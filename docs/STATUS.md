@@ -63,7 +63,8 @@ on API 29 and lower fixed the stall while retaining asynchronous frame and
 presentation workers. Both universal and four-part device-split version 7
 packages sustained the runtime, exposed the menu, rendered diverse frames,
 and preserved durable state on API 29, then the same exact AAB passed again on
-API 36. The local preview is now `0.4.0-android-preview.2`; API 28 remains
+API 36. That compatibility run used preview 2; the current local candidate is
+preview 3 as recorded below. API 28 remains
 provisional because its official emulator exposes no usable Vulkan adapter.
 Physical vendor-driver, performance, touch/audio/haptics/controller, thermal,
 and lifecycle acceptance remain open. Evidence:
@@ -244,21 +245,21 @@ Evidence:
 [`docs/artifacts/2026-09-05/android/a6-bundle-derived-apk-emulator.md`](artifacts/2026-09-05/android/a6-bundle-derived-apk-emulator.md).
 
 The current Android hardware-preview identity is now
-`0.4.0-android-preview.2` version code 7, carrying the API 29 Vulkan
-compatibility correction.
+`0.4.0-android-preview.3` version code 8, carrying the API 29 Vulkan
+compatibility correction and retained Original runtime-root repair.
 Both metadata inputs are validated, and strict APK/AAB audits require the
 expected name. Two independent scoped clean builds produced identical unsigned
 AAB bytes at SHA-256
-`d03f1791989142e109f2a3101a3bca629e80d3b8b1fdde54269b17b21d554f4a`.
+`85a7e12d8ebccbaa313dc2740e86137a26c24d02ac47c7835d6019a60f1335d7`.
 The exact derived non-debuggable APK upgraded the populated emulators from
-version 5 to 7, executed the native runtime, and preserved durable state before
+version 7 to 8, executed the native runtime, and preserved durable state before
 the debug fixture was restored. Its SHA-256 is
-`cfb32065650a15e9d3ddab9aa2705ea62e9930626445c7e568e1ef29b8e53420`,
-and the audited 90,477,735-byte local hardware preview is retained ignored
+`b709d5e42b08be0e276c2fc07ed25b1f34a58c31282c049d6505a390ee647707`,
+and the audited 90,502,311-byte local hardware preview is retained ignored
 under `.android-bootstrap/hardware-preview/`. Physical testing is now the next
 authority; this local debug-signed preview is not a release-key candidate and
 was not published. Evidence:
-[`docs/artifacts/2026-09-05/android/a6-api29-product-runtime.md`](artifacts/2026-09-05/android/a6-api29-product-runtime.md).
+[`docs/artifacts/2026-09-05/android/a6-preview3-hardware-candidate.md`](artifacts/2026-09-05/android/a6-preview3-hardware-candidate.md).
 
 Local Play-style device targeting now passes too. Pinned bundletool queried the
 Pixel Tablet device spec and emitted exactly four APKs: base, ARM64, English,

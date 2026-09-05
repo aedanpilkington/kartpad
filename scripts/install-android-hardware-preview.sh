@@ -7,11 +7,11 @@ source "$repo_root/scripts/android-toolchain-versions.sh"
 
 sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
 adb="${KARTPAD_ADB:-$sdk_root/platform-tools/adb}"
-apk="${1:-$repo_root/.android-bootstrap/hardware-preview/KartPad-0.4.0-android-preview.2-v7-arm64.apk}"
+apk="${1:-$repo_root/.android-bootstrap/hardware-preview/KartPad-0.4.0-android-preview.3-v8-arm64.apk}"
 package="dev.kartpad.android"
-expected_sha256="${KARTPAD_ANDROID_EXPECTED_PREVIEW_SHA256:-cfb32065650a15e9d3ddab9aa2705ea62e9930626445c7e568e1ef29b8e53420}"
-expected_version_code=7
-expected_version_name="0.4.0-android-preview.2"
+expected_sha256="${KARTPAD_ANDROID_EXPECTED_PREVIEW_SHA256:-b709d5e42b08be0e276c2fc07ed25b1f34a58c31282c049d6505a390ee647707}"
+expected_version_code=8
+expected_version_name="0.4.0-android-preview.3"
 allow_update="${KARTPAD_ANDROID_ALLOW_PREVIEW_UPDATE:-0}"
 minimum_free_kib="${KARTPAD_ANDROID_PREVIEW_MIN_FREE_KIB:-6291456}"
 

@@ -15,9 +15,9 @@ class AndroidHardwarePreviewInstallContractTests(unittest.TestCase):
 
         self.assertIn("check-android-physical-device.sh", installer)
         self.assertIn("audit-android-package.sh", installer)
-        self.assertIn("cfb32065650a15e9d3ddab9aa2705ea", installer)
-        self.assertIn("0.4.0-android-preview.2", installer)
-        self.assertIn("expected_version_code=7", installer)
+        self.assertIn("b709d5e42b08be0e276c2fc07ed25b1", installer)
+        self.assertIn("0.4.0-android-preview.3", installer)
+        self.assertIn("expected_version_code=8", installer)
         self.assertIn("KARTPAD_ANDROID_ALLOW_PREVIEW_UPDATE", installer)
         self.assertIn("KARTPAD_ANDROID_PREVIEW_MIN_FREE_KIB", installer)
         self.assertIn("6291456", installer)

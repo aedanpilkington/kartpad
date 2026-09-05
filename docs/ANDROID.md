@@ -985,12 +985,12 @@ the wrong package identity, a non-increasing version code, or an installed
 version that does not match the requested APK. This override is test-only;
 normal builds retain the manifest's default version code.
 
-Android's default user-visible version is `0.4.0-android-preview.2`. Override
+Android's default user-visible version is `0.4.0-android-preview.3`. Override
 it only for a deliberately named preview with
 `KARTPAD_ANDROID_VERSION_NAME`; the builder and Gradle property both reject
 empty, over-64-character, or non-portable values. Strict APK/AAB audits require
 the expected default unless `KARTPAD_ANDROID_EXPECTED_VERSION_NAME` is supplied
-for that deliberate build. Version code 7 is the current hardware-preview
+for that deliberate build. Version code 8 is the current hardware-preview
 line and must not be decreased for distributed test upgrades.
 
 The product builder emits a debug APK by default. Set
@@ -1008,13 +1008,13 @@ for local paths, private-data names, and unexpected key markers. Candidate AAB
 hashes must come from independent scoped clean builds, not a cached task.
 
 The current local hardware-preview APK is derived from two byte-identical clean
-version-code 7 AAB builds, is non-debuggable, and has SHA-256
-`cfb32065650a15e9d3ddab9aa2705ea62e9930626445c7e568e1ef29b8e53420`.
+version-code 8 AAB builds, is non-debuggable, and has SHA-256
+`b709d5e42b08be0e276c2fc07ed25b1f34a58c31282c049d6505a390ee647707`.
 It is retained ignored under `.android-bootstrap/hardware-preview/` for the
 first physical session. Its local debug signature is test-only and cannot be
 updated in place by a future release-key package; export test saves before any
 signing-identity transition. Evidence is in
-`docs/artifacts/2026-09-05/android/a6-api29-product-runtime.md`.
+`docs/artifacts/2026-09-05/android/a6-preview3-hardware-candidate.md`.
 
 The same guarded bundle-derived runner also exercises the device-specific form.
 It obtains a temporary device spec with pinned bundletool, requires the exact

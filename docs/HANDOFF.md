@@ -214,17 +214,17 @@ Play device-split delivery, release signing, physical-device acceptance, and
 publication remain open. Evidence:
 `docs/artifacts/2026-09-05/android/a6-bundle-derived-apk-emulator.md`.
 
-The current hardware preview is `0.4.0-android-preview.2` at version code 7.
-Two clean unsigned AABs match at `d03f1791…`; the derived, non-debuggable APK
-at `cfb32065…` passed real version 5-to-7 emulator upgrades, selector/native
+The current hardware preview is `0.4.0-android-preview.3` at version code 8.
+Two clean unsigned AABs match at `85a7e12d…`; the derived, non-debuggable APK
+at `b709d5e4…` passed a real version 7-to-8 emulator upgrade, selector/native
 runtime execution, and durable-state preservation before the debug fixture was
-restored. The exact audited 90,477,735-byte ARM64/API-28+ APK is retained
+restored. The exact audited 90,502,311-byte ARM64/API-28+ APK is retained
 locally and ignored at
-`.android-bootstrap/hardware-preview/KartPad-0.4.0-android-preview.2-v7-arm64.apk`.
+`.android-bootstrap/hardware-preview/KartPad-0.4.0-android-preview.3-v8-arm64.apk`.
 It uses only the local debug identity, contains no game data, is not a
 release-key candidate, and was not published. Physical-device execution is the
 next authority. Evidence:
-`docs/artifacts/2026-09-05/android/a6-api29-product-runtime.md`.
+`docs/artifacts/2026-09-05/android/a6-preview3-hardware-candidate.md`.
 
 Pinned bundletool's device-targeted path now passes on the Pixel Tablet as
 well. It generated exactly base, ARM64, English, and xhdpi APKs. Every split is

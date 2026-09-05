@@ -4404,3 +4404,24 @@ This file is append-only. Evidence paths refer to sanitized, publishable artifac
   emulator runtime/state stability; not physical-device stability.** No build
   or private artifact was published. Evidence:
   `docs/artifacts/2026-09-05/android/a6-retained-game-data-runtime-root.md`.
+
+## 2026-09-05 — Android A6 preview 3 hardware candidate
+
+- Promoted the private local phone candidate to
+  `0.4.0-android-preview.3`, version code 8, so it is a forward upgrade from
+  the prior tester line and includes the retained Original path correction.
+- Two independent scoped clean builds produced identical unsigned AAB SHA-256
+  `85a7e12d8ebccbaa313dc2740e86137a26c24d02ac47c7835d6019a60f1335d7`.
+- The bundle-derived universal and four-part device-split API 36 ARM64 gates
+  both passed selector, stable/diverse Original rendering, exact native/signer,
+  debug restoration, and durable-state preservation.
+- Retained the exact audited 90,502,311-byte non-debuggable APK locally at
+  `.android-bootstrap/hardware-preview/KartPad-0.4.0-android-preview.3-v8-arm64.apk`
+  with SHA-256
+  `b709d5e42b08be0e276c2fc07ed25b1f34a58c31282c049d6505a390ee647707`.
+  The guarded installer now pins those exact bytes and metadata.
+- The sole connected target was the emulator; the installer rejected it before
+  mutation, redacted its serial, and left installed version 7 byte-identical.
+- Classification: **Pass for a reproducible, guarded, unpublished phone-test
+  candidate; not physical-device stability or acceptance.** Evidence:
+  `docs/artifacts/2026-09-05/android/a6-preview3-hardware-candidate.md`.
