@@ -2403,7 +2403,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [weakSelf gameOverlayRequestsControllerMapping:nil];
   }]];
-  [sheet addAction:[UIAlertAction actionWithTitle:@"Host or Join a Private Friend Room…"
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Private Friend Rooms…"
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [weakSelf showIntegrationAlert:@"Private Friend Rooms"
         message:@"Use the same game profile, content version, and online service as your friends. In the game, choose Nintendo WFC → Friends and exchange friend codes. The host creates a room; friends join it from their friend roster.\n\nOriginal Mario Kart Wii requires a compatible private server. This uses Wii friend codes; MeleePad room codes and peer chat are not available in KartPad."];

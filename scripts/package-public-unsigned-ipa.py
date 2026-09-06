@@ -71,6 +71,7 @@ def main() -> int:
     additional_entries = {
         "INSTALL_IPA.md": repo / "docs/INSTALL_IPA.md",
         "RELEASE_NOTES.md": repo / "docs/releases/v0.4.9.md",
+        "MULTIPLAYER.md": repo / "docs/MULTIPLAYER.md",
         "LICENSES/GPL-3.0.txt": repo / "LICENSES/GPL-3.0.txt",
         "RIGHTS_AND_LICENSES.md": repo / "RIGHTS_AND_LICENSES.md",
         "THIRD_PARTY_NOTICES.md": repo / "THIRD_PARTY_NOTICES.md",
