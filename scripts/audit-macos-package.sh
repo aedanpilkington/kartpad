@@ -6,6 +6,7 @@ if [[ $# -ne 1 || "$1" != /* || "$1" != *.app ]]; then
   exit 64
 fi
 
+repo_root="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 app="$1"
 contents="${app}/Contents"
 plist="${contents}/Info.plist"
@@ -21,12 +22,13 @@ icon_name="$(plutil -extract CFBundleIconFile raw "${plist}")"
 executable="${contents}/MacOS/${executable_name}"
 
 test "${bundle_identifier}" = "dev.kartpad.app"
-test "$(plutil -extract CFBundleShortVersionString raw "${plist}")" = "0.4.8"
-test "$(plutil -extract CFBundleVersion raw "${plist}")" = "22"
+test "$(plutil -extract CFBundleShortVersionString raw "${plist}")" = "0.4.9"
+test "$(plutil -extract CFBundleVersion raw "${plist}")" = "23"
 test "$(plutil -extract NSBluetoothAlwaysUsageDescription raw "${plist}")" = \
   "KartPad uses Bluetooth to pair and connect an experimental Wii Remote and Nunchuk."
 test -x "${executable}"
 test -f "${contents}/Resources/${icon_name%.icns}.icns"
+cmp "${contents}/Resources/${icon_name%.icns}.icns" "${repo_root}/branding/exports/KartPad.icns"
 test "$(readlink "${contents}/MacOS/dsp_coef.bin")" = \
   "../Resources/Runtime/dsp_coef.bin"
 test "$(readlink "${contents}/MacOS/build-fingerprint.json")" = \

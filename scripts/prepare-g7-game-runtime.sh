@@ -65,6 +65,8 @@ patch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-apple-network-tls.patch"
 patch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-local-wfc-test-route.patch"
+patch --batch -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-private-wfc.patch"
 patch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-blocking-stream-recv-wait.patch"
 patch -p1 -d "${runtime_source}" < \

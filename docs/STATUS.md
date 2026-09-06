@@ -1,5 +1,20 @@
 # KartPad status
 
+## 0.4.9 controller and multiplayer update
+
+0.4.9 fixes the Apple mobile WPAD physical-controller detection mismatch in
+issue #85. The actual prepared-runtime regression fails on 0.4.8 and passes
+with the fix; four Apple snapshot-controller slots, registration taps and
+reconnection are covered. The Apple interfaces gain private friend-room
+guidance and experimental private Wii-server routing. Mac now uses the current
+iPhone/iPad K-circuit icon. See `MULTIPLAYER.md` and `releases/v0.4.9.md`.
+
+MeleePad room codes, native host/join and chat are not ported. Private-server
+authentication, complete friend-room races and physical multiplayer acceptance
+remain open. Android stays paused; no Android build or merge is included.
+
+The entries below retain their original historical evidence scope.
+
 Updated: 2026-09-06
 
 ## Native Android work
@@ -40,7 +55,7 @@ gate are in
 
 ## Current goal
 
-**0.4.4 is published as the latest stable community release.** The `v0.4.4`
+**Historical 0.4.4 release checkpoint.** The `v0.4.4`
 tag dereferences to audited source commit
 `3b857f9ae2b7933c6eb4f8f8f61a07df6b455624`. It advances the verified full
 pack and ahead-of-time native graph to Retro Rewind 6.12.7, improves the future
