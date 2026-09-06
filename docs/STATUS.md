@@ -2,6 +2,11 @@
 
 ## 0.4.9 controller and multiplayer update
 
+Released from `8dd79d50b681a89fea9741f3da219332fa6c2196` on 2026-09-07.
+iPhone/iPad and Mac build 23 and experimental Apple TV build 8 passed full app
+and public-package audits, deterministic double packaging, and anonymous hosted
+download comparisons. See [release verification](artifacts/2026-09-07/apple/v049-release-verification.md).
+
 0.4.9 fixes the Apple mobile WPAD physical-controller detection mismatch in
 issue #85. The actual prepared-runtime regression fails on 0.4.8 and passes
 with the fix; four Apple snapshot-controller slots, registration taps and
