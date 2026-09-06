@@ -4,6 +4,12 @@ Date: 2026-09-06 (JST). Android branch only; no merge to `main`, Android release
 package publication or private-data commit. Base source:
 `4221ef4894248d7d3135bb289c9318660db4456b`, plus the changes accompanying this note.
 
+Owner paused testing until tomorrow (2026-09-07 JST). Implementation checkpoint
+`c987a26755d5f02877784567b65173f571ab7a9d` is pushed to the Android branch.
+Host-side app logging was stopped; existing private captures and phone data are
+retained. Resume with physical A-button confirmation and the same slow Single
+Player menu/race, then collect a matched performance sample. No scheduled restart.
+
 ## Current installed artifact
 
 - Package `dev.kartpad.android`, version `0.4.8-android-preview.8`, code 13.
