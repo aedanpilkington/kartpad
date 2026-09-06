@@ -3,12 +3,14 @@
 ## Current state
 
 Android work resumed on 2026-09-06 and now includes stable Apple v0.4.8 source.
-The private Preview 5 candidate includes Retro Rewind 6.12.7 metadata,
-borrowed-descriptor import, Apple-style floating touch defaults, and diagnostics.
-The Pixel is locked; candidate installation, real picker import, Retro Rewind
-crash diagnosis, warm performance, and player-identity feature parity remain open.
+Private Preview 6 (code 11) is installed in-place on the Pixel. Real picker WBFS
+import passes; Original boots and Retro Rewind 6.12.7 supports physical offline
+play. The Original save remained byte-identical across update/import. Apple-style
+floating input, A lock and HOME/Recents resume have partial physical evidence.
+Measured warm slowdowns, the earlier post-installer crash, the remaining hardware
+checklist and player-identity feature parity remain open.
 Keep `codex/android-a4-touch-settings` separate from `main` during acceptance.
-Current evidence: `docs/artifacts/2026-09-06/android/preview5-development-checkpoint.md`.
+Current evidence: `docs/artifacts/2026-09-06/android/preview6-physical-import-gameplay.md`.
 Previous partial device evidence:
 `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 

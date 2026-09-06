@@ -1,8 +1,9 @@
 # KartPad Android source-only fixture
 
-Current development checkpoint (2026-09-06): the private full-runtime Preview 5
-candidate follows stable Apple v0.4.8, but physical acceptance is still open.
-See `../docs/artifacts/2026-09-06/android/preview5-development-checkpoint.md`.
+Current development checkpoint (2026-09-06): private full-runtime Preview 6 is
+installed on the Pixel with working picker import and Retro Rewind offline play.
+Warm slowdowns and full physical/feature acceptance remain open.
+See `../docs/artifacts/2026-09-06/android/preview6-physical-import-gameplay.md`.
 Do not publish private builds or infer gameplay/performance acceptance from the
 fixture and packaging checks below.
 
@@ -22,8 +23,8 @@ cooperative scheduler for two million deterministic operations and a native
 ELF AArch64 fiber for one million context switches with callee-saved register
 checks. None of these paths use game data or generated translated code.
 
-Gameplay, physical-device support, performance, and release readiness remain
-unproven. A1 is complete; A2 is the next gate.
+The source-only fixture does not establish gameplay, physical-device support,
+performance or release readiness. A1 is complete; full A2 acceptance remains open.
 
 Game-runtime builds launch through `KartPadLaunchActivity`, which validates the
 pinned Retro Rewind installation before presenting side-by-side Original and

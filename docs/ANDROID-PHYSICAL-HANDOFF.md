@@ -7,20 +7,21 @@ phone.
 ## Resumed development on 2026-09-06; physical acceptance still open
 
 After Apple v0.4.8 shipped, Android development resumed on this branch. The
-private Preview 5 candidate incorporates the shared stable runtime, Retro
-Rewind 6.12.7 metadata, borrowed-descriptor image import, floating touch input,
-and bounded performance diagnostics. It is not physically accepted. The Pixel
-remains locked, so the new candidate has not been installed or tested through
-the real document picker. The earlier Retro Rewind crash and reported warm
-slowdowns remain unresolved. Do not merge this branch to `main` or publish its
-packages. See `docs/artifacts/2026-09-06/android/preview5-development-checkpoint.md`
-for current evidence and resumption commands. The earlier pause record remains
+private Preview 6 (code 11) is installed on the Pixel in-place. Real document-picker
+WBFS import now succeeds, Original boots, and Retro Rewind 6.12.7 is playable.
+The Original save compared byte-for-byte before and after the update/import.
+Physical acceptance remains open: warm slowdowns are measured, the earlier
+post-installer crash is not explained, and player-identity parity is incomplete.
+Do not merge this branch to `main` or publish its packages. See
+`docs/artifacts/2026-09-06/android/preview6-physical-import-gameplay.md`
+for current evidence and guarded resumption commands. Preview 5's pre-install
+checkpoint remains historical. The earlier pause record remains
 at `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 
 ## Historical Preview 3 source checkpoint
 
 The remaining Preview 3 commands and hashes below are historical; use the
-Preview 5 checkpoint above for the current candidate and explicit version guards.
+Preview 6 checkpoint above for the current candidate and explicit version guards.
 
 - Branch: `codex/android-a4-touch-settings`
 - Audited product base commit: `cdc96af`

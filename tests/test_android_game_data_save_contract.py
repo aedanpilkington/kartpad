@@ -8,6 +8,15 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 class AndroidGameDataSaveContractTests(unittest.TestCase):
+    def test_successful_native_import_is_not_treated_as_a_null_descriptor(self) -> None:
+        importer = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadDiscImageImporter.kt").read_text()
+        # JNI returns null on success. A trailing Elvis on use() would therefore
+        # throw after a successful extraction and make storage delete staging.
+        self.assertIn('val descriptor = resolver.openFileDescriptor(image, "r")', importer)
+        self.assertIn('descriptor.use {', importer)
+        self.assertNotIn('} ?: throw', importer)
+        self.assertLess(importer.index('?: throw'), importer.index('descriptor.use {'))
+
     def test_launcher_and_runtime_share_real_game_data_management(self) -> None:
         launcher = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadLaunchActivity.kt").read_text()
         activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()

@@ -11,11 +11,13 @@ internal object KartPadDiscImageImporter {
     }
 
     fun extract(resolver: ContentResolver, image: Uri, destination: File) {
-        resolver.openFileDescriptor(image, "r")?.use { descriptor ->
-            nativeExtract(descriptor.fd, destination.absolutePath)?.let {
+        val descriptor = resolver.openFileDescriptor(image, "r")
+            ?: throw IllegalArgumentException("The selected disc image could not be opened.")
+        descriptor.use {
+            nativeExtract(it.fd, destination.absolutePath)?.let {
                 throw IllegalArgumentException(it)
             }
-        } ?: throw IllegalArgumentException("The selected disc image could not be opened.")
+        }
     }
 
     private external fun nativeExtract(fd: Int, destination: String): String?
