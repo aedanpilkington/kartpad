@@ -2,11 +2,11 @@
 
 ## Current state
 
-Android physical testing is paused as of 2026-09-06. Preview 3 is behind the
-current iOS runtime and Retro Rewind fixes, and the maintainer observed major
-slowdowns on the phone. Partial device results are evidence only, not Android
-acceptance; keep `codex/android-a4-touch-settings` separate from `main` and
-resume after iOS stabilizes. Evidence:
+Android physical work resumed on 2026-09-06 following the stable Apple v0.4.7
+release. Bring the shared runtime and Retro Rewind 6.12.7 fixes forward, match
+the attached iPhone's touch layout, and diagnose the Pixel's reported slowdowns.
+Keep `codex/android-a4-touch-settings` separate from `main` during acceptance.
+Previous partial device evidence:
 `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 
 The latest exact dual APK moves the three-dot trigger and iOS-shaped menu card
@@ -75,6 +75,28 @@ Both exact-main builds and two independent packages per platform pass. Fresh
 anonymous downloads match the local bytes, checksums, provenance, and audits.
 GitHub marks this non-prerelease as **Latest**. Physical Apple TV acceptance
 remains open.
+
+KartPad `v0.4.4` is published as the latest stable community release from
+`3b857f9ae2b7933c6eb4f8f8f61a07df6b455624`. The iPhone/iPad app 0.4.4 build
+18 IPA has SHA-256
+`5d2428abe9e4e0a7736912669c05fe8b40d3d5b34fcf85d05f3d31f336c6ed11`;
+the experimental tvOS app 0.4.4 build 7 IPA has SHA-256
+`b508d45fc4426190e7c25c6f57c31ec838f71f02a666feb07b06ca379a976f66`.
+Both exact-source builds and two independent packages per platform pass. Fresh
+anonymous hosted downloads match the local bytes, checksums, provenance, and
+audits. The release advances the verified pack and AOT graph to Retro Rewind
+6.12.7. It also makes the daily watcher open one deduplicated compatibility
+issue and adds a resumable one-command profile updater. Retro WFC service
+recovery is verified; exact 0.4.4 production gameplay and physical-device
+acceptance remain open. Apple TV remains experimental.
+
+The Issue #17 reporter accepted the exact public `v0.4.1` tvOS storage hotfix on
+an Apple TV 4K (3rd generation) running tvOS 26.5/26.6. Config writes no longer
+raise error 513, both profiles launch, NAND/save and settings changes survive a
+normal relaunch, and the cache-root backup script succeeds. This resolves the
+reported storage defect without establishing the still-open 0.4.3, A12,
+sleep/wake, restore, multi-controller, purge-recovery, or sustained-performance
+gates.
 
 Android A5 now proves the product runtime's translated guest TLS IOCTLV path,
 not only the Mbed TLS wrapper. The visible ARM64 Pixel Tablet used real guest
@@ -481,9 +503,9 @@ on the exact affected iPad and Files provider.
 The preview offers Original Mario Kart Wii or optional Retro Rewind 6.12.5.
 The preceding 6.12.4 build completed physical iPad pack download, verification,
 installation, launch, and a playable single-player match. General physical
-execution is accepted on iPad and iPhone. Retro WFC remains unavailable during
-external service maintenance; live public online play is not claimed and does
-not block offline Retro Rewind support.
+execution is accepted on iPad and iPhone. Retro WFC service recovery is now
+verified, but live public online play is not claimed for the exact 0.4.4
+artifact until its production and physical-device gates pass.
 
 ## Next executable work
 
@@ -701,7 +723,7 @@ not block offline Retro Rewind support.
    airplane mode. Gameplay/mode switching and physical acceptance remain open.
    Evidence:
    `docs/artifacts/2026-09-04/android/a3-production-install.md`.
-2. Collect the first physical Apple TV report against `v0.4.0` using
+2. Collect a physical Apple TV report against the exact `v0.4.4` asset using
    `docs/TVOS-TESTING.md`.
 3. Await the Issue #1 Feather-signed iPad import retest and the Issue #5 MacBook
    Air cursor/settings retest requested against Preview 5.
@@ -711,8 +733,8 @@ not block offline Retro Rewind support.
    the accepted 0.3.0 release baseline.
 6. Complete the remaining three- and four-player, touch, motion, controller,
    audio, thermal, lifecycle, and long-soak rows in `docs/PRD.md`.
-7. When Retro WFC returns, retest production login, matchmaking, a complete
-   race, results, reconnect, and physical-device online play.
+7. Retest production login, matchmaking, a complete race, results, reconnect,
+   and physical-device online play against the recovered Retro WFC service.
 8. Follow `docs/UPSTREAM_UPDATES.md` whenever WiiCompiled or Retro Rewind
    advances; never accept an unpinned pack or `Code.pul`.
 

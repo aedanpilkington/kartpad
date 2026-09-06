@@ -1,6 +1,6 @@
 # KartPad status
 
-Updated: 2026-09-05
+Updated: 2026-09-06
 
 KartPad's Android three-dot trigger and menu card now honor system-bar and
 display-cutout safe insets, including transiently hidden bars on API 30+ and
@@ -1153,25 +1153,85 @@ Accepted evidence:
 
 ## Native tvOS work
 
-The maintainer-owned `codex/tvos-retro-rewind` branch contains the first
-independent native tvOS implementation slice: a `KartPadDual` tvOS build graph,
+The repository contains an independent native tvOS implementation slice: a
+`KartPadDual` tvOS build graph,
 focus-driven setup host, Extended Gamepad requirement, Mac-side private game
 data staging, official hash-verified Retro Rewind installation, and a fail-closed
 artifact audit. The complete dual Original/Retro Rewind graph now compiles and
 links as an unsigned arm64 tvOS 17 app, and that app passes the native bundle,
-platform, dependency, symbol, privacy, and private-data audit. No Apple TV is
-paired with the current Mac, so signing, installation, execution, gameplay,
-performance, and save recovery remain untested. Apple TV support is therefore
-not accepted. The candidate includes an original three-layer tvOS icon and Top
-Shelf image compiled into its audited asset catalog. It remains explicitly
-experimental in the `v0.4.0` hardware-bring-up build. The next
-gate is a small outside cohort using the exact audited candidate and tester
-checklist. The
+platform, dependency, symbol, privacy, and private-data audit. An external Apple
+TV 4K (3rd generation) run on tvOS 26.5/26.6 accepted playable Original and
+Retro Rewind video, audio, menus, and Extended Gamepad input after moving the
+runtime from unwritable Application Support to Caches. The `v0.4.1` tvOS-only
+hotfix incorporates that path correction, and the reporter accepted its exact
+public IPA for config writes, both profile launches, normal-relaunch
+persistence, and cache-root backup. The 0.4.2 release adds a generic compiler
+baseline, explicitly disables RCpc instructions, and rejects those instructions
+during final-binary audit; physical testing of the exact 0.4.4 artifact, restore,
+sleep/wake, multi-controller, and sustained performance remain open. Apple TV
+support is therefore still experimental. The release includes
+an original three-layer tvOS icon and Top Shelf image compiled into its audited
+asset catalog. The
 authoritative scope, build procedure, storage boundary, and external-testing
 gate are in
 [`docs/TVOS.md`](TVOS.md).
 
 ## Current goal
+
+**0.4.4 is published as the latest stable community release.** The `v0.4.4`
+tag dereferences to audited source commit
+`3b857f9ae2b7933c6eb4f8f8f61a07df6b455624`. It advances the verified full
+pack and ahead-of-time native graph to Retro Rewind 6.12.7, improves the future
+version-mismatch explanation, makes the daily watcher open one deduplicated
+maintenance issue, and adds a resumable one-command profile updater. Exact
+source iOS 0.4.4 build 18 and tvOS build 7 builds and app audits passed. Two
+packages per platform were byte-identical; anonymous hosted downloads matched,
+passed their checksums, and re-audited. The iPhone/iPad executable and IPA
+SHA-256 values are respectively
+`1e251b27a05411f4e03b9d6ff468cb49a7bb111d3648534d32184e2493c089c7`
+and `5d2428abe9e4e0a7736912669c05fe8b40d3d5b34fcf85d05f3d31f336c6ed11`.
+The experimental tvOS executable and IPA SHA-256 values are respectively
+`0bd0409e4cfb14fd4850ebae96b1cd5e85e6c6476dee94b872426a78c91c6d47`
+and `b508d45fc4426190e7c25c6f57c31ec838f71f02a666feb07b06ca379a976f66`.
+Android work is separate and unchanged. Exact Retro WFC production gameplay,
+0.4.4 physical-device acceptance, and broader tvOS gates remain open.
+
+**0.4.2 is retained as the preceding stable community release.** The `v0.4.2`
+tag dereferences to audited source commit
+`776a2a6a0e367b6d06f627c983f5da4a565ea104`. It refreshes the accepted
+iPhone/iPad path as app 0.4.2 build 16 and the experimental tvOS path as app
+0.4.2 build 5. The
+shared mobile runtime now reports the host-selected aspect mode through the
+guest system configuration. tvOS additionally uses a generic AArch64 compiler
+baseline with RCpc disabled and a fail-closed final-binary instruction audit.
+The release does not add tvOS Settings UI, controller rumble, or multichannel
+audio, and it does not claim physical A12 acceptance. Exact merged-source
+builds and app audits passed; two packages per platform were byte-identical.
+Fresh hosted downloads matched the local files and passed checksum, ZIP,
+private-data, signing-residue, provenance, and app audits. The iPhone/iPad IPA
+SHA-256 is
+`4c498de9a858bf9d59e6f082ebbe7a34e64935831601dc0981de42be8a8d473e`;
+the experimental tvOS IPA SHA-256 is
+`0802f7e572da3df9b8daf5b09b45717584fad33c07d8be4ba5c6d8fadceaab3f`.
+
+**0.4.1 tvOS storage hotfix is published.** The `v0.4.1` tag dereferences to
+source commit `d0e77d5c9bc48a7f1f6aaedf79fd00d5e616dc0c`. Its tvOS app 0.4.1
+build 4 IPA has SHA-256
+`ca62f6e00e0b5260ddb6b836ae2cda969d3bc5655ba4bd3dac19aa9406249e49`;
+the executable SHA-256 is
+`a9e5c89ba20406897f8925c48b9683a1582bf902a9335a6922c22db1240f7ce3`.
+It moves tvOS config, NAND, saves, runtime logs, and controller diagnostics to
+purgeable Caches, retains cache-first diagnostics with a legacy Application
+Support fallback, and adds a non-atomic config write fallback for the physical
+error-513 path. The exact merged-source build and app audit passed, two packages
+were byte-identical, and a fresh anonymous hosted download matched and passed
+checksum, ZIP, app, privacy, signing-residue, private-data, and provenance
+audits. The iPhone/iPad 0.4.0 release is unchanged. On 2026-09-04, the reporter
+accepted the exact signed hotfix artifact on an Apple TV 4K (3rd generation):
+`Config.toml` wrote without error 513, Original and Retro Rewind launched,
+NAND/save and settings changes survived normal termination and relaunch, and
+`backup-tvos-state.sh` succeeded. Issue #17 is resolved; broader tvOS and exact
+0.4.3 acceptance remain separate gates.
 
 **0.4.0 is published as KartPad's second stable community release.** The
 `v0.4.0` tag points to source commit
@@ -1262,13 +1322,13 @@ each direction per client and consumed the complete 5,001-frame fixture. The
 test-only finish trigger is documented in `docs/ONLINE.md`; public-service,
 physical-device online, impairment, and external-client rows remain open.
 
-The exact released dual-mode build also reaches production Retro WFC NAS
-authentication. It then receives `61070` because the public GameSpy
-gameplay-login endpoint times out. Retro Rewind's official documentation lists
-the service as in testing/maintenance mode, and its status page has no live
-room data. Production online acceptance is waiting on Retro WFC recovery. That
-external outage does not block the accepted Retro Rewind installation, launch,
-or offline-gameplay support in the current KartPad build.
+The previously tested dual-mode build reached production Retro WFC NAS
+authentication but then received `61070` while the public GameSpy gameplay
+login endpoint was unavailable. On 6 September 2026, Retro WFC's health and
+room endpoints were reachable and reported active service. Production service
+recovery is therefore verified, while login, matchmaking, complete race,
+results, reconnect, and physical-device acceptance of the exact 0.4.4 artifact
+remain open.
 
 The same source produced a fresh signed KartPad `0.3.0` physical-iOS build. It
 was installed over the existing app on the attached iPad without
@@ -1292,8 +1352,8 @@ in place without removing KartPad's data and carries the final iPad
 multiplayer-guidance polish, which is validated in the exact iPad Simulator
 candidate. This closes physical pack installation, Retro Rewind launch, and
 initial offline-gameplay acceptance. Production Retro WFC matchmaking and
-online gameplay remain unaccepted while the external service is in maintenance,
-but they are not a blocker for this build.
+online gameplay remain unaccepted for the exact current artifact, but they are
+not a blocker for offline support.
 
 ## Goal ledger
 

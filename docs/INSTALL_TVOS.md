@@ -1,12 +1,13 @@
 # Install the experimental KartPad Apple TV build
 
-KartPad `v0.4.0` includes an unsigned ARM64 tvOS IPA for hardware
-bring-up. It has passed compilation and package audits but has not run on the
-maintainer's Apple TV hardware. Treat it as an experimental tester build, not
-supported Apple TV functionality.
+KartPad `v0.4.4` includes an unsigned ARM64 tvOS IPA for hardware bring-up. It
+carries forward the cache-root storage correction and adds a generic compiler
+baseline with RCpc instructions disabled and audited out of the final binary.
+Treat it as an experimental build, not supported Apple TV functionality.
 
-1. Download `KartPad-v0.4.0-tvos-unsigned.ipa` and `SHA256SUMS` from
-   the release and verify the checksum.
+1. Download `KartPad-v0.4.4-tvos-unsigned.ipa` and `SHA256SUMS` from
+   the [0.4.4 release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.4)
+   and verify the checksum.
 2. Re-sign the IPA with your own Apple development identity and bundle
    identifier, then install it on a paired Apple TV through Xcode or a
    compatible tvOS signing workflow.
@@ -22,7 +23,10 @@ Nintendo assets, Retro Rewind pack, saves, signing identity, provisioning
 profile, or Wii banner artwork. KartPad downloads and hash-verifies the pinned
 official Retro Rewind pack only after the tester selects that mode.
 
-Update in place with the same signing identity and bundle identifier. Back up
-Application Support before deleting the app or changing signing identities.
-Never attach game data, Retro Rewind files, saves, signing material, device
-identifiers, or a complete app container to a public report.
+Update in place with the same signing identity and bundle identifier. KartPad's
+tvOS config, NAND, saves, logs, game data, and downloaded pack live under
+`Library/Caches`; tvOS may purge them under storage pressure. Run
+`scripts/backup-tvos-state.sh` before and after meaningful testing and before
+deleting the app or changing signing identities. Never attach game data, Retro
+Rewind files, saves, signing material, device identifiers, or a complete app
+container to a public report.

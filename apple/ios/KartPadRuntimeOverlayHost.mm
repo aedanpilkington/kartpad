@@ -854,13 +854,13 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 
 - (void)showKartPadUpdateRequiredForRetroVersion:(NSString *)latest {
   NSString *message = [NSString stringWithFormat:
-      @"Retro Rewind %@ is current, but this KartPad build supports %@. KartPad precompiles Retro Rewind's code, so update KartPad before installing the newer pack or playing online.",
+      @"Retro Rewind %@ was released after this KartPad build, which supports %@. Retro Rewind changed executable code that KartPad must translate ahead of time, so a matching KartPad release is required before installing the new pack or playing online. Original Mario Kart Wii remains available.",
       latest, KartPadRetroRewindInstaller.requiredVersion];
   UIAlertController *alert = [UIAlertController
-      alertControllerWithTitle:@"KartPad Update Required"
+      alertControllerWithTitle:@"Retro Rewind Update Needed"
                        message:message
                 preferredStyle:UIAlertControllerStyleAlert];
-  [alert addAction:[UIAlertAction actionWithTitle:@"Check KartPad Releases"
+  [alert addAction:[UIAlertAction actionWithTitle:@"View KartPad Releases"
                                              style:UIAlertActionStyleDefault
                                            handler:^(UIAlertAction *action) {
     (void)action;
@@ -1855,7 +1855,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
         }
       }
       UIAction *miiManager =
-          [UIAction actionWithTitle:@"Manage Miis…"
+          [UIAction actionWithTitle:@"Player Identity…"
                               image:[UIImage systemImageNamed:@"person.crop.circle.badge.plus"]
                          identifier:@"dev.kartpad.manage-miis"
                             handler:^(__kindof UIAction *action) {
@@ -2196,6 +2196,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                      selector:@selector(applicationDidBecomeActive:)
                          name:UIApplicationDidBecomeActiveNotification
                        object:nil];
+  [notifications addObserver:self
+                     selector:@selector(userDidTakeScreenshot:)
+                         name:UIApplicationUserDidTakeScreenshotNotification
+                       object:nil];
   SunPadDiagnosticsStart();
   NSLog(@"[KartPad] exact SunPad runtime overlay installed");
   return self;
@@ -2222,6 +2226,25 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   _overlay.alpha = 1.0;
   [container bringSubviewToFront:_overlay];
   [_overlay setNeedsLayout];
+  [_overlay layoutIfNeeded];
+  UIButton *menuButton = KartPadFindMenuButton(_overlay);
+  KartPadConfigureMenuButton(menuButton);
+  menuButton.selected = NO;
+  menuButton.highlighted = NO;
+  menuButton.hidden = NO;
+  menuButton.alpha = 1.0;
+}
+
+- (void)userDidTakeScreenshot:(NSNotification *)notification {
+  (void)notification;
+  // The screenshot notification arrives after capture. Reassert the app-owned
+  // overlay immediately and once more on the next run-loop pass so UIKit's
+  // transient screenshot/menu state cannot leave the persistent button hidden.
+  [self reattachOverlayIfNeeded];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf reattachOverlayIfNeeded];
+  });
 }
 
 - (void)showMotionSteering {
@@ -2231,8 +2254,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   KartPadMotionSteering *motion = [KartPadMotionSteering sharedSteering];
   NSString *status = motion.sensorAvailable
       ? [NSString stringWithFormat:
-            @"Tilt the device like a steering wheel. Current state: %@. Sensitivity: %.1fx. Physical controllers take priority.",
-            motion.enabled ? @"On" : @"Off", motion.sensitivity]
+            @"Tilt steering: %@. Shake tricks/wheelies: %@. Sensitivity: %.1fx. Physical controllers take priority.",
+            motion.enabled ? @"On" : @"Off",
+            motion.shakeTricksEnabled ? @"On" : @"Off", motion.sensitivity]
       : @"Motion data is unavailable on this device or Simulator. Touch and physical-controller steering remain available.";
   UIAlertController *sheet =
       [UIAlertController alertControllerWithTitle:@"Motion Steering"
@@ -2261,6 +2285,15 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                   handler:^(UIAlertAction *action) {
       (void)action;
       motion.inverted = !motion.inverted;
+    }]];
+    [sheet addAction:[UIAlertAction
+        actionWithTitle:motion.shakeTricksEnabled
+            ? @"Disable Shake Tricks/Wheelies"
+            : @"Enable Shake Tricks/Wheelies"
+                    style:UIAlertActionStyleDefault
+                  handler:^(UIAlertAction *action) {
+      (void)action;
+      motion.shakeTricksEnabled = !motion.shakeTricksEnabled;
     }]];
     [sheet addAction:[UIAlertAction
         actionWithTitle:@"Cycle Sensitivity"
@@ -2388,13 +2421,259 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 }
 
 - (void)showMiiCreationHelp {
-  [self showIntegrationAlert:@"Create a Mii"
-                     message:@"KartPad does not include the Wii Menu or Mii Channel, so it cannot create a new Mii yet. Create or export a standard 74-byte .mii file with a compatible tool, then choose Import Mii… here. After restarting KartPad, use Mario Kart Wii's License Settings → Change Mii screen to select it."];
+  [self showIntegrationAlert:@"Mii Appearance"
+                     message:@"KartPad can set the online player name for its built-in Mii. To change the face or other appearance details, import a standard 74-byte .mii file made with a compatible tool. Player Identity can then rename it and update every linked Mario Kart Wii license."];
+}
+
+- (void)showPlayerNameEditorForRecord:(NSDictionary<NSString *, id> *)record {
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  NSString *currentName = record[@"name"] ?: @"";
+  NSUInteger slot = [record[@"slot"] unsignedIntegerValue];
+  UIAlertController *editor = [UIAlertController
+      alertControllerWithTitle:@"Set Player Name"
+                       message:@"Use 1–10 characters. On restart, KartPad will update this Mii and every license linked to it without changing friend codes or progress."
+                preferredStyle:UIAlertControllerStyleAlert];
+  [editor addTextFieldWithConfigurationHandler:^(UITextField *field) {
+    field.text = currentName;
+    field.placeholder = @"Player name";
+    field.clearButtonMode = UITextFieldViewModeWhileEditing;
+    field.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    field.returnKeyType = UIReturnKeyDone;
+  }];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  [editor addAction:[UIAlertAction actionWithTitle:@"Save"
+                                             style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action) {
+    (void)action;
+    NSString *name = editor.textFields.firstObject.text ?: @"";
+    NSError *renameError = nil;
+    NSUInteger updatedLicenses = 0;
+    if (!KartPadStagePlayerName(slot, name, &updatedLicenses, &renameError)) {
+      [weakSelf showIntegrationAlert:@"Player Name Could Not Be Changed"
+                             message:renameError.localizedDescription];
+      return;
+    }
+    NSString *trimmed = [name stringByTrimmingCharactersInSet:
+        NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    NSString *licenseDetail = updatedLicenses == 0
+        ? @"New licenses will use this name."
+        : [NSString stringWithFormat:@"%lu linked license%@ will also be updated.",
+            (unsigned long)updatedLicenses,
+            updatedLicenses == 1 ? @"" : @"s"];
+    [weakSelf showIntegrationAlert:@"Player Name Scheduled"
+                           message:[NSString stringWithFormat:
+        @"%@ will be applied the next time KartPad launches. %@ A backup will be kept automatically.",
+        trimmed, licenseDetail]];
+  }]];
+  [editor addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                             style:UIAlertActionStyleCancel
+                                           handler:nil]];
+  [controller presentViewController:editor animated:YES completion:nil];
+}
+
+- (void)showPlayerNameChoices {
+  NSError *error = nil;
+  NSArray<NSDictionary<NSString *, id> *> *records = KartPadMiiRecords(&error);
+  if (error != nil) {
+    [self showIntegrationAlert:@"Player Identity Could Not Be Read"
+                       message:error.localizedDescription];
+    return;
+  }
+  if (records.count == 1) {
+    [self showPlayerNameEditorForRecord:records.firstObject];
+    return;
+  }
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  UIAlertController *choices = [UIAlertController
+      alertControllerWithTitle:@"Choose a Mii"
+                       message:@"Choose which identity to rename. Every license linked to it will be updated."
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  for (NSDictionary<NSString *, id> *record in records) {
+    [choices addAction:[UIAlertAction actionWithTitle:record[@"name"]
+                                                style:UIAlertActionStyleDefault
+                                              handler:^(UIAlertAction *action) {
+      (void)action;
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                   (int64_t)(0.35 * NSEC_PER_SEC)),
+                     dispatch_get_main_queue(), ^{
+        [weakSelf showPlayerNameEditorForRecord:record];
+      });
+    }]];
+  }
+  [choices addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+  choices.popoverPresentationController.sourceView = _overlay;
+  choices.popoverPresentationController.sourceRect = CGRectMake(
+      CGRectGetMidX(_overlay.bounds), CGRectGetMidY(_overlay.bounds), 1.0, 1.0);
+  [controller presentViewController:choices animated:YES completion:nil];
+}
+
+- (NSString *)licenseTitleForRecord:(NSDictionary<NSString *, id> *)record {
+  return [NSString stringWithFormat:@"%@ · Slot %lu · %@",
+      record[@"profileTitle"] ?: @"Mario Kart Wii",
+      (unsigned long)([record[@"slot"] unsignedIntegerValue] + 1),
+      record[@"name"] ?: @"Unnamed"];
+}
+
+- (void)showLicenseNameEditorForRecord:(NSDictionary<NSString *, id> *)record {
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  UIAlertController *editor = [UIAlertController
+      alertControllerWithTitle:@"Rename Existing License"
+                       message:[NSString stringWithFormat:
+          @"%@\n\nUse 1–10 characters. The selected license keeps its friend code, online account, records, and progress.",
+          [self licenseTitleForRecord:record]]
+                preferredStyle:UIAlertControllerStyleAlert];
+  [editor addTextFieldWithConfigurationHandler:^(UITextField *field) {
+    field.text = record[@"name"] ?: @"";
+    field.placeholder = @"License name";
+    field.clearButtonMode = UITextFieldViewModeWhileEditing;
+    field.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    field.returnKeyType = UIReturnKeyDone;
+  }];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  [editor addAction:[UIAlertAction actionWithTitle:@"Save"
+                                             style:UIAlertActionStyleDefault
+                                           handler:^(UIAlertAction *action) {
+    (void)action;
+    NSError *renameError = nil;
+    if (!KartPadStageLicenseRename(record[@"profileIdentifier"],
+            [record[@"slot"] unsignedIntegerValue], record[@"createId"],
+            editor.textFields.firstObject.text ?: @"", &renameError)) {
+      [weakSelf showIntegrationAlert:@"License Could Not Be Renamed"
+                             message:renameError.localizedDescription];
+      return;
+    }
+    [weakSelf showIntegrationAlert:@"License Rename Scheduled"
+                           message:@"Close and reopen KartPad to apply the change before playing. The live save and matching Mii are backed up automatically."];
+  }]];
+  [editor addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                             style:UIAlertActionStyleCancel
+                                           handler:nil]];
+  [controller presentViewController:editor animated:YES completion:nil];
+}
+
+- (void)confirmLicenseDeletionForRecord:(NSDictionary<NSString *, id> *)record {
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  NSString *name = record[@"name"] ?: @"Unnamed";
+  UIAlertController *confirm = [UIAlertController
+      alertControllerWithTitle:[NSString stringWithFormat:
+          @"Delete “%@” from %@ Slot %lu?", name,
+          record[@"profileTitle"] ?: @"Mario Kart Wii",
+          (unsigned long)([record[@"slot"] unsignedIntegerValue] + 1)]
+                       message:@"This permanently removes that license’s friend code, online account data, records, and progress. Its Mii appearance remains available. KartPad creates a save backup first."
+                preferredStyle:UIAlertControllerStyleAlert];
+  [confirm addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  [confirm addAction:[UIAlertAction actionWithTitle:@"Delete License"
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+    (void)action;
+    NSError *deleteError = nil;
+    if (!KartPadStageLicenseDeletion(record[@"profileIdentifier"],
+            [record[@"slot"] unsignedIntegerValue], record[@"createId"],
+            &deleteError)) {
+      [weakSelf showIntegrationAlert:@"License Could Not Be Deleted"
+                             message:deleteError.localizedDescription];
+      return;
+    }
+    [weakSelf showIntegrationAlert:@"License Deletion Scheduled"
+                           message:@"Close and reopen KartPad to apply the deletion before playing. The live save is backed up automatically."];
+  }]];
+  [controller presentViewController:confirm animated:YES completion:nil];
+}
+
+- (void)showLicenseActionsForRecord:(NSDictionary<NSString *, id> *)record {
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  UIAlertController *actions = [UIAlertController
+      alertControllerWithTitle:[self licenseTitleForRecord:record]
+                       message:@"Rename keeps the selected license’s account and progress. Delete removes only this license slot after another confirmation."
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  [actions addAction:[UIAlertAction actionWithTitle:@"Rename License…"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+    (void)action;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 (int64_t)(0.35 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+      [weakSelf showLicenseNameEditorForRecord:record];
+    });
+  }]];
+  [actions addAction:[UIAlertAction actionWithTitle:@"Delete License…"
+                                              style:UIAlertActionStyleDestructive
+                                            handler:^(UIAlertAction *action) {
+    (void)action;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 (int64_t)(0.35 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+      [weakSelf confirmLicenseDeletionForRecord:record];
+    });
+  }]];
+  [actions addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+  actions.popoverPresentationController.sourceView = _overlay;
+  actions.popoverPresentationController.sourceRect = CGRectMake(
+      CGRectGetMidX(_overlay.bounds), CGRectGetMidY(_overlay.bounds), 1.0, 1.0);
+  [controller presentViewController:actions animated:YES completion:nil];
+}
+
+- (void)showLicenseChoices {
+  NSError *error = nil;
+  NSArray<NSDictionary<NSString *, id> *> *records = KartPadLicenseRecords(&error);
+  if (error != nil) {
+    [self showIntegrationAlert:@"Licenses Could Not Be Read"
+                       message:error.localizedDescription];
+    return;
+  }
+  if (records.count == 0) {
+    [self showIntegrationAlert:@"No Existing Licenses"
+                       message:@"Create a Mario Kart Wii or Retro Rewind license in the game, then return here to rename or remove it."];
+    return;
+  }
+  UIViewController *controller = KartPadVisibleViewController(_window);
+  if (controller == nil) return;
+  UIAlertController *choices = [UIAlertController
+      alertControllerWithTitle:@"Existing Licenses"
+                       message:@"Choose the exact game profile and slot. A license with an established friend code should be renamed, not deleted."
+                preferredStyle:UIAlertControllerStyleActionSheet];
+  __weak KartPadRuntimeOverlayHost *weakSelf = self;
+  for (NSDictionary<NSString *, id> *record in records) {
+    [choices addAction:[UIAlertAction
+        actionWithTitle:[self licenseTitleForRecord:record]
+                    style:UIAlertActionStyleDefault
+                  handler:^(UIAlertAction *action) {
+      (void)action;
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                   (int64_t)(0.35 * NSEC_PER_SEC)),
+                     dispatch_get_main_queue(), ^{
+        [weakSelf showLicenseActionsForRecord:record];
+      });
+    }]];
+  }
+  [choices addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+  choices.popoverPresentationController.sourceView = _overlay;
+  choices.popoverPresentationController.sourceRect = CGRectMake(
+      CGRectGetMidX(_overlay.bounds), CGRectGetMidY(_overlay.bounds), 1.0, 1.0);
+  [controller presentViewController:choices animated:YES completion:nil];
 }
 
 - (void)showMiiRemovalChoices {
   NSError *error = nil;
   NSArray<NSDictionary<NSString *, id> *> *records = KartPadMiiRecords(&error);
+  NSArray<NSDictionary<NSString *, id> *> *licenses =
+      error == nil ? KartPadLicenseRecords(&error) : @[];
   if (error != nil) {
     [self showIntegrationAlert:@"Miis Could Not Be Read"
                        message:error.localizedDescription];
@@ -2403,17 +2682,33 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   UIViewController *controller = KartPadVisibleViewController(_window);
   if (controller == nil) return;
   UIAlertController *choices = [UIAlertController
-      alertControllerWithTitle:@"Remove a Mii"
-                       message:@"Removal is staged safely and takes effect the next time KartPad launches. At least one Mii is always retained."
+      alertControllerWithTitle:@"Remove Mii Appearance"
+                       message:@"This removes only an unused Mii appearance; it does not delete a Mario Kart license. Miis linked to a license must be changed or removed from Existing Licenses first."
                 preferredStyle:UIAlertControllerStyleActionSheet];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
   for (NSDictionary<NSString *, id> *record in records) {
-    NSString *title = record[@"name"];
+    NSUInteger linkedLicenses = 0;
+    for (NSDictionary<NSString *, id> *license in licenses) {
+      if ([license[@"createId"] isEqualToData:record[@"createIdBytes"]]) {
+        ++linkedLicenses;
+      }
+    }
+    NSString *title = linkedLicenses == 0 ? record[@"name"] :
+        [NSString stringWithFormat:@"%@ — used by %lu license%@",
+            record[@"name"], (unsigned long)linkedLicenses,
+            linkedLicenses == 1 ? @"" : @"s"];
     NSUInteger slot = [record[@"slot"] unsignedIntegerValue];
+    UIAlertActionStyle style = linkedLicenses == 0
+        ? UIAlertActionStyleDestructive : UIAlertActionStyleDefault;
     [choices addAction:[UIAlertAction actionWithTitle:title
-                                                style:UIAlertActionStyleDestructive
+                                                style:style
                                               handler:^(UIAlertAction *action) {
       (void)action;
+      if (linkedLicenses > 0) {
+        [weakSelf showIntegrationAlert:@"Mii Is In Use"
+                               message:@"Open Existing Licenses to rename or delete the linked license first. Removing its Mii appearance here could leave the license unusable."];
+        return;
+      }
       NSError *removeError = nil;
       if (!KartPadStageMiiRemoval(slot, &removeError)) {
         [weakSelf showIntegrationAlert:@"Mii Could Not Be Removed"
@@ -2421,7 +2716,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
         return;
       }
       [weakSelf showIntegrationAlert:@"Mii Removal Scheduled"
-                             message:@"Close and reopen KartPad to apply the change. A backup of the current Mii database will be kept automatically."];
+                             message:@"Close and reopen KartPad to apply the appearance removal. A backup of the current Mii database will be kept automatically."];
     }]];
   }
   [choices addAction:[UIAlertAction actionWithTitle:@"Cancel"
@@ -2437,6 +2732,8 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   [[SunPadInputMixer sharedMixer] clearInputFromTouch:YES];
   NSError *error = nil;
   NSArray<NSDictionary<NSString *, id> *> *records = KartPadMiiRecords(&error);
+  NSArray<NSDictionary<NSString *, id> *> *licenses =
+      error == nil ? KartPadLicenseRecords(&error) : @[];
   if (error != nil) {
     [self showIntegrationAlert:@"Miis Could Not Be Read"
                        message:error.localizedDescription];
@@ -2451,17 +2748,34 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   NSString *pending = KartPadHasPendingMiiChanges()
       ? @"\n\nPending changes will be applied on the next launch." : @"";
   NSString *message = [NSString stringWithFormat:
-      @"%lu Mii%@ available: %@%@",
+      @"%lu Mii appearance%@ available: %@\n%lu existing license%@ found.%@",
       (unsigned long)records.count, records.count == 1 ? @"" : @"s",
-      summary, pending];
+      summary, (unsigned long)licenses.count,
+      licenses.count == 1 ? @"" : @"s", pending];
   UIViewController *controller = KartPadVisibleViewController(_window);
   if (controller == nil) return;
   UIAlertController *manager = [UIAlertController
-      alertControllerWithTitle:@"Manage Miis (Experimental)"
+      alertControllerWithTitle:@"Player Identity"
                        message:message
                 preferredStyle:UIAlertControllerStyleActionSheet];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
-  [manager addAction:[UIAlertAction actionWithTitle:@"Import Mii…"
+  [manager addAction:[UIAlertAction actionWithTitle:@"Manage Existing Licenses…"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+    (void)action;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 (int64_t)(0.35 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{ [weakSelf showLicenseChoices]; });
+  }]];
+  [manager addAction:[UIAlertAction actionWithTitle:@"Set Player Name…"
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *action) {
+    (void)action;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 (int64_t)(0.35 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{ [weakSelf showPlayerNameChoices]; });
+  }]];
+  [manager addAction:[UIAlertAction actionWithTitle:@"Import Mii Appearance…"
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
     (void)action;
@@ -2469,7 +2783,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                                  (int64_t)(0.35 * NSEC_PER_SEC)),
                    dispatch_get_main_queue(), ^{ [weakSelf presentMiiImportPicker]; });
   }]];
-  [manager addAction:[UIAlertAction actionWithTitle:@"Remove a Mii…"
+  [manager addAction:[UIAlertAction actionWithTitle:@"Remove Mii Appearance…"
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
     (void)action;
@@ -2477,7 +2791,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                                  (int64_t)(0.35 * NSEC_PER_SEC)),
                    dispatch_get_main_queue(), ^{ [weakSelf showMiiRemovalChoices]; });
   }]];
-  [manager addAction:[UIAlertAction actionWithTitle:@"Create a Mii…"
+  [manager addAction:[UIAlertAction actionWithTitle:@"About Mii Appearance…"
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
     (void)action;
@@ -2774,14 +3088,12 @@ extern "C" bool KartPadMobileReadClassicInputForPlayer(
   }
   KartPadClassicInputState adapted =
       kartpad::mobile::AdaptSunPadInput(source);
+  KartPadMotionSteering *motion = [KartPadMotionSteering sharedSteering];
+  const BOOL shakeTrick = player == 0 ? [motion consumeShakeTrick] : NO;
   if (player == 0 &&
       [KartPadPhysicalControllers sharedControllers].connectedControllerCount == 0) {
-    const float motion = [KartPadMotionSteering sharedSteering].currentSteering;
-    const int motionStick = static_cast<int>(std::lround(motion * 127.0f));
-    if (std::abs(motionStick) > std::abs(static_cast<int>(adapted.leftStickX))) {
-      adapted.leftStickX = static_cast<std::int8_t>(
-          std::clamp(motionStick, -127, 127));
-    }
+    kartpad::mobile::ApplyMotionInput(adapted, motion.currentSteering,
+                                      shakeTrick);
   }
   snapshot->buttons = adapted.buttons;
   snapshot->leftStickX = std::clamp(static_cast<float>(adapted.leftStickX) / 127.0f,

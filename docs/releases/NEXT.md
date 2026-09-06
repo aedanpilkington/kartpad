@@ -1,55 +1,80 @@
-# KartPad v0.4.0 release rollup
+# KartPad v0.4.4 release rollup
 
-Updated: 2026-09-03
+Updated: 2026-09-06
 
-This is the living validation record for the second stable KartPad community
-release. User-facing notes are in [`v0.4.0.md`](v0.4.0.md).
+This is the living validation record for the KartPad 0.4.4 Retro Rewind
+compatibility release. User-facing notes are in [`v0.4.4.md`](v0.4.4.md).
 
 ## Included changes
 
-- Official Retro Rewind 6.12.5 archive, `Code.pul`, XML, and upstream source
-  pins with a newly generated ahead-of-time translation graph.
-- Kamek v2 and v3 parsing with strict outer-bound and command validation.
-- Read-only daily upstream-version detection and a deterministic profile-update
-  helper for future Retro Rewind releases.
-- Universal iPhone/iPad three-dot-menu refresh repair: the menu remains titled
-  KartPad and keeps the accepted consolidated hierarchy without the obsolete
-  SunPad performance and 60 FPS experiments.
-- Maintainer-tested compact defaults for untouched iPhones, per-control
-  Hide/Show, grouped D-pad visibility, and a direct Back path from the editor.
-- iPhone/iPad app 0.4.0 build 15 and tvOS app 0.4.0 build 3.
+- Advance the official Retro Rewind full-pack and ahead-of-time native graph
+  from 6.12.5 to 6.12.7.
+- Pin Retro Rewind Pulsar source commit
+  `93ba8c8a486bd771c97ffc8b68fd504f47f742b5` and tree
+  `320825ec78da1eed8f82cc1abb0335c3d806d9fe`.
+- Update the iPhone/iPad explanation shown when Retro Rewind advances beyond
+  the graph built into KartPad.
+- Make the daily version watcher open one deduplicated, actionable GitHub issue
+  instead of only failing silently in Actions.
+- Add `update-retro-rewind-profile.py --latest` to download or resume the
+  official full archive and refresh all release-input pins in one command.
+- iPhone/iPad app 0.4.4 build 18 and tvOS app 0.4.4 build 7.
+- No Android changes.
 
-## Accepted baseline
+## Native graph evidence
 
-The preceding signed iPad candidate preserved its complete Application Support
-and NAND tree while passing Original Mario Kart Wii, Retro Rewind 6.12.4,
-ordinary controller input, and the corrected three-dot menu. The stable 0.4.0
-candidate then installed in place on the maintainer's iPhone and passed Retro
-Rewind 6.12.5 launch, per-control hiding, and the editor's Back path while
-retaining the existing app container, preferences, game data, and saves.
+The official 6.12.7 full archive is 1,859,041,688 bytes with SHA-256
+`ade59f3ae217944bd7c3535b3bae79d5aa7b521ba00c581a16c7c2e3ce54c349`.
+Its `Code.pul` changed from 6.12.5 and is 1,723,048 bytes with SHA-256
+`3a1e60f6c94e435ff672167816dbe040d0f48874bfa093ada39e468655baef72`.
+The Riivolution XML remains byte-identical. Fresh translation emitted 29,637
+base functions, 4,188 Retro Rewind functions, 645 profile-sensitive targets,
+and 1,391 callers with no translation failures.
 
-## External acceptance still required
+## Sustainable update boundary
 
-- Install the exact tvOS candidate on physical Apple TV hardware and follow
-  `docs/TVOS-TESTING.md` through private staging, controller input, Original and
-  Retro Rewind races, relaunch, sleep/wake, and save durability.
-- Keep public Retro WFC online compatibility separate until the external
-  service and a live test are available.
+The watcher now creates the maintenance task automatically and the local
+updater makes the input refresh one command. A changed `Code.pul` still
+requires a new KartPad binary: its PowerPC code is translated into the signed
+ARM64 executable ahead of time, and iOS/tvOS cannot safely load newly generated
+unsigned executable code. Hosted CI cannot complete that build without private
+user-owned game input or a generated retail graph, neither of which belongs in
+GitHub Actions.
+
+## Acceptance and boundaries
+
+The official Retro WFC health endpoint and room feed were reachable on 6
+September 2026 and reported active service. This establishes service recovery,
+not end-to-end KartPad production compatibility. The exact 0.4.4 candidate must
+still pass production login, matchmaking, a complete race, results, lobby
+return, and physical-device acceptance before those claims are made.
+
+The iPhone/iPad and tvOS binaries are unsigned. They contain translated game
+logic but no disc image, extracted game assets, Retro Rewind pack, saves,
+signing identity, provisioning profile, credentials, or device identifiers.
+tvOS remains experimental pending exact-artifact physical acceptance.
 
 ## Release gates
 
-- [x] Merge and verify the complete source on `main`.
-- [x] Rebuild exact merged source as iOS 0.4.0 build 15 and tvOS build 3.
-- [x] Pass full tests, source/safety checks, patch verification, app audits, and
-      physical iPhone touch-editor acceptance.
-- [x] Package each IPA twice deterministically and compare bytes.
-- [x] Audit exact IPAs and embedded provenance/notices.
-- [x] Tag the audited source and publish both IPAs plus `SHA256SUMS`.
-- [x] Download hosted assets, byte-compare, checksum-verify, and re-audit.
-- [x] Verify remote `main` and the dereferenced tag.
+- [x] Inspect and hash the official 6.12.7 full archive.
+- [x] Pin the matching Retro Rewind source commit and tree.
+- [x] Regenerate the complete 6.12.7 native graph with the signed production
+      Retro WFC payload.
+- [x] Add automatic issue creation and the one-command profile updater.
+- [x] Pass full repository, source, patch, translator, and native tests.
+- [x] Build and audit exact-source iOS 0.4.4 build 18 and tvOS build 7.
+- [x] Package each IPA twice byte-identically and audit exact packages.
+- [x] Publish `v0.4.4`, both IPAs, and `SHA256SUMS`.
+- [x] Download hosted assets, compare bytes, and re-audit them.
+- [ ] Receive physical acceptance before broadening device or production-online
+      claims.
 
-- Published source: `369159153bef0d045edf5cc1cf3b1b444b36a284`
-- iPhone/iPad IPA SHA-256:
-  `af80c2bc6fcabdb4eee84aed05254eccef76d7e6bbf83f2c7f21101168c665c8`
-- tvOS IPA SHA-256:
-  `9ee2a9b05bff56261d4d4986eca54840e98ade8ae0abd3ac623c1f2393dcf5cc`
+Published source: `3b857f9ae2b7933c6eb4f8f8f61a07df6b455624`.
+iPhone/iPad executable SHA-256:
+`1e251b27a05411f4e03b9d6ff468cb49a7bb111d3648534d32184e2493c089c7`.
+iPhone/iPad IPA SHA-256:
+`5d2428abe9e4e0a7736912669c05fe8b40d3d5b34fcf85d05f3d31f336c6ed11`.
+Experimental tvOS executable SHA-256:
+`0bd0409e4cfb14fd4850ebae96b1cd5e85e6c6476dee94b872426a78c91c6d47`.
+Experimental tvOS IPA SHA-256:
+`b508d45fc4426190e7c25c6f57c31ec838f71f02a666feb07b06ca379a976f66`.
