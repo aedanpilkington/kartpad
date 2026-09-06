@@ -7,6 +7,11 @@ source "$repo_root/scripts/android-toolchain-versions.sh"
 version_code_override="${KARTPAD_ANDROID_VERSION_CODE:-}"
 version_name_override="${KARTPAD_ANDROID_VERSION_NAME:-}"
 package_format="${KARTPAD_ANDROID_PACKAGE_FORMAT:-apk}"
+profileable="${KARTPAD_ANDROID_PROFILEABLE:-0}"
+case "$profileable" in
+  0|1) ;;
+  *) echo "ERROR: KARTPAD_ANDROID_PROFILEABLE must be 0 or 1" >&2; exit 64 ;;
+esac
 case "$package_format" in
   apk) package_task=assembleDebug; package_kind=APK ;;
   aab) package_task=bundleRelease; package_kind="unsigned AAB" ;;
@@ -94,6 +99,10 @@ gradle_args=(
   -PkartpadAndroidNativeTarget="$native_target"
   -PkartpadDiscIoJniRoot="$discio_jni_root"
 )
+if [[ "$profileable" == 1 ]]; then
+  gradle_args+=("-PkartpadProfileable=true")
+  echo "Local profiling enabled; keep performance captures private. Debugging remains disabled in release builds."
+fi
 if [[ -n "$version_code_override" ]]; then
   gradle_args+=("-PkartpadVersionCode=$version_code_override")
 fi

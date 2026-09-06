@@ -1,9 +1,11 @@
 # KartPad Android source-only fixture
 
-Current development checkpoint (2026-09-06): private full-runtime Preview 6 is
-installed on the Pixel with working picker import and Retro Rewind offline play.
-Warm slowdowns and full physical/feature acceptance remain open.
-See `../docs/artifacts/2026-09-06/android/preview6-physical-import-gameplay.md`.
+Current development checkpoint (2026-09-06): private full-runtime Preview 8 is
+installed on the Pixel with the shared Apple icon and the first measured CPU-side
+optimization. Original boots and its save bytes are preserved, but rendered
+attract mode still dips to approximately 39 FPS. Severe slowdowns, a matched
+menu/race retest and full physical/feature acceptance remain open.
+See `../docs/artifacts/2026-09-06/android/preview8-performance-iteration.md`.
 Do not publish private builds or infer gameplay/performance acceptance from the
 fixture and packaging checks below.
 

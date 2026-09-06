@@ -15,10 +15,12 @@
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/ic_kartpad"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/ic_kartpad"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/KartPadTheme">
+        <!-- Opt-in local timing/call-stack capture; never enables debugging. -->
+        <profileable android:shell="${kartpadProfileable}" tools:targetApi="29" />
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"

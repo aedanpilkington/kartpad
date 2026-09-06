@@ -12,6 +12,16 @@ val gameRuntimeSource = providers.gradleProperty("kartpadGameRuntimeSource").orN
 val translatedShardManifest = providers.gradleProperty("kartpadTranslatedShardManifest").orNull
 val androidNativeTarget = providers.gradleProperty("kartpadAndroidNativeTarget").orNull
 val discIoJniRoot = providers.gradleProperty("kartpadDiscIoJniRoot").orNull
+val kartpadProfileable = providers.gradleProperty("kartpadProfileable")
+    .map { it.toBooleanStrict() }
+    .getOrElse(false)
+// Reuse the shipped Apple artwork byte-for-byte; do not maintain a second logo.
+val kartpadIconResources = layout.buildDirectory.dir("generated/res/kartpadIcon")
+val prepareKartpadIcon by tasks.registering(Copy::class) {
+    from(rootProject.file("../apple/ios/Assets.xcassets/AppIcon.appiconset/KartPadIcon-1024.png"))
+    into(kartpadIconResources.map { it.dir("drawable-nodpi") })
+    rename { "kartpad_app_icon.png" }
+}
 val kartpadVersionCode = providers.gradleProperty("kartpadVersionCode")
     .map { value ->
         value.toIntOrNull()?.takeIf { it > 0 }
@@ -39,6 +49,7 @@ android {
         targetSdk = 36
         versionCode = kartpadVersionCode
         versionName = kartpadVersionName
+        manifestPlaceholders["kartpadProfileable"] = kartpadProfileable.toString()
         buildConfigField("boolean", "GAME_RUNTIME", (gameRuntimeSource != null).toString())
         buildConfigField("boolean", "DISC_IMAGE_IMPORT", (discIoJniRoot != null).toString())
 
@@ -81,6 +92,9 @@ android {
         prefab = true
         buildConfig = true
     }
+    sourceSets.named("main") {
+        res.srcDir(kartpadIconResources)
+    }
     if (gameRuntimeSource != null) {
         sourceSets.named("main") {
             assets.srcDir(file("$gameRuntimeSource/assets"))
@@ -105,6 +119,10 @@ android {
         // A0 deliberately pins this verified wrapper and supports ARM64 Android only.
         disable += setOf("AndroidGradlePluginVersion", "ChromeOsAbiSupport", "DiscouragedApi")
     }
+}
+
+tasks.named("preBuild") {
+    dependsOn(prepareKartpadIcon)
 }
 
 kotlin {

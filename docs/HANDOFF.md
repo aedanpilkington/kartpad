@@ -3,14 +3,15 @@
 ## Current state
 
 Android work resumed on 2026-09-06 and now includes stable Apple v0.4.8 source.
-Private Preview 6 (code 11) is installed in-place on the Pixel. Real picker WBFS
-import passes; Original boots and Retro Rewind 6.12.7 supports physical offline
-play. The Original save remained byte-identical across update/import. Apple-style
-floating input, A lock and HOME/Recents resume have partial physical evidence.
-Measured warm slowdowns, the earlier post-installer crash, the remaining hardware
-checklist and player-identity feature parity remain open.
+Private Preview 8 (code 13) is installed in-place on the Pixel with the Apple icon,
+opt-in profiling and an Android-only scalar-mode optimization. Physical arithmetic
+tests pass. Original now boots and its post-update save is byte-identical to the
+fresh backup. Rendered attract mode still dips to approximately 39 FPS; the severe
+FPS issue and matched menu/race comparison remain open. Preview 6's real picker
+import, Original/Retro boot, save-preservation and partial touch evidence remain
+historical successes, not full physical or feature-parity acceptance.
 Keep `codex/android-a4-touch-settings` separate from `main` during acceptance.
-Current evidence: `docs/artifacts/2026-09-06/android/preview6-physical-import-gameplay.md`.
+Current evidence: `docs/artifacts/2026-09-06/android/preview8-performance-iteration.md`.
 Previous partial device evidence:
 `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 

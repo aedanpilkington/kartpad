@@ -6,14 +6,16 @@ phone.
 
 ## Resumed development on 2026-09-06; physical acceptance still open
 
-After Apple v0.4.8 shipped, Android development resumed on this branch. The
-private Preview 6 (code 11) is installed on the Pixel in-place. Real document-picker
-WBFS import now succeeds, Original boots, and Retro Rewind 6.12.7 is playable.
-The Original save compared byte-for-byte before and after the update/import.
-Physical acceptance remains open: warm slowdowns are measured, the earlier
-post-installer crash is not explained, and player-identity parity is incomplete.
+After Apple v0.4.8 shipped, Android development resumed on this branch. Private
+Preview 8 (code 13) is installed in-place with the shared Apple icon, opt-in local
+profiling and a tested Android scalar-mode optimization. Post-update Original
+launch and byte-identical save export pass. Rendered attract mode still dips to
+approximately 39 FPS; matched menu/race testing and the severe slowdown remain
+open. Preview 6 previously verified real picker
+WBFS import, Original boot, Retro Rewind 6.12.7 play and byte-identical Original
+save preservation. Full physical and player-identity parity remain incomplete.
 Do not merge this branch to `main` or publish its packages. See
-`docs/artifacts/2026-09-06/android/preview6-physical-import-gameplay.md`
+`docs/artifacts/2026-09-06/android/preview8-performance-iteration.md`
 for current evidence and guarded resumption commands. Preview 5's pre-install
 checkpoint remains historical. The earlier pause record remains
 at `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
@@ -21,7 +23,7 @@ at `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 ## Historical Preview 3 source checkpoint
 
 The remaining Preview 3 commands and hashes below are historical; use the
-Preview 6 checkpoint above for the current candidate and explicit version guards.
+Preview 8 checkpoint above for the current candidate and explicit version guards.
 
 - Branch: `codex/android-a4-touch-settings`
 - Audited product base commit: `cdc96af`
