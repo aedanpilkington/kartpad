@@ -49,7 +49,13 @@ adb_private() {
   printf '%s\n' "$output" | tr -d '\r'
 }
 
-package_record="$(adb_private shell cmd package list packages -U dev.kartpad.android)"
+current_user="$(adb_private shell am get-current-user)"
+[[ "$current_user" =~ ^[0-9]+$ ]] || {
+  echo "ERROR: Android returned an invalid current user" >&2
+  exit 1
+}
+package_record="$(adb_private shell cmd package list packages -U \
+  --user "$current_user" dev.kartpad.android)"
 uid="$(printf '%s\n' "$package_record" |
   sed -nE 's/^package:dev\.kartpad\.android uid:([0-9]+)$/\1/p')"
 [[ "$uid" =~ ^[0-9]+$ ]] || {

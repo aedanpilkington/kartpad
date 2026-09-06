@@ -2,6 +2,13 @@
 
 ## Current state
 
+Android physical testing is paused as of 2026-09-06. Preview 3 is behind the
+current iOS runtime and Retro Rewind fixes, and the maintainer observed major
+slowdowns on the phone. Partial device results are evidence only, not Android
+acceptance; keep `codex/android-a4-touch-settings` separate from `main` and
+resume after iOS stabilizes. Evidence:
+`docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
+
 The latest exact dual APK moves the three-dot trigger and iOS-shaped menu card
 inside Android's system-bar/display-cutout safe bounds, including bars hidden
 by immersive mode. On the visible API 36 phone, the card occupied y=84--975

@@ -4,6 +4,15 @@ This is the authoritative handoff for moving Android KartPad testing from the
 current development Mac to another machine and then to one physical Android
 phone.
 
+## Testing paused on 2026-09-06
+
+Physical testing is paused because this Android preview is behind the current
+iOS runtime and Retro Rewind fixes, and the maintainer observed major slowdowns
+on the phone. Do not treat Preview 3 as accepted or merge this branch to
+`main`. Resume Android work after the iOS version is stable. The partial phone
+results and remaining gates are recorded in
+`docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
+
 ## Current source checkpoint
 
 - Branch: `codex/android-a4-touch-settings`

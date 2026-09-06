@@ -56,8 +56,13 @@ case "$*" in
     ;;
   'dumpsys input') echo '  Sources: 0x01000511' ;;
   'pm path dev.kartpad.android') echo 'package:/data/app/dev.kartpad.android/base.apk' ;;
+  'pm list features')
+    echo 'feature:android.hardware.vulkan.version=4198400'
+    echo 'feature:android.hardware.vulkan.level=1'
+    ;;
   'cmd gpu vkjson') echo '{"deviceName":"Example GPU"}' ;;
-  'cmd package list packages -U dev.kartpad.android')
+  'am get-current-user') echo 10 ;;
+  'cmd package list packages -U --user 10 dev.kartpad.android')
     echo 'package:dev.kartpad.android uid:10123'
     ;;
   'date +%m-%d_%H:%M:%S.000') echo '09-04_12:34:56.000' ;;
