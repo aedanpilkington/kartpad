@@ -326,6 +326,27 @@ UIButton *KartPadTVButton(NSString *title, UIColor *color,
                     buttons:@[original, retro, multiplayer]];
 }
 
+- (void)presentMultiplayerAlert:(UIAlertController *)alert {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *presented = self.root.presentedViewController;
+    void (^present)(void) = ^{
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self.root presentViewController:alert animated:YES completion:nil];
+      });
+    };
+    if ([presented isKindOfClass:UIAlertController.class]) {
+      if (presented.isBeingDismissed && presented.transitionCoordinator) {
+        [presented.transitionCoordinator animateAlongsideTransition:nil
+            completion:^(id<UIViewControllerTransitionCoordinatorContext> context) { present(); }];
+      } else {
+        [presented dismissViewControllerAnimated:YES completion:present];
+      }
+    } else {
+      present();
+    }
+  });
+}
+
 - (void)showMultiplayer {
   UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Multiplayer"
       message:@"Both games support local split-screen. Register each connected Extended Gamepad with A in the game. DualShock 4 and DualSense use Cross for A by default.\n\nPrivate friend rooms use Nintendo WFC → Friends. Everyone needs the same game, version and server. Original Mario Kart Wii needs a compatible private server. MeleePad room codes and chat are not available."
@@ -336,7 +357,7 @@ UIButton *KartPadTVButton(NSString *title, UIColor *color,
     [weakSelf showPrivateServer];
   }]];
   [sheet addAction:[UIAlertAction actionWithTitle:@"Back" style:UIAlertActionStyleCancel handler:nil]];
-  [self.root presentViewController:sheet animated:YES completion:nil];
+  [self presentMultiplayerAlert:sheet];
 }
 
 - (void)showPrivateServer {
@@ -367,7 +388,7 @@ UIButton *KartPadTVButton(NSString *title, UIColor *color,
     [NSUserDefaults.standardUserDefaults removeObjectForKey:@"KartPadPrivateWfcHost"];
   }]];
   [editor addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-  [self.root presentViewController:editor animated:YES completion:nil];
+  [self presentMultiplayerAlert:editor];
 }
 
 - (void)showControllerRequired:(BOOL)retroRewind {

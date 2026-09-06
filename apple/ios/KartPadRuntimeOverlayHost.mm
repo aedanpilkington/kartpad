@@ -2347,11 +2347,47 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   [controller presentViewController:sheet animated:YES completion:nil];
 }
 
+// UIAlertAction handlers run before UIKit finishes dismissing their alert.
+// Present the next screen only after that transition completes.
+- (void)presentMultiplayerAlert:(UIAlertController *)alert {
+  UIPopoverPresentationController *popover = alert.popoverPresentationController;
+  popover.sourceView = _overlay;
+  popover.sourceRect = CGRectMake(CGRectGetMidX(_overlay.bounds),
+      CGRectGetMidY(_overlay.bounds), 1, 1);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIViewController *presenter = KartPadVisibleViewController(self->_window);
+    if (presenter == nil) return;
+    void (^present)(void) = ^{
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [KartPadVisibleViewController(self->_window)
+            presentViewController:alert animated:YES completion:nil];
+      });
+    };
+    if ([presenter isKindOfClass:UIAlertController.class]) {
+      if (presenter.isBeingDismissed && presenter.transitionCoordinator) {
+        [presenter.transitionCoordinator animateAlongsideTransition:nil
+            completion:^(id<UIViewControllerTransitionCoordinatorContext> context) { present(); }];
+      } else {
+        [presenter dismissViewControllerAnimated:YES completion:present];
+      }
+    } else {
+      present();
+    }
+  });
+}
+
+- (void)showMultiplayerMessage:(NSString *)title message:(NSString *)message {
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:title
+      message:message preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleCancel handler:nil]];
+  [self presentMultiplayerAlert:alert];
+}
+
 - (void)showPrivateServerSettings {
   UIViewController *controller = KartPadVisibleViewController(_window);
   if (controller == nil) return;
   UIAlertController *editor = [UIAlertController alertControllerWithTitle:@"Private Wii Server"
-      message:@"Advanced, experimental setup for both games. Enter the hostname or IPv4 address of a compatible Wii WFC server you trust. Everyone must use the same server. Legacy Wii online traffic is unencrypted. Changes apply after fully closing and reopening KartPad."
+      message:@"Trusted Wii WFC host only (unencrypted). Restart to apply; leave blank for default."
       preferredStyle:UIAlertControllerStyleAlert];
   [editor addTextFieldWithConfigurationHandler:^(UITextField *field) {
     field.placeholder = @"Server hostname or IPv4 address";
@@ -2362,27 +2398,27 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     field.accessibilityLabel = @"Private Wii server address";
   }];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
-  [editor addAction:[UIAlertAction actionWithTitle:@"Save for Next Launch"
+  [editor addAction:[UIAlertAction actionWithTitle:@"Save"
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     NSString *host = [editor.textFields.firstObject.text
         stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (host.length == 0) {
+      [NSUserDefaults.standardUserDefaults removeObjectForKey:@"KartPadPrivateWfcHost"];
+      [weakSelf showMultiplayerMessage:@"Default Service Selected"
+          message:@"Fully close and reopen KartPad to restore the default online service. Original Mario Kart Wii's original service is closed; Retro Rewind uses Retro WFC."];
+      return;
+    }
     if (!KartPad::Network::ValidPrivateWfcHost(host.UTF8String ?: "")) {
-      [weakSelf showIntegrationAlert:@"Invalid Server Address"
+      [weakSelf showMultiplayerMessage:@"Invalid Server Address"
           message:@"Enter a hostname or IPv4 address only, without a URL scheme, path, port, or spaces."];
       return;
     }
     [NSUserDefaults.standardUserDefaults setObject:host forKey:@"KartPadPrivateWfcHost"];
-    [weakSelf showIntegrationAlert:@"Private Server Saved"
+    [weakSelf showMultiplayerMessage:@"Private Server Saved"
         message:@"Fully close and reopen KartPad. Then choose Nintendo WFC → Friends in the game. Server compatibility and complete races still need testing."];
   }]];
-  [editor addAction:[UIAlertAction actionWithTitle:@"Use Default Service Next Launch"
-      style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    [NSUserDefaults.standardUserDefaults removeObjectForKey:@"KartPadPrivateWfcHost"];
-    [weakSelf showIntegrationAlert:@"Default Service Selected"
-        message:@"Fully close and reopen KartPad to restore the default online service. Original Mario Kart Wii's original service is closed; Retro Rewind uses Retro WFC."];
-  }]];
   [editor addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-  [controller presentViewController:editor animated:YES completion:nil];
+  [self presentMultiplayerAlert:editor];
 }
 
 - (void)showMultiplayerAccess {
@@ -2391,11 +2427,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   if (controller == nil) return;
   NSString *profile = gKartPadRetroRewindSelected ? @"Retro Rewind" : @"Mario Kart Wii";
   NSString *server = KartPadPrivateServerHost();
-  NSString *message = [NSString stringWithFormat:
-      @"%@\nLocal split-screen supports up to four players. Private friend rooms use the game's Nintendo WFC menu.\n\n%@",
-      profile, server.length ? @"A private server is saved for the next launch."
-          : (gKartPadRetroRewindSelected ? @"Online service: Retro WFC."
-              : @"Original Nintendo WFC is closed. A compatible private server is required for online play.")];
+  NSString *message = [NSString stringWithFormat:@"%@\n%@", profile,
+      server.length ? @"Private server configured; restart after changes."
+          : (gKartPadRetroRewindSelected ? @"Online: Retro WFC."
+              : @"Online: private server required (experimental).")];
   UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Multiplayer"
       message:message preferredStyle:UIAlertControllerStyleAlert];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
@@ -2405,7 +2440,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   }]];
   [sheet addAction:[UIAlertAction actionWithTitle:@"Private Friend Rooms…"
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    [weakSelf showIntegrationAlert:@"Private Friend Rooms"
+    [weakSelf showMultiplayerMessage:@"Private Friend Rooms"
         message:@"Use the same game profile, content version, and online service as your friends. In the game, choose Nintendo WFC → Friends and exchange friend codes. The host creates a room; friends join it from their friend roster.\n\nOriginal Mario Kart Wii requires a compatible private server. This uses Wii friend codes; MeleePad room codes and peer chat are not available in KartPad."];
   }]];
   [sheet addAction:[UIAlertAction actionWithTitle:@"Private Wii Server…"
@@ -2413,7 +2448,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [weakSelf showPrivateServerSettings];
   }]];
   [sheet addAction:[UIAlertAction actionWithTitle:@"Back" style:UIAlertActionStyleCancel handler:nil]];
-  [controller presentViewController:sheet animated:YES completion:nil];
+  [self presentMultiplayerAlert:sheet];
 }
 
 - (void)uninstall {
@@ -3070,7 +3105,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 - (void)showControllerButtonAssignment:(uint16_t)gameButton title:(NSString *)title {
   UIAlertController *sheet = [UIAlertController alertControllerWithTitle:title
       message:@"Choose a physical button. If it is already assigned, the two assignments swap. Applies to all connected controllers; touch controls keep their layout."
-      preferredStyle:UIAlertControllerStyleAlert];
+      preferredStyle:UIAlertControllerStyleActionSheet];
   NSArray<NSString *> *names = @[@"A / Cross / bottom", @"B / Circle / right",
       @"X / Square / left", @"Y / Triangle / top", @"Left Shoulder / L1"];
   const SunPadPhysicalControllerButton buttons[] = {SunPadPhysicalControllerButtonA,
@@ -3085,13 +3120,13 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     }]];
   }
   [sheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-  [KartPadVisibleViewController(_window) presentViewController:sheet animated:YES completion:nil];
+  [self presentMultiplayerAlert:sheet];
 }
 
 - (void)showControllerButtonMapping {
   UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Controller Button Mapping"
       message:@"Choose the game button to reassign. Sticks, D-pad, Menu, and triggers remain direct."
-      preferredStyle:UIAlertControllerStyleAlert];
+      preferredStyle:UIAlertControllerStyleActionSheet];
   const SunPadControllerButtonMapping mapping = [SunPadControllerMappingStore mapping];
   NSArray<NSString *> *names = @[@"A — Accelerate / Confirm", @"B — Drift / Back",
       @"X — Rear View", @"Y", @"ZR — Rear View"];
@@ -3109,8 +3144,14 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       [weakSelf showControllerButtonAssignment:gameButton title:name];
     }]];
   }
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Reset Face Button Mapping"
+      style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    [SunPadControllerMappingStore reset];
+    [weakSelf showMultiplayerMessage:@"Default Mapping Restored"
+        message:@"The default A/B/X/Y and left-shoulder mapping will apply to new controller input."];
+  }]];
   [sheet addAction:[UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleCancel handler:nil]];
-  [KartPadVisibleViewController(_window) presentViewController:sheet animated:YES completion:nil];
+  [self presentMultiplayerAlert:sheet];
 }
 
 - (void)gameOverlayRequestsControllerMapping:(SunPadGameOverlay *)overlay {
@@ -3118,8 +3159,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   KartPadPhysicalControllers *controllers = [KartPadPhysicalControllers sharedControllers];
   [controllers reconcileControllers];
   NSString *players = [[controllers playerDescriptions] componentsJoinedByString:@"\n"];
-  NSString *message = [NSString stringWithFormat:
-      @"%@\n\nPair controllers in system Bluetooth settings. Choose Multiplayer in the game, then press the mapped A button on each controller at Register Controllers. Touch shares Player 1.\n\nDualShock 4 and DualSense use Cross = A, Circle = B, Square = X, Triangle = Y by default. GameCube-style pads work when the OS exposes an Extended Gamepad; original GameCube USB adapters are not supported on iPad by this build.", players];
+  NSString *message = players;
   UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Controller Setup"
       message:message preferredStyle:UIAlertControllerStyleAlert];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
@@ -3127,18 +3167,13 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [weakSelf showControllerButtonMapping];
   }]];
-  [sheet addAction:[UIAlertAction actionWithTitle:@"Refresh Connected Players"
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Pairing & Compatibility…"
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    [weakSelf gameOverlayRequestsControllerMapping:nil];
-  }]];
-  [sheet addAction:[UIAlertAction actionWithTitle:@"Reset Face Button Mapping"
-      style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    [SunPadControllerMappingStore reset];
-    [weakSelf showIntegrationAlert:@"Default Mapping Restored"
-        message:@"The default A/B/X/Y and left-shoulder mapping will apply to new controller input."];
+    [weakSelf showMultiplayerMessage:@"Connect & Register Controllers"
+        message:@"Pair pads in system Bluetooth settings. In the game, choose Multiplayer and press mapped A on each pad at Register Controllers. Touch shares Player 1.\n\nDualShock 4 / DualSense defaults: Cross = A, Circle = B, Square = X, Triangle = Y. GameCube-style pads need OS Extended Gamepad support. Original GameCube USB adapters are not supported on iPad."];
   }]];
   [sheet addAction:[UIAlertAction actionWithTitle:@"Done" style:UIAlertActionStyleCancel handler:nil]];
-  [KartPadVisibleViewController(_window) presentViewController:sheet animated:YES completion:nil];
+  [self presentMultiplayerAlert:sheet];
 }
 
 - (NSString *)gameOverlayDiagnosticContext:(SunPadGameOverlay *)overlay {
