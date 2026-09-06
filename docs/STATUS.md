@@ -1503,3 +1503,11 @@ final API 36 ARM64 bundle-derived universal and split installs render Original,
 survive repeat launch, and preserve durable state; strict APK/AAB audits and
 the 110-test suite pass. Physical-device stability remains unclaimed. Evidence:
 `docs/artifacts/2026-09-05/android/a6-retained-game-data-runtime-root.md`.
+
+The source and private-build transition to another machine is documented in
+`docs/ANDROID-PHYSICAL-HANDOFF.md`. The handoff pins the branch and audited
+product-base commit, preview
+metadata and digest, makes the ignored-APK transfer boundary explicit, and
+provides fail-closed preflight/install/capture commands plus the first physical
+acceptance matrix. A Git pull alone intentionally does not include the APK,
+game data, saves, keys, or private translated inputs.

@@ -711,6 +711,13 @@ not block offline Retro Rewind support.
 
 ## Operating constraints
 
+Cross-machine Android phone testing now has one authoritative runbook:
+`docs/ANDROID-PHYSICAL-HANDOFF.md`. Git carries the source branch and guarded
+installer, but not the ignored 90,502,311-byte preview APK or private runtime
+inputs. Privately transfer the exact preview-3 APK, verify SHA-256
+`b709d5e42b08be0e276c2fc07ed25b1f34a58c31282c049d6505a390ee647707`,
+then follow that runbook on a machine with exactly one attached physical phone.
+
 The current Android A6 candidate idempotently repairs a missing retained
 Original `dvd_root` before launch. A release-derived API 36 ARM64 gate passes
 for universal and device-split installs with stable rendering and preserved

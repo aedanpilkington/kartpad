@@ -4425,3 +4425,23 @@ This file is append-only. Evidence paths refer to sanitized, publishable artifac
 - Classification: **Pass for a reproducible, guarded, unpublished phone-test
   candidate; not physical-device stability or acceptance.** Evidence:
   `docs/artifacts/2026-09-05/android/a6-preview3-hardware-candidate.md`.
+
+## 2026-09-05 — Android cross-machine physical handoff
+
+- Added `docs/ANDROID-PHYSICAL-HANDOFF.md` as the exact other-machine runbook:
+  fetch/switch the Android branch, privately transfer and hash-check preview 3,
+  run the physical preflight, install without clearing data, execute the manual
+  hardware matrix, and emit the UID-scoped sanitized summary.
+- The document explicitly records that Git does not carry the ignored APK,
+  private translation graph, game data, saves, credentials, or signing state.
+  A source pull therefore cannot manufacture the already-audited full product
+  unless the second machine also has the authorized ignored build inputs.
+- An attempted extension of the release-derived emulator gate was rejected
+  before commit: ADB cannot directly start the intentionally non-exported
+  runtime activity, shell task-fronting left the compositor portrait, and the
+  Recents-based split-package probe later stalled in `uiautomator dump` despite
+  a focused landscape KartPad process. The runner was interrupted through its
+  cleanup trap; installed debug version 7 and the selector were restored. No
+  product failure is inferred and no unverified lifecycle-gate code remains.
+- Classification: **Pass for a clean, documented, privacy-bounded machine and
+  phone-test handoff; physical execution and performance remain open.**
