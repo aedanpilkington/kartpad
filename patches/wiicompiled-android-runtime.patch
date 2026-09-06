@@ -268,14 +268,17 @@
  mkw_configure_product(WiiCompiled)
  target_precompile_headers(WiiCompiled PRIVATE
      "${MKW_RUNTIME_SOURCE_DIR}/include/mkw_pch.h")
-@@ -537,6 +563,8 @@
+@@ -537,11 +563,11 @@
      mkw_retro_rewind_functions WiiCompiled RetroRewind KartPadDual)
  foreach(target IN LISTS MKW_ALL_BUILD_TARGETS)
      if(TARGET ${target})
--        target_compile_options(${target} PRIVATE -mcpu=apple-m2)
-+        if(APPLE)
-+            target_compile_options(${target} PRIVATE -mcpu=apple-m2)
-+        endif()
+         if(CMAKE_SYSTEM_NAME STREQUAL "tvOS")
+             target_compile_options(${target} PRIVATE
+                 "SHELL:-mcpu=generic -Xclang -target-feature -Xclang -rcpc")
+-        else()
++        elseif(APPLE)
+             target_compile_options(${target} PRIVATE -mcpu=apple-m2)
+         endif()
      endif()
  endforeach()
 --- a/include/guest_flat_memory.h
@@ -679,3 +682,14 @@
 +.size KartPadSwitchAndroidRuntimeFiber, .-KartPadSwitchAndroidRuntimeFiber
 +
 +.section .note.GNU-stack,"",%progbits
+--- a/src/audio_backend.cpp
++++ b/src/audio_backend.cpp
+@@ -10,6 +10,8 @@
+ #include <SDL3/SDL_hints.h>
+ #include <SDL3/SDL_init.h>
++#if defined(__APPLE__)
+ #include <TargetConditionals.h>
++#endif
+ 
+ AudioBackend& AudioBackend::Instance() {
+     static AudioBackend instance;

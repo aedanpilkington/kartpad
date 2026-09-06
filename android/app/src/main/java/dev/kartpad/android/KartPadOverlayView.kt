@@ -70,6 +70,8 @@ class KartPadOverlayView(context: Context) : View(context) {
     private var controllerConnected = false
     private var gasHoldGeneration = 0
     private var gasLocked = false
+    private var leftStickAnchor: PointF? = null
+    private val floatingStickDrawingFrame = RectF()
     private var debugVirtualKeyHapticCount = 0
     private var lastPublishedButtons = 0
     private var accessibilityButtons = 0
@@ -102,6 +104,9 @@ class KartPadOverlayView(context: Context) : View(context) {
 
     @Suppress("DEPRECATION")
     override fun onApplyWindowInsets(insets: WindowInsets): WindowInsets {
+        if (insetLeft != insets.systemWindowInsetLeft || insetTop != insets.systemWindowInsetTop ||
+            insetRight != insets.systemWindowInsetRight || insetBottom != insets.systemWindowInsetBottom
+        ) clearTouchInput()
         insetLeft = insets.systemWindowInsetLeft
         insetTop = insets.systemWindowInsetTop
         insetRight = insets.systemWindowInsetRight
@@ -128,13 +133,21 @@ class KartPadOverlayView(context: Context) : View(context) {
             val identifier = editableIdentifier(control)
             val hidden = KartPadTouchSettings.isHidden(context, identifier)
             if (hidden && !editingLayout) return@forEach
+            if (control.kind == Kind.LEFT_STICK && !editingLayout && leftStickAnchor == null) {
+                return@forEach
+            }
             val alpha = when {
                 editingLayout && hidden -> 0.35f
                 editingLayout -> 1f
                 else -> controlOpacity
             }
+            val anchor = if (control.kind == Kind.LEFT_STICK && !editingLayout) leftStickAnchor else null
+            val drawingFrame = if (anchor == null) control.frame else floatingStickDrawingFrame.apply {
+                set(control.frame)
+                offset(anchor.x - control.frame.centerX(), anchor.y - control.frame.centerY())
+            }
             val saved = canvas.saveLayerAlpha(
-                control.frame,
+                drawingFrame,
                 (alpha * 255f).roundToInt().coerceIn(0, 255),
             )
             when (control.kind) {
@@ -158,7 +171,13 @@ class KartPadOverlayView(context: Context) : View(context) {
                 if (control == null) {
                     return event.actionMasked != MotionEvent.ACTION_DOWN && pointerOwners.isNotEmpty()
                 }
+                // One finger owns each stick until release; other fingers can
+                // still press buttons without stealing or clearing steering.
+                if (control.kind != Kind.BUTTON && pointerOwners.containsValue(control.id)) return true
                 pointerOwners[pointerId] = control.id
+                if (control.kind == Kind.LEFT_STICK) {
+                    leftStickAnchor = PointF(event.getX(actionIndex), event.getY(actionIndex))
+                }
                 if (control.id == "A") beginGasPress()
                 updateOwnedControl(control, event.getX(actionIndex), event.getY(actionIndex))
             }
@@ -186,6 +205,11 @@ class KartPadOverlayView(context: Context) : View(context) {
     override fun performClick(): Boolean {
         super.performClick()
         return true
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        clearTouchInput()
     }
 
     override fun getAccessibilityNodeProvider(): AccessibilityNodeProvider = virtualNodeProvider
@@ -222,6 +246,7 @@ class KartPadOverlayView(context: Context) : View(context) {
         accessibilityButtons = 0
         accessibilityPulseGenerations.clear()
         gasLocked = false
+        leftStickAnchor = null
         lastPublishedButtons = 0
         gasHoldGeneration += 1
         updateGasAccessibility()
@@ -233,7 +258,9 @@ class KartPadOverlayView(context: Context) : View(context) {
         check(isLaidOut && width > 0 && height > 0) { "touch overlay is not laid out" }
         val move = controls.first { it.id == "move" }
         val a = controls.first { it.id == "A" }.frame.let { PointF(it.centerX(), it.centerY()) }
-        val r = controls.first { it.id == "R" }.frame.let { PointF(it.centerX(), it.centerY()) }
+        val r = controls.first { it.id == "R" }.frame.let {
+            PointF(it.left + it.width() * 0.875f, it.centerY())
+        }
         val z = controls.first { it.id == "Z" }.frame.let { PointF(it.centerX(), it.centerY()) }
         val steer = PointF(
             move.frame.centerX() + move.frame.width() * 0.375f,
@@ -281,7 +308,10 @@ class KartPadOverlayView(context: Context) : View(context) {
 
         clearTouchInput()
         motionSteeringX = 0f
-        dispatch(MotionEvent.ACTION_DOWN, listOf(0 to steer), 0)
+        val pickup = PointF(move.frame.centerX(), move.frame.centerY())
+        dispatch(MotionEvent.ACTION_DOWN, listOf(0 to pickup), 0)
+        check(leftX == 0f && leftY == 0f) { "floating pickup must start neutral" }
+        dispatch(MotionEvent.ACTION_MOVE, listOf(0 to steer), 1)
         check(abs(leftX - 0.75f) < 0.01f && abs(leftY) < 0.01f &&
             lastPublishedButtons == 0
         ) {
@@ -357,7 +387,10 @@ class KartPadOverlayView(context: Context) : View(context) {
         check(isLaidOut && width > 0 && height > 0) { "touch overlay is not laid out" }
         clearTouchInput()
         layoutControls()
-        controls.forEach { control ->
+        val hittable = controls.filter {
+            !KartPadTouchSettings.isHidden(context, editableIdentifier(it))
+        }
+        hittable.forEach { control ->
             val centerHit = hitTest(control.frame.centerX(), control.frame.centerY())
             check(centerHit?.id == control.id) {
                 "${control.id} center mapped to ${centerHit?.id}"
@@ -393,7 +426,7 @@ class KartPadOverlayView(context: Context) : View(context) {
             "empty-space down consumed=$consumed owners=${pointerOwners.size} " +
                 "buttons=0x${lastPublishedButtons.toString(16)}"
         }
-        return "centers=${controls.size} edges=${controls.size} outside=passed"
+        return "centers=${hittable.size} edges=${hittable.size} outside=passed"
     }
 
     fun runDebugAccessibilityActionsFixture(
@@ -776,20 +809,20 @@ class KartPadOverlayView(context: Context) : View(context) {
         controls += button("B", "B", BUTTON_B, 67.19f, 67.19f,
             0.8398611f, 0.6898649f, Color.argb(235, 199, 26, 33))
         controls += button("X", "X", BUTTON_X, 46f, 46f,
-            0.896f, 0.4258446f, Color.argb(235, 184, 184, 184), true)
+            0.12563889f, 0.5348536f, Color.argb(235, 184, 184, 184), true)
         controls += button("Y", "Y", BUTTON_Y, 46f, 46f,
-            0.84525f, 0.5268581f, Color.argb(235, 184, 184, 184), true)
+            0.05547222f, 0.56739867f, Color.argb(235, 184, 184, 184), true)
         controls += button("L", "L", BUTTON_L, 94f, 46f,
-            0.09058333f, 0.25399774f, dark)
+            0.9358057f, 0.42246622f, dark)
         controls += button("R", "R", BUTTON_R, 94f, 46f,
-            0.86875f, 0.27291667f, dark)
+            0.82080555f, 0.52246624f, dark)
         controls += button("Z", "Z", BUTTON_ZR, 46f, 46f,
-            0.969f, 0.410f, Color.argb(240, 97, 46, 148))
+            0.8459167f, 0.37832206f, Color.argb(240, 97, 46, 148))
         controls += button("Start", "START", BUTTON_PLUS, 92f, 46f,
             0.09022222f, 0.11289414f, Color.argb(235, 71, 71, 71))
 
-        val dpadX = 0.08127778f
-        val dpadY = 0.46773648f
+        val dpadX = 0.08450000f
+        val dpadY = 0.34521396f
         controls += button("DpadUp", "▲", BUTTON_UP, 36f, 36f,
             dpadX, dpadY, dark)
         controls += button("DpadDown", "▼", BUTTON_DOWN, 36f, 36f,
@@ -807,7 +840,8 @@ class KartPadOverlayView(context: Context) : View(context) {
 
     private fun layoutControls() {
         val safe = safeFrame()
-        val tabletDefaults = resources.configuration.smallestScreenWidthDp >= 600 &&
+        val tabletLayout = resources.configuration.smallestScreenWidthDp >= 600
+        val tabletDefaults = tabletLayout &&
             safe.width() / resources.displayMetrics.density >= 1000f
         val baseScale = if (tabletDefaults) {
             1f
@@ -816,7 +850,9 @@ class KartPadOverlayView(context: Context) : View(context) {
         }
         controls.forEach { control ->
             val identifier = editableIdentifier(control)
-            val individualScale = KartPadTouchSettings.controlSize(context, identifier)
+            // Current Apple R is an ordinary digital button, with L's bounds.
+            val individualScale = KartPadTouchSettings.controlSize(context,
+                if (identifier == "R") "L" else identifier)
             val combinedScale = baseScale * controlSizeScale * individualScale
             val tabletSize = if (tabletDefaults) tabletControlSize(control.id) else null
             val controlWidth = dp(tabletSize?.x ?: control.width) * combinedScale
@@ -827,7 +863,7 @@ class KartPadOverlayView(context: Context) : View(context) {
             if (customOrigin != null) {
                 centerX = safe.left + customOrigin.x * safe.width()
                 centerY = safe.top + customOrigin.y * safe.height()
-            } else if (tabletDefaults) {
+            } else if (tabletLayout) {
                 val center = tabletControlCenter(control.id)
                 centerX = safe.left + center.x * safe.width()
                 centerY = safe.top + center.y * safe.height()
@@ -875,23 +911,23 @@ class KartPadOverlayView(context: Context) : View(context) {
         "A" -> PointF(104f, 104f)
         "B" -> PointF(76f, 76f)
         "L" -> PointF(132f, 62f)
-        "R" -> PointF(280f, 62f)
+        "R" -> PointF(132f, 62f)
         "Start" -> PointF(116f, 62f)
         "DpadUp", "DpadDown", "DpadLeft", "DpadRight" -> PointF(48f, 48f)
         else -> PointF(62f, 62f)
     }
 
     private fun tabletControlCenter(id: String): PointF = when (id) {
-        "move" -> PointF(0.13103953f, 0.79058945f)
-        "c" -> PointF(0.9062958f, 0.8583247f)
-        "A" -> PointF(0.8916545f, 0.7409514f)
-        "B" -> PointF(0.83601755f, 0.80920374f)
-        "X" -> PointF(0.95937043f, 0.71561533f)
-        "Y" -> PointF(0.95424595f, 0.786970f)
-        "L" -> PointF(0.12811127f, 0.66339195f)
-        "R" -> PointF(0.8960469f, 0.647880f)
-        "Z" -> PointF(0.8275988f, 0.721303f)
-        "Start" -> PointF(0.89677894f, 0.57807654f)
+        "move" -> PointF(0.13f, 0.83f)
+        "c" -> PointF(0.91f, 0.90f)
+        "A" -> PointF(0.93f, 0.75f)
+        "B" -> PointF(0.82f, 0.82f)
+        "X" -> PointF(0.14f, 0.60f)
+        "Y" -> PointF(0.06f, 0.63f)
+        "L" -> PointF(0.93f, 0.60f)
+        "R" -> PointF(0.815f, 0.64f)
+        "Z" -> PointF(0.84f, 0.52f)
+        "Start" -> PointF(0.94f, 0.50f)
         else -> PointF(0.26866764f, 0.79472595f)
     }
 
@@ -940,10 +976,13 @@ class KartPadOverlayView(context: Context) : View(context) {
 
     private fun drawStick(canvas: Canvas, control: Control, axisX: Float, axisY: Float) {
         val radius = min(control.frame.width(), control.frame.height()) * 0.5f
+        val anchor = if (control.kind == Kind.LEFT_STICK && !editingLayout) leftStickAnchor else null
+        val centerX = anchor?.x ?: control.frame.centerX()
+        val centerY = anchor?.y ?: control.frame.centerY()
         fillPaint.style = Paint.Style.FILL
         fillPaint.color = control.fill
-        canvas.drawCircle(control.frame.centerX(), control.frame.centerY(), radius, fillPaint)
-        canvas.drawCircle(control.frame.centerX(), control.frame.centerY(), radius, strokePaint)
+        canvas.drawCircle(centerX, centerY, radius, fillPaint)
+        canvas.drawCircle(centerX, centerY, radius, strokePaint)
         val thumbRadius = radius * 0.42f
         val travel = max(0f, radius - thumbRadius - dp(4f))
         fillPaint.color = if (control.kind == Kind.LEFT_STICK) {
@@ -952,8 +991,8 @@ class KartPadOverlayView(context: Context) : View(context) {
             Color.argb(250, 255, 214, 64)
         }
         canvas.drawCircle(
-            control.frame.centerX() + axisX * travel,
-            control.frame.centerY() - axisY * travel,
+            centerX + axisX * travel,
+            centerY - axisY * travel,
             thumbRadius, fillPaint,
         )
     }
@@ -1028,6 +1067,11 @@ class KartPadOverlayView(context: Context) : View(context) {
         if (!editingLayout && KartPadTouchSettings.isHidden(context, editableIdentifier(it))) {
             return@firstOrNull false
         }
+        if (!editingLayout && it.kind == Kind.LEFT_STICK) {
+            return@firstOrNull RectF(it.frame).apply {
+                inset(-width() * 0.65f, -height() * 0.45f)
+            }.contains(x, y)
+        }
         if (!it.frame.contains(x, y)) return@firstOrNull false
         if (it.kind == Kind.BUTTON && it.frame.width() != it.frame.height()) return@firstOrNull true
         val radius = min(it.frame.width(), it.frame.height()) * 0.5f
@@ -1037,8 +1081,9 @@ class KartPadOverlayView(context: Context) : View(context) {
     private fun updateOwnedControl(control: Control, x: Float, y: Float) {
         if (control.kind == Kind.BUTTON) return
         val radius = max(1f, min(control.frame.width(), control.frame.height()) * 0.5f)
-        var axisX = (x - control.frame.centerX()) / radius
-        var axisY = -(y - control.frame.centerY()) / radius
+        val anchor = if (control.kind == Kind.LEFT_STICK) leftStickAnchor else null
+        var axisX = (x - (anchor?.x ?: control.frame.centerX())) / radius
+        var axisY = -(y - (anchor?.y ?: control.frame.centerY())) / radius
         val length = hypot(axisX.toDouble(), axisY.toDouble()).toFloat()
         if (length > 1f) {
             axisX /= length
@@ -1057,7 +1102,7 @@ class KartPadOverlayView(context: Context) : View(context) {
         val owner = pointerOwners.remove(pointerId) ?: return
         if (owner == "A") gasHoldGeneration += 1
         when (controls.firstOrNull { it.id == owner }?.kind) {
-            Kind.LEFT_STICK -> { leftX = 0f; leftY = 0f }
+            Kind.LEFT_STICK -> { leftX = 0f; leftY = 0f; leftStickAnchor = null }
             Kind.RIGHT_STICK -> { rightX = 0f; rightY = 0f }
             else -> Unit
         }

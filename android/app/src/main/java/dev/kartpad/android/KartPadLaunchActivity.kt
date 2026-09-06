@@ -1,6 +1,7 @@
 package dev.kartpad.android
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -281,6 +282,25 @@ class KartPadLaunchActivity : Activity() {
         status.id = R.id.kartpad_mode_status
         status.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         column.addView(status, layout(0))
+        column.addView(Button(this).apply {
+            text = "Export Private Diagnostics…"
+            isAllCaps = false
+            setTextColor(Color.argb(184, 255, 255, 255))
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnClickListener {
+                AlertDialog.Builder(this@KartPadLaunchActivity)
+                    .setTitle("Export Private Diagnostics")
+                    .setMessage("Save recent runtime logs to a location you choose. Logs may contain local paths or personal details. No game images, saves, profiles, or signing material are copied. Keep this file private and review it before sharing.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Save Locally…") { _, _ ->
+                        startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/zip"
+                            putExtra(Intent.EXTRA_TITLE, "KartPad-private-diagnostics.zip")
+                        }, REQUEST_DIAGNOSTICS)
+                    }.show()
+            }
+        }, layout(0))
 
         val availableWidthDp = (resources.displayMetrics.widthPixels / density).toInt() - 64
         val contentWidth = dp(minOf(760, maxOf(320, availableWidthDp)))
@@ -307,6 +327,24 @@ class KartPadLaunchActivity : Activity() {
         button.setModeText(title, subtitle)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != REQUEST_DIAGNOSTICS || resultCode != RESULT_OK) return
+        val destination = data?.data ?: return
+        showStatus("Exporting private diagnostics…")
+        validator.execute {
+            val succeeded = runCatching {
+                KartPadDiagnosticExport.write(applicationContext, destination)
+            }.isSuccess
+            runOnUiThread {
+                if (!isFinishing && !isDestroyed) showStatus(
+                    if (succeeded) "Private diagnostics saved. Nothing was uploaded."
+                    else "Diagnostics export failed. The destination may contain an incomplete archive.",
+                )
+            }
+        }
+    }
+
     private fun showStatus(message: String) {
         status.text = message
         status.visibility = View.VISIBLE
@@ -325,6 +363,7 @@ class KartPadLaunchActivity : Activity() {
         private const val EXTRA_DEBUG_GAME_DATA_VALID =
             "dev.kartpad.android.TEST_MODE_CHOOSER_GAME_DATA_VALID"
         private const val REQUEST_GAME_DATA = 4_303
+        private const val REQUEST_DIAGNOSTICS = 4_304
     }
 
     /** Centers the icon and two-line label as one unit, matching UIButton.Configuration. */

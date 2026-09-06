@@ -128,8 +128,18 @@ internal object KartPadTouchSettings {
     }
 
     fun controlSize(context: Context, identifier: String): Float = preferences(context)
-        .getFloat(CONTROL_SIZE_PREFIX + identifier, 1f)
+        .getFloat(CONTROL_SIZE_PREFIX + identifier, defaultControlSize(context, identifier))
         .coerceIn(MIN_CONTROL_SIZE, MAX_CONTROL_SIZE)
+
+    // Matches KartPadSeedTouchLayoutDefaults; stored edits still win.
+    private fun defaultControlSize(context: Context, identifier: String): Float {
+        return when (identifier) {
+            "L" -> 0.97919405f
+            "R" -> 0.60f
+            "Dpad" -> 0.78272003f
+            else -> 1f
+        }
+    }
 
     fun setControlSize(context: Context, identifier: String, value: Float) {
         preferences(context).edit().putFloat(
@@ -139,12 +149,12 @@ internal object KartPadTouchSettings {
     }
 
     fun isHidden(context: Context, identifier: String): Boolean = preferences(context)
-        .getStringSet(HIDDEN_CONTROLS, emptySet())
+        .getStringSet(HIDDEN_CONTROLS, setOf("Dpad"))
         ?.contains(identifier) == true
 
     fun setHidden(context: Context, identifier: String, hidden: Boolean) {
         val saved = preferences(context)
-        val values = saved.getStringSet(HIDDEN_CONTROLS, emptySet())
+        val values = saved.getStringSet(HIDDEN_CONTROLS, setOf("Dpad"))
             ?.toMutableSet() ?: mutableSetOf()
         if (hidden) values += identifier else values -= identifier
         saved.edit().putStringSet(HIDDEN_CONTROLS, values).apply()

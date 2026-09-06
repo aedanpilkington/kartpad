@@ -71,6 +71,8 @@ patch --batch -p1 -d "$runtime_source" < \
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-runtime-settings.patch"
 patch --batch -p1 -d "$runtime_source" < \
+  "$repo_root/patches/wiicompiled-android-performance-telemetry.patch"
+patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-network-tls.patch"
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-tls-ioctlv-fixture.patch"

@@ -10,8 +10,8 @@ adb="${KARTPAD_ADB:-$sdk_root/platform-tools/adb}"
 apk="${1:-$repo_root/.android-bootstrap/hardware-preview/KartPad-0.4.0-android-preview.3-v8-arm64.apk}"
 package="dev.kartpad.android"
 expected_sha256="${KARTPAD_ANDROID_EXPECTED_PREVIEW_SHA256:-b709d5e42b08be0e276c2fc07ed25b1f34a58c31282c049d6505a390ee647707}"
-expected_version_code=8
-expected_version_name="0.4.0-android-preview.3"
+expected_version_code="${KARTPAD_ANDROID_EXPECTED_VERSION_CODE:-8}"
+expected_version_name="${KARTPAD_ANDROID_EXPECTED_VERSION_NAME:-0.4.0-android-preview.3}"
 allow_update="${KARTPAD_ANDROID_ALLOW_PREVIEW_UPDATE:-0}"
 minimum_free_kib="${KARTPAD_ANDROID_PREVIEW_MIN_FREE_KIB:-6291456}"
 
@@ -22,6 +22,9 @@ fail() {
 
 [[ -x "$adb" ]] || fail "adb is unavailable at the configured path"
 [[ -f "$apk" ]] || fail "hardware preview APK is unavailable"
+[[ "$expected_version_code" =~ ^[1-9][0-9]*$ ]] || fail "invalid expected version code"
+[[ "$expected_version_name" =~ ^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$ ]] ||
+  fail "invalid expected version name"
 [[ "$allow_update" == 0 || "$allow_update" == 1 ]] ||
   fail "KARTPAD_ANDROID_ALLOW_PREVIEW_UPDATE must be 0 or 1"
 [[ "$minimum_free_kib" =~ ^[0-9]+$ ]] ||
@@ -32,6 +35,13 @@ actual_sha256="$(shasum -a 256 "$apk" | awk '{ print $1 }')"
 [[ "$actual_sha256" == "$expected_sha256" ]] ||
   fail "hardware preview APK does not match the approved digest"
 "$repo_root/scripts/audit-android-package.sh" "$apk" >/dev/null
+aapt2="$sdk_root/build-tools/$KARTPAD_ANDROID_BUILD_TOOLS/aapt2"
+badging="$("$aapt2" dump badging "$apk")"
+[[ "$badging" == *"versionCode='$expected_version_code'"* &&
+   "$badging" == *"versionName='$expected_version_name'"* ]] ||
+  fail "APK version does not match the approved preview"
+[[ "$badging" != *"application-debuggable"* ]] ||
+  fail "hardware preview must be non-debuggable"
 
 # This must pass before any package mutation. It rejects emulators, unsupported
 # ABI/API/page sizes, insufficient space, and ambiguous/unauthorized targets.

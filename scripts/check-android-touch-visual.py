@@ -21,10 +21,6 @@ LABELS = (
     "R button",
     "Z button",
     "Start button",
-    "D-pad up",
-    "D-pad down",
-    "D-pad left",
-    "D-pad right",
 )
 
 
@@ -60,6 +56,8 @@ def main() -> None:
     if missing:
         raise SystemExit(f"ERROR: touch accessibility targets missing: {missing}")
     frames = {label: bounds(nodes[label].attrib["bounds"]) for label in LABELS}
+    if any(label.startswith("D-pad ") for label in nodes):
+        raise SystemExit("ERROR: default D-pad must be hidden")
 
     width, height = expected_size
     for label, rect in frames.items():
@@ -67,7 +65,10 @@ def main() -> None:
             raise SystemExit(f"ERROR: {label} is outside the viewport: {rect}")
     if center(frames["Move stick"])[0] >= width / 2:
         raise SystemExit("ERROR: move stick left/right placement changed")
-    for label in ("Camera stick", "A button", "B button", "X button", "Y button", "Z button"):
+    for label in ("X button", "Y button"):
+        if center(frames[label])[0] >= width / 2:
+            raise SystemExit(f"ERROR: {label} must be left of center")
+    for label in ("Camera stick", "A button", "B button", "L button", "R button", "Z button"):
         if center(frames[label])[0] <= width / 2:
             raise SystemExit(f"ERROR: {label} left/right placement changed")
 
@@ -79,17 +80,11 @@ def main() -> None:
         raise SystemExit(f"ERROR: X/Z spacing regressed: X={x} Z={z}")
     l_width = frames["L button"][2] - frames["L button"][0]
     r_width = frames["R button"][2] - frames["R button"][0]
-    if args.lane == "phone" and abs(l_width - r_width) > 1:
-        raise SystemExit(f"ERROR: phone L/R pill widths differ: {l_width}/{r_width}")
-    if args.lane == "tablet" and r_width != 560:
-        raise SystemExit(f"ERROR: tablet R width {r_width}px != 560px")
-
-    up = center(frames["D-pad up"])
-    down = center(frames["D-pad down"])
-    left = center(frames["D-pad left"])
-    right = center(frames["D-pad right"])
-    if not (up[1] < left[1] < down[1] and left[0] < up[0] < right[0]):
-        raise SystemExit("ERROR: grouped D-pad cross geometry changed")
+    if abs(l_width - r_width) > 1:
+        raise SystemExit(f"ERROR: L/R pill widths differ: {l_width}/{r_width}")
+    start_x = center(frames["Start button"])[0]
+    if (args.lane == "phone" and start_x >= width / 2) or (args.lane == "tablet" and start_x <= width / 2):
+        raise SystemExit("ERROR: Start must be left on phone and right on tablet")
 
     raw = args.frame.read_bytes()
     if len(raw) < 16:
@@ -132,6 +127,9 @@ def main() -> None:
     surface = pixel(width // 2, height // 2)
     if not close(surface, (13, 51, 61), 1):
         raise SystemExit(f"ERROR: source fixture surface changed: {surface}")
+    move_x, move_y = center(frames["Move stick"])
+    if not close(pixel(int(move_x), int(move_y)), surface, 1):
+        raise SystemExit("ERROR: idle floating movement stick must be invisible")
 
     print(
         "Android touch visual contract passed: "

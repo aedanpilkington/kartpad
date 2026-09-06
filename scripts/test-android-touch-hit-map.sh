@@ -18,6 +18,11 @@ device_count="$("$adb" devices | sed -n '2,$p' | grep -c '[[:space:]]device$' ||
   echo "ERROR: expected exactly one connected Android emulator/device" >&2
   exit 1
 }
+# This fixture clears disposable state. Never run it against a real phone.
+[[ "$("$adb" shell getprop ro.kernel.qemu | tr -d '\r')" == 1 ]] || {
+  echo "ERROR: destructive touch fixture requires an emulator" >&2
+  exit 1
+}
 
 "$repo_root/scripts/build-android-fixture.sh"
 apk="$repo_root/android/app/build/outputs/apk/debug/app-debug.apk"
@@ -32,7 +37,7 @@ apk="$repo_root/android/app/build/outputs/apk/debug/app-debug.apk"
   --ez dev.kartpad.android.TEST_TOUCH_OVERLAY true \
   --ez dev.kartpad.android.TEST_TOUCH_HIT_MAP true >/dev/null
 
-expected="A4 hit-map fixture passed centers=14 edges=14 outside=passed"
+expected="A4 hit-map fixture passed centers=10 edges=10 outside=passed"
 for _ in {1..30}; do
   output="$("$adb" logcat -d -v brief KartPadFixture:I AndroidRuntime:E '*:S')"
   if grep -Fq "$expected" <<<"$output"; then

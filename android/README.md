@@ -1,5 +1,11 @@
 # KartPad Android source-only fixture
 
+Current development checkpoint (2026-09-06): the private full-runtime Preview 5
+candidate follows stable Apple v0.4.8, but physical acceptance is still open.
+See `../docs/artifacts/2026-09-06/android/preview5-development-checkpoint.md`.
+Do not publish private builds or infer gameplay/performance acceptance from the
+fixture and packaging checks below.
+
 This directory contains the non-playable Android source-only fixture. A0 proves
 the pinned ARM64 toolchain, SDLActivity/JNI entry, SDL Vulkan loader, Dawn
 Vulkan adapter discovery, 4 KiB execution, and 16 KiB execution. The first A1

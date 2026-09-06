@@ -49,6 +49,11 @@ elif [[ ! -f "${work_build}/CMakeCache.txt" ]]; then
   exit 66
 fi
 
+if ! grep -q 'DuplicateFileDescriptor' "${work_source}/Source/Core/Common/DirectIOFile.h"; then
+  patch --batch -p1 -d "${work_source}" < \
+    "${repo_root}/patches/dolphin-android-borrowed-disc-descriptor.patch"
+fi
+
 path_map_flags="-ffile-prefix-map=${work_source}=Dolphin -fmacro-prefix-map=${work_source}=Dolphin -ffile-prefix-map=${repo_root}=KartPad -fmacro-prefix-map=${repo_root}=KartPad -ffile-prefix-map=${sdk_root}=AndroidSDK -fmacro-prefix-map=${sdk_root}=AndroidSDK"
 "${cmake_bin}" -S "${work_source}" -B "${work_build}" -G Ninja \
   -DCMAKE_MAKE_PROGRAM="${ninja_bin}" \

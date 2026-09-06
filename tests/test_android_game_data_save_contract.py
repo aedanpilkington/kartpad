@@ -74,7 +74,7 @@ class AndroidGameDataSaveContractTests(unittest.TestCase):
         gradle = (REPO / "android/app/build.gradle.kts").read_text()
         build = (REPO / "scripts/build-android-discio-probe.sh").read_text()
         self.assertIn('System.loadLibrary("kartpad_discio")', importer)
-        self.assertIn('"/proc/self/fd/"', native)
+        self.assertIn('KartPadOpenDiscDescriptor(fd)', native)
         self.assertIn('volume->GetGameID(partition) != "RMCP01"', native)
         self.assertIn("DiscIO::ExportSystemData", native)
         self.assertIn("DiscIO::ExportDirectory", native)

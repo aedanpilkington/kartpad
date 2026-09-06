@@ -2,12 +2,17 @@
 
 ## Current state
 
-Android physical work resumed on 2026-09-06 following the stable Apple v0.4.7
-release. Bring the shared runtime and Retro Rewind 6.12.7 fixes forward, match
-the attached iPhone's touch layout, and diagnose the Pixel's reported slowdowns.
+Android work resumed on 2026-09-06 and now includes stable Apple v0.4.8 source.
+The private Preview 5 candidate includes Retro Rewind 6.12.7 metadata,
+borrowed-descriptor import, Apple-style floating touch defaults, and diagnostics.
+The Pixel is locked; candidate installation, real picker import, Retro Rewind
+crash diagnosis, warm performance, and player-identity feature parity remain open.
 Keep `codex/android-a4-touch-settings` separate from `main` during acceptance.
+Current evidence: `docs/artifacts/2026-09-06/android/preview5-development-checkpoint.md`.
 Previous partial device evidence:
 `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
+
+## Earlier Android evidence (not the latest candidate)
 
 The latest exact dual APK moves the three-dot trigger and iOS-shaped menu card
 inside Android's system-bar/display-cutout safe bounds, including bars hidden

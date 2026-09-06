@@ -10,6 +10,7 @@
 #include "DiscIO/DiscExtractor.h"
 #include "DiscIO/Filesystem.h"
 #include "DiscIO/Volume.h"
+#include "kartpad_disc_image_volume.h"
 
 namespace {
 
@@ -32,8 +33,7 @@ Java_dev_kartpad_android_KartPadDiscImageImporter_nativeExtract(
   env->ReleaseStringUTFChars(destination_string, destination_chars);
 
   try {
-    const std::string image = "/proc/self/fd/" + std::to_string(fd);
-    std::unique_ptr<DiscIO::Volume> volume = DiscIO::CreateVolume(image);
+    std::unique_ptr<DiscIO::Volume> volume = KartPadOpenDiscDescriptor(fd);
     if (!volume) {
       return Error(env, "Dolphin could not read the selected ISO or WBFS image.");
     }

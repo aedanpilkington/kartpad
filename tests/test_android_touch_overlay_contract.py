@@ -79,10 +79,13 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("TEST_TOUCH_ACCESSIBILITY_ACTIONS", runner)
         self.assertIn("focus=A b=pulse move=right lock=on click=unlock", runner)
 
-    def test_r_is_the_same_compact_digital_pill_as_l(self) -> None:
+    def test_r_matches_current_iphone_digital_button(self) -> None:
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadOverlayView.kt").read_text()
         self.assertIn('button("L", "L", BUTTON_L, 94f, 46f', source)
         self.assertIn('button("R", "R", BUTTON_R, 94f, 46f', source)
+        self.assertNotIn('rFullPress', source)
+        self.assertNotIn('drawTrigger', source)
+        self.assertIn('if (identifier == "R") "L" else identifier', source)
         self.assertIn("const val BUTTON_R = 0x00000200", source)
 
     def test_controller_handoff_clears_hides_and_restores_touch(self) -> None:
@@ -124,7 +127,8 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("control.frame.left + 1f", overlay)
         self.assertIn("check(!consumed && pointerOwners.isEmpty()", overlay)
         self.assertIn("TEST_TOUCH_HIT_MAP", runner)
-        self.assertIn("centers=14 edges=14 outside=passed", runner)
+        self.assertIn("centers=10 edges=10 outside=passed", runner)
+        self.assertIn("destructive touch fixture requires an emulator", runner)
 
     def test_source_fixture_clears_a_real_held_touch_when_menu_opens(self) -> None:
         activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
@@ -173,7 +177,8 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('"Z button"', verifier)
         self.assertIn("max(z[0] - x[2], x[0] - z[2])", verifier)
         self.assertIn('44 if args.lane == "phone" else 16', verifier)
-        self.assertIn("r_width != 560", verifier)
+        self.assertIn("abs(l_width - r_width) > 1", verifier)
+        self.assertIn("idle floating movement stick must be invisible", verifier)
         self.assertIn('"A button": (18, 120, 71)', verifier)
         self.assertIn('"B button": (153, 32, 40)', verifier)
         self.assertIn('"Z button": (78, 47, 128)', verifier)
@@ -378,18 +383,19 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
 
     def test_z_has_clear_spacing_from_x(self) -> None:
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadOverlayView.kt").read_text()
-        self.assertIn('0.896f, 0.4258446f, Color.argb(235, 184, 184, 184)', source)
-        self.assertIn('0.969f, 0.410f, Color.argb(240, 97, 46, 148)', source)
+        self.assertIn('0.12563889f, 0.5348536f, Color.argb(235, 184, 184, 184)', source)
+        self.assertIn('0.8459167f, 0.37832206f, Color.argb(240, 97, 46, 148)', source)
 
     def test_touch_overlay_preserves_ipad_default_geometry_on_tablets(self) -> None:
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadOverlayView.kt").read_text()
         activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
         self.assertIn("smallestScreenWidthDp >= 600", source)
         self.assertIn('"move" -> PointF(172f, 172f)', source)
-        self.assertIn('"R" -> PointF(280f, 62f)', source)
+        self.assertIn('"R" -> PointF(132f, 62f)', source)
         self.assertIn('"Start" -> PointF(116f, 62f)', source)
-        self.assertIn('"move" -> PointF(0.13103953f, 0.79058945f)', source)
-        self.assertIn('"Z" -> PointF(0.8275988f, 0.721303f)', source)
+        self.assertIn('"move" -> PointF(0.13f, 0.83f)', source)
+        self.assertIn('"Z" -> PointF(0.84f, 0.52f)', source)
+        self.assertIn('"Start" -> PointF(0.94f, 0.50f)', source)
         self.assertIn('else -> PointF(0.26866764f, 0.79472595f)', source)
         self.assertIn("DEBUG_EXTRA_TOUCH_OVERLAY", activity)
         self.assertIn("BuildConfig.GAME_RUNTIME || debugTouchOverlay", activity)

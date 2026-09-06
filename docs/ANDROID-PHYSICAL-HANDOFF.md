@@ -4,16 +4,23 @@ This is the authoritative handoff for moving Android KartPad testing from the
 current development Mac to another machine and then to one physical Android
 phone.
 
-## Testing paused on 2026-09-06
+## Resumed development on 2026-09-06; physical acceptance still open
 
-Physical testing is paused because this Android preview is behind the current
-iOS runtime and Retro Rewind fixes, and the maintainer observed major slowdowns
-on the phone. Do not treat Preview 3 as accepted or merge this branch to
-`main`. Resume Android work after the iOS version is stable. The partial phone
-results and remaining gates are recorded in
-`docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
+After Apple v0.4.8 shipped, Android development resumed on this branch. The
+private Preview 5 candidate incorporates the shared stable runtime, Retro
+Rewind 6.12.7 metadata, borrowed-descriptor image import, floating touch input,
+and bounded performance diagnostics. It is not physically accepted. The Pixel
+remains locked, so the new candidate has not been installed or tested through
+the real document picker. The earlier Retro Rewind crash and reported warm
+slowdowns remain unresolved. Do not merge this branch to `main` or publish its
+packages. See `docs/artifacts/2026-09-06/android/preview5-development-checkpoint.md`
+for current evidence and resumption commands. The earlier pause record remains
+at `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 
-## Current source checkpoint
+## Historical Preview 3 source checkpoint
+
+The remaining Preview 3 commands and hashes below are historical; use the
+Preview 5 checkpoint above for the current candidate and explicit version guards.
 
 - Branch: `codex/android-a4-touch-settings`
 - Audited product base commit: `cdc96af`
