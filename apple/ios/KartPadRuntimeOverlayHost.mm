@@ -13,6 +13,7 @@
 #import "SunPadGameOverlay.h"
 #import "SunPadInputMixer.h"
 #import "SunPadSettings.h"
+#include "audio_backend.h"
 
 #import <SDL3/SDL_properties.h>
 #import <SDL3/SDL_video.h>
@@ -25,16 +26,20 @@
 #include <algorithm>
 #include <cmath>
 
+extern "C" int g_gxFrameCount;
+
 @interface KartPadRuntimeOverlayHost : NSObject <SunPadGameOverlayDelegate,
                                                  UIDocumentPickerDelegate>
 - (instancetype)initWithSDLWindow:(SDL_Window *)window;
 - (void)uninstall;
 - (void)reattachOverlayIfNeeded;
+- (void)runMainMenu;
 @end
 
 @interface KartPadGameOverlay : SunPadGameOverlay
 @property(nonatomic, strong) KartPadFloatingStickView *kartPadMoveStick;
 @property(nonatomic, copy) void (^multiplayerRequested)(void);
+@property(nonatomic, copy) void (^mainMenuRequested)(void);
 @property(nonatomic, copy) void (^motionSteeringRequested)(void);
 @property(nonatomic, copy) void (^miiManagerRequested)(void);
 @property(nonatomic, copy) void (^wiimoteRequested)(void);
@@ -78,6 +83,7 @@ namespace {
 
 KartPadRuntimeOverlayHost *gRuntimeOverlayHost = nil;
 BOOL gKartPadRetroRewindSelected = NO;
+BOOL gKartPadMainMenuRequested = NO;
 NSString *const kKartPadRequestedRuntimeProfileKey =
     @"KartPadRequestedRuntimeProfile";
 NSString *const kKartPadHiddenTouchControlsKey =
@@ -88,17 +94,18 @@ void KartPadSeedTouchLayoutDefaults(BOOL force) {
   NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
   BOOL changed = NO;
   if (force || [defaults dictionaryForKey:@"SunPadControlOrigins"] == nil) {
+    // iPad layout accepted by the maintainer on the physical iPad, 2026-09-07.
     NSDictionary *origins = tablet ? @{
-      @"move": NSStringFromCGPoint(CGPointMake(0.13, 0.83)),
-      @"c": NSStringFromCGPoint(CGPointMake(0.91, 0.90)),
-      @"X": NSStringFromCGPoint(CGPointMake(0.14, 0.60)),
-      @"Y": NSStringFromCGPoint(CGPointMake(0.06, 0.63)),
-      @"A": NSStringFromCGPoint(CGPointMake(0.93, 0.75)),
-      @"B": NSStringFromCGPoint(CGPointMake(0.82, 0.82)),
-      @"R": NSStringFromCGPoint(CGPointMake(0.815, 0.64)),
-      @"L": NSStringFromCGPoint(CGPointMake(0.93, 0.60)),
-      @"Z": NSStringFromCGPoint(CGPointMake(0.84, 0.52)),
-      @"Start": NSStringFromCGPoint(CGPointMake(0.94, 0.50)),
+      @"move": NSStringFromCGPoint(CGPointMake(0.14756954612005857, 0.91391391391391397)),
+      @"c": NSStringFromCGPoint(CGPointMake(0.90377745241581253, 0.87147147147147153)),
+      @"X": NSStringFromCGPoint(CGPointMake(0.1290190336749634, 0.66706706706706709)),
+      @"Y": NSStringFromCGPoint(CGPointMake(0.062562225475841865, 0.6820520520520521)),
+      @"A": NSStringFromCGPoint(CGPointMake(0.90181551976573948, 0.74799799799799804)),
+      @"B": NSStringFromCGPoint(CGPointMake(0.82915080527086371, 0.81399399399399397)),
+      @"R": NSStringFromCGPoint(CGPointMake(0.80767935578330885, 0.72758758758758757)),
+      @"L": NSStringFromCGPoint(CGPointMake(0.91096632503660335, 0.64904904904904903)),
+      @"Z": NSStringFromCGPoint(CGPointMake(0.83304538799414352, 0.65063063063063065)),
+      @"Start": NSStringFromCGPoint(CGPointMake(0.95537335285505121, 0.57607607607607603)),
     } : @{
       @"L" : NSStringFromCGPoint(CGPointMake(0.93580568318565682,
                                                0.42246621616846858)),
@@ -119,14 +126,20 @@ void KartPadSeedTouchLayoutDefaults(BOOL force) {
     changed = YES;
   }
   if (force || [defaults dictionaryForKey:@"SunPadControlSizeScales"] == nil) {
-    [defaults setObject:@{
-      @"L" : @0.9791940450668335,
-      @"R" : @0.6000000238418579,
-    } forKey:@"SunPadControlSizeScales"];
-    [[SunPadSettings sharedSettings] setSizeScale:0.9791940450668335
-                                       forControl:@"L"];
-    [[SunPadSettings sharedSettings] setSizeScale:0.6000000238418579
-                                       forControl:@"R"];
+    NSDictionary<NSString *, NSNumber *> *scales = tablet ? @{
+      @"A": @1.2150695323944092,
+      @"B": @1.2253857851028442,
+      @"L": @0.9791940450668335,
+      @"R": @0.6000000238418579,
+      @"X": @1.257727861404419,
+      @"Y": @1.3797838687896729,
+      @"Z": @1.2058641910552979,
+    } : @{@"L": @0.9791940450668335, @"R": @0.6000000238418579};
+    [defaults setObject:scales forKey:@"SunPadControlSizeScales"];
+    SunPadSettings *settings = SunPadSettings.sharedSettings;
+    for (NSString *identifier in scales) {
+      [settings setSizeScale:scales[identifier].doubleValue forControl:identifier];
+    }
     changed = YES;
   }
   if (force || [defaults objectForKey:@"SunPadExperimentalDPadOrigin"] == nil) {
@@ -652,6 +665,8 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 
 @interface KartPadFirstLaunchViewController : UIViewController
 @property(nonatomic, copy) void (^modeSelected)(BOOL retroRewind);
+@property(nonatomic, assign) BOOL resumingGame;
+@property(nonatomic, assign) BOOL currentRetroRewind;
 @property(nonatomic, strong) CAGradientLayer *backgroundGradient;
 @property(nonatomic, strong) NSLayoutConstraint *contentWidthConstraint;
 @end
@@ -700,7 +715,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 
   UILabel *message = [[UILabel alloc] init];
   message.translatesAutoresizingMaskIntoConstraints = NO;
-  message.text = @"Your own RMCP01 disc image or extracted game data is required before play.";
+  message.text = self.resumingGame
+      ? @"Your current game is paused. Resume it below. Switching games requires closing and reopening KartPad."
+      : @"Your own RMCP01 disc image or extracted game data is required before play.";
   message.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   message.textColor = [UIColor colorWithWhite:1.0 alpha:0.62];
   message.textAlignment = NSTextAlignmentCenter;
@@ -710,6 +727,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       [UIButtonConfiguration filledButtonConfiguration];
   originalConfiguration.title = @"Mario Kart Wii";
   originalConfiguration.subtitle = @"Original game";
+  if (self.resumingGame) {
+    originalConfiguration.title = self.currentRetroRewind ? @"Mario Kart Wii" : @"Resume Mario Kart Wii";
+    originalConfiguration.subtitle = self.currentRetroRewind ? @"Switch on next launch" : @"Current game • Paused";
+  }
   originalConfiguration.image = [UIImage systemImageNamed:@"flag.checkered"];
   originalConfiguration.imagePadding = 12.0;
   originalConfiguration.baseBackgroundColor =
@@ -733,6 +754,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                                    installedVersion]
       : [NSString stringWithFormat:@"Download %@ • Extra content + Retro WFC",
                                    KartPadRetroRewindInstaller.requiredVersion];
+  if (self.resumingGame) {
+    retroConfiguration.title = self.currentRetroRewind ? @"Resume Retro Rewind" : @"Retro Rewind";
+    retroConfiguration.subtitle = self.currentRetroRewind ? @"Current game • Paused" : @"Switch on next launch";
+  }
   retroConfiguration.image = [UIImage systemImageNamed:@"gobackward"];
   retroConfiguration.imagePadding = 12.0;
   retroConfiguration.baseBackgroundColor =
@@ -1378,12 +1403,15 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   };
   NSString *requestedProfile = [NSUserDefaults.standardUserDefaults
       stringForKey:kKartPadRequestedRuntimeProfileKey];
-  if ([requestedProfile isEqualToString:@"retro_rewind"]) {
+  if ([requestedProfile isEqualToString:@"retro_rewind"] ||
+      [requestedProfile isEqualToString:@"base"]) {
     [NSUserDefaults.standardUserDefaults
         removeObjectForKey:kKartPadRequestedRuntimeProfileKey];
     [NSUserDefaults.standardUserDefaults synchronize];
     dispatch_async(dispatch_get_main_queue(), ^{
-      if (self.root.modeSelected != nil) self.root.modeSelected(YES);
+      if (self.root.modeSelected != nil) {
+        self.root.modeSelected([requestedProfile isEqualToString:@"retro_rewind"]);
+      }
     });
   }
   if (removalError != nil) {
@@ -1930,6 +1958,11 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
                    children:displayItems];
 
   NSMutableArray<UIMenuElement *> *children = [NSMutableArray array];
+  [children addObject:[UIAction actionWithTitle:@"Return to KartPad Menu"
+      image:[UIImage systemImageNamed:@"house"] identifier:@"dev.kartpad.main-menu"
+      handler:^(__kindof UIAction *action) {
+    if (weakSelf.mainMenuRequested) weakSelf.mainMenuRequested();
+  }]];
   [children addObject:multiplayer];
   if (fpsCounter != nil) [children addObject:fpsCounter];
   [children addObject:controls];
@@ -2201,6 +2234,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   overlay.multiplayerRequested = ^{
     [weakSelf showMultiplayerAccess];
   };
+  overlay.mainMenuRequested = ^{
+    gKartPadMainMenuRequested = YES;
+  };
   overlay.motionSteeringRequested = ^{
     [weakSelf showMotionSteering];
   };
@@ -2383,11 +2419,66 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   [self presentMultiplayerAlert:alert];
 }
 
+- (void)runMainMenu {
+  // Called by the guest's event pump, after the menu action has returned.
+  // This keeps the current guest stack suspended while UIKit stays responsive.
+  gKartPadMainMenuRequested = NO;
+  [(KartPadGameOverlay *)_overlay resetKartPadControlAppearance];
+  [[SunPadInputMixer sharedMixer] clearInputFromTouch:YES];
+  [[KartPadMotionSteering sharedSteering] stop];
+  AudioBackend::Instance().SetPausedForHost(true);
+  __block BOOL finished = NO;
+  KartPadFirstLaunchViewController *root = [[KartPadFirstLaunchViewController alloc] init];
+  root.resumingGame = YES;
+  root.currentRetroRewind = gKartPadRetroRewindSelected;
+  UIWindow *home = [[UIWindow alloc] initWithWindowScene:_window.windowScene];
+  home.windowLevel = UIWindowLevelAlert + 1;
+  home.rootViewController = root;
+  __weak KartPadFirstLaunchViewController *weakRoot = root;
+  root.modeSelected = ^(BOOL retroRewind) {
+    if (retroRewind == gKartPadRetroRewindSelected) {
+      finished = YES;
+      return;
+    }
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Switch on Next Launch"
+        message:@"Close KartPad from the app switcher and reopen it to start the other game. Your saved progress and control layout are kept. Unsaved race progress is not carried over."
+        preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Use on Next Launch"
+        style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      [NSUserDefaults.standardUserDefaults setObject:retroRewind ? @"retro_rewind" : @"base"
+          forKey:kKartPadRequestedRuntimeProfileKey];
+      [NSUserDefaults.standardUserDefaults synchronize];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [weakRoot presentViewController:alert animated:YES completion:nil];
+  };
+  [home makeKeyAndVisible];
+  const int pausedFrame = g_gxFrameCount;
+  NSLog(@"[KartPad] main menu opened; current game suspended at frame %d", pausedFrame);
+  while (!finished) {
+    @autoreleasepool {
+      [NSRunLoop.currentRunLoop runMode:NSDefaultRunLoopMode
+          beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.02]];
+    }
+  }
+  home.hidden = YES;
+  root.modeSelected = nil;
+  [_window makeKeyAndVisible];
+  [[SunPadInputMixer sharedMixer] clearInputFromTouch:YES];
+  for (NSUInteger player = 0; player < 4; ++player) {
+    SunPadInputState ignored{};
+    [[KartPadPhysicalControllers sharedControllers] consumePlayer:player state:&ignored];
+  }
+  [[KartPadMotionSteering sharedSteering] start];
+  AudioBackend::Instance().SetPausedForHost(false);
+  NSLog(@"[KartPad] current game resumed from main menu; frame %d -> %d", pausedFrame, g_gxFrameCount);
+}
+
 - (void)showPrivateServerSettings {
   UIViewController *controller = KartPadVisibleViewController(_window);
   if (controller == nil) return;
   UIAlertController *editor = [UIAlertController alertControllerWithTitle:@"Private Wii Server"
-      message:@"Trusted Wii WFC host only (unencrypted). Restart to apply; leave blank for default."
+      message:@"Experimental Wii server (unencrypted), not another iPad's address. Restart to apply; blank restores default."
       preferredStyle:UIAlertControllerStyleAlert];
   [editor addTextFieldWithConfigurationHandler:^(UITextField *field) {
     field.placeholder = @"Server hostname or IPv4 address";
@@ -2415,7 +2506,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     }
     [NSUserDefaults.standardUserDefaults setObject:host forKey:@"KartPadPrivateWfcHost"];
     [weakSelf showMultiplayerMessage:@"Private Server Saved"
-        message:@"Fully close and reopen KartPad. Then choose Nintendo WFC → Friends in the game. Server compatibility and complete races still need testing."];
+        message:@"Fully close and reopen KartPad to apply this experimental override. A compatible server must already be running. This does not create a room or restore vanilla Nintendo WFC; server login and races remain unverified."];
   }]];
   [editor addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
   [self presentMultiplayerAlert:editor];
@@ -2428,9 +2519,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   NSString *profile = gKartPadRetroRewindSelected ? @"Retro Rewind" : @"Mario Kart Wii";
   NSString *server = KartPadPrivateServerHost();
   NSString *message = [NSString stringWithFormat:@"%@\n%@", profile,
-      server.length ? @"Private server configured; restart after changes."
-          : (gKartPadRetroRewindSelected ? @"Online: Retro WFC."
-              : @"Online: private server required (experimental).")];
+      !gKartPadRetroRewindSelected
+          ? @"Local split-screen available. Original Nintendo WFC is closed; private online rooms are not available in this build."
+          : (server.length ? @"Experimental server override configured; restart after changes."
+              : @"Online: Retro WFC.")];
   UIAlertController *sheet = [UIAlertController alertControllerWithTitle:@"Multiplayer"
       message:message preferredStyle:UIAlertControllerStyleAlert];
   __weak KartPadRuntimeOverlayHost *weakSelf = self;
@@ -2438,12 +2530,14 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [weakSelf gameOverlayRequestsControllerMapping:nil];
   }]];
-  [sheet addAction:[UIAlertAction actionWithTitle:@"Private Friend Rooms…"
-      style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    [weakSelf showMultiplayerMessage:@"Private Friend Rooms"
-        message:@"Use the same game profile, content version, and online service as your friends. In the game, choose Nintendo WFC → Friends and exchange friend codes. The host creates a room; friends join it from their friend roster.\n\nOriginal Mario Kart Wii requires a compatible private server. This uses Wii friend codes; MeleePad room codes and peer chat are not available in KartPad."];
-  }]];
-  [sheet addAction:[UIAlertAction actionWithTitle:@"Private Wii Server…"
+  if (gKartPadRetroRewindSelected) {
+    [sheet addAction:[UIAlertAction actionWithTitle:@"Retro WFC Friend Rooms…"
+        style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      [weakSelf showMultiplayerMessage:@"Retro WFC Friend Rooms"
+          message:@"Retro Rewind uses Retro WFC. Connect there in the game, then open Friends and exchange friend codes with players using the same Retro Rewind version. The host creates a room; friends join from their roster.\n\nThis is Retro Rewind's in-game service. A custom server override may prevent connection. Native KartPad host/join rooms are not implemented yet."];
+    }]];
+  }
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Experimental Server Settings…"
       style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
     [weakSelf showPrivateServerSettings];
   }]];
@@ -3207,6 +3301,12 @@ extern "C" bool KartPadMobileEnsureGameDataAvailable() {
 
 extern "C" const char *KartPadMobileSelectedRuntimeProfile() {
   return gKartPadRetroRewindSelected ? "retro_rewind" : "base";
+}
+
+extern "C" void KartPadMobileServiceMainMenu() {
+  if (gKartPadMainMenuRequested && gRuntimeOverlayHost != nil && NSThread.isMainThread) {
+    [gRuntimeOverlayHost runMainMenu];
+  }
 }
 
 extern "C" void KartPadMobileRuntimeHostInstall(void *sdlWindow) {
