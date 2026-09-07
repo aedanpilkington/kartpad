@@ -46,12 +46,15 @@ server CSNum cleanup and sustained 60 FPS are not claimed.
 - [x] Prepare fresh dual runtime sources with the credited issue #94 correction.
 - [x] Build ARM64 tvOS 0.4.11/build 9 and pass the app/RCpc/private-data audit.
 - [x] Verify linked serial write and repository/source checks.
-- [ ] Merge metadata, rebuild exact main, package twice and audit exact IPA.
-- [ ] Publish only the tvOS IPA/checksum; anonymously download and re-audit.
-- [ ] Update issue #94 with the verified download and remaining server-history boundary.
+- [x] Merge metadata, rebuild exact main, package twice and audit exact IPA.
+- [x] Publish only the tvOS IPA/checksum; anonymously download and re-audit.
+- [x] Update issue #94 with the verified download and remaining server-history boundary.
 
 No physical Apple TV test, production-online acceptance, DSU support or
 external-display fix is inferred from this targeted rebuild.
+
+Published and anonymously re-audited: [v0.4.11-tvos.1](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1).
+See the [exact artifact and triage evidence](artifacts/2026-09-08/tvos-v0411-release.md).
 
 ## tvOS experimental candidate
 
