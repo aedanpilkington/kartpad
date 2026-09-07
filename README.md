@@ -341,10 +341,11 @@ Apple Silicon Mac before signing:
 ./scripts/build-user-ipa.sh build /path/to/Mario-Kart-Wii.wbfs
 ```
 
-The resulting `artifacts/KartPad-personal-unsigned.ipa` is private and must not
-be redistributed because it contains translated code generated from the
-user's game executable. Compatibility is profile-driven: additional verified
-WBFS/ISO containers can share a profile only when their extracted executables
+The resulting `artifacts/KartPad-personal-unsigned.ipa` remains an ignored local
+artifact because it contains translated code from the user's game executable,
+whose redistribution rights KartPad does not clear. This publication policy
+does not restrict your rights to the GPL-covered software. Compatibility is
+profile-driven: additional verified WBFS/ISO containers can share a profile only when their extracted executables
 are identical, while different regions or revisions use separate profiles.
 See [`docs/BUILDER.md`](docs/BUILDER.md) for the cache, validation, extension,
 and release contracts. Maintainers should also follow
@@ -771,7 +772,7 @@ narrower performance, audio, motion, and controller refinements can continue.
 | Path | Purpose |
 |---|---|
 | [`docs/INSTALL_IPA.md`](docs/INSTALL_IPA.md) | Download, checksum, re-signing, first-launch import, and update guidance for the public unsigned IPA |
-| [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md) | Free community-preview authorization and unresolved translated-code rights boundary |
+| [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md) | GPLv3 scope, redistribution rights, Corresponding Source, and game-content boundary |
 | [`scripts/build-user-ipa.sh`](scripts/build-user-ipa.sh) | Identify a supported image and build a private unsigned IPA with the profile-driven Builder |
 | [`scripts/package-public-unsigned-ipa.py`](scripts/package-public-unsigned-ipa.py) | Deterministically package the exact audited public community-preview IPA |
 | [`scripts/audit-public-unsigned-ipa.py`](scripts/audit-public-unsigned-ipa.py) | Reject game data, signing residue, private paths, missing notices, malformed provenance, or an incorrect release build |
@@ -813,8 +814,17 @@ Mario Kart, Wii, Nintendo, and game imagery are owned by their respective
 rights holders and are used here only to identify compatibility and document
 runtime behavior. KartPad is not affiliated with or endorsed by Nintendo.
 
-WiiCompiled is GPLv3 at the pinned revision. Aurora, Dawn, SDL, Dolphin-derived
-code, Crypto++, Abseil, FreeType, libpng, and other dependencies retain their
+KartPad is free software under the **GNU General Public License, version 3**
+([`LICENSE`](LICENSE)). This covers KartPad-owned code and all modifications to
+WiiCompiled, including the modified runtime and the integrated application as a
+combined work where GPLv3 requires. You may use, modify, and redistribute the
+GPL-covered software, including commercially, under the GPL without separate
+maintainer approval. Community-release policies do not restrict those rights.
+See [`RIGHTS_AND_LICENSES.md`](RIGHTS_AND_LICENSES.md) for the full scope,
+Corresponding Source obligations, and separate game-content rights.
+
+Aurora, Dawn, SDL, Dolphin-derived code, Crypto++, Abseil, FreeType, libpng,
+and other dependencies retain their
 own licenses and notice obligations. The imported SunPad mobile UI snapshot
 retains its GPLv3 license, exact upstream revision, hashes, and attribution.
 KartPad's original icon provenance is recorded in

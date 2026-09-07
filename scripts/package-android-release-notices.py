@@ -47,6 +47,7 @@ def main() -> None:
         parser.error("signature does not match the single approved release identity")
     deps = args.native_build / "_deps"
     entries = {
+        "LICENSE": REPO / "LICENSE",
         "INSTALL_ANDROID.md": REPO / "docs/INSTALL_ANDROID.md",
         "BUILD_ANDROID.md": REPO / "android/README.md",
         "RELEASE_NOTES.md": REPO / f"docs/releases/{TAG}.md",

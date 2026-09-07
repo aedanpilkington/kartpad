@@ -14,6 +14,10 @@ output="$2"
 : "${KARTPAD_ANDROID_KEY_ALIAS:?Provide the release key alias}"
 : "${KARTPAD_ANDROID_PASSWORD_FILE:?Provide a private password file (same key/store password)}"
 [[ -f "$KARTPAD_ANDROID_KEYSTORE" && -f "$KARTPAD_ANDROID_PASSWORD_FILE" ]] || exit 66
+if [[ "$KARTPAD_ANDROID_KEY_ALIAS" == androiddebugkey ]]; then
+  echo "ERROR: the local Android debug identity is not a public release signer" >&2
+  exit 65
+fi
 [[ ! -e "$output" ]] || { echo "ERROR: output exists; choose a new path" >&2; exit 73; }
 export JAVA_HOME="$repo_root/.android-bootstrap/jdk-$KARTPAD_ANDROID_JDK_VERSION/Contents/Home"
 sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-$HOME/Library/Android/sdk}}"
