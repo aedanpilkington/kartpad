@@ -1,5 +1,19 @@
 # KartPad release checklist
 
+## iPhone/iPad 0.4.11 console-serial hotfix
+
+- [x] Retain the credited upstream fix and host/Android ARM64 regressions.
+- [x] Rebuild the native ARM64 iPhone/iPad app as 0.4.11/build 26; app audit passes.
+- [x] Inspect the linked serial routine: numeric byte reversal and a four-byte
+      store replace the old string write; 140 Python tests and source/safety
+      checks pass.
+- [ ] Merge release metadata, rebuild from exact main, package twice and audit.
+- [ ] Publish the new IPA/checksum, anonymously download and re-audit.
+- [ ] Update issue #94 with the verified download and remaining boundaries.
+
+Old Mac/tvOS packages remain offline-only pending rebuild. No new physical
+online race or server-history cleanup is inferred from these checks.
+
 ## First Android community release (v0.4.10-android.1)
 
 - [x] Owner accepts Original/Kishi gameplay, automatic touch hiding and reports
@@ -10,8 +24,8 @@
       inspect the corrected linked four-byte write.
 - [x] Audit AAB/APK, reject debug signing and wrong versions, derive identical
       signed APK bytes twice, and verify fresh emulator install/import entry.
-- [ ] Merge reviewed source and publish only APK, notices and checksums.
-- [ ] Download hosted files anonymously, compare and re-audit exact bytes.
+- [x] Merge reviewed source and publish only APK, notices and checksums.
+- [x] Download hosted files anonymously, compare and re-audit exact bytes.
 
 See [candidate verification](artifacts/2026-09-07/android/first-release-verification.md)
 and [release maintenance](RELEASING_ANDROID.md). Original public-signature
