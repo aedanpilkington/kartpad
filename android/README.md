@@ -1,11 +1,13 @@
 # KartPad Android source-only fixture
 
-Current development checkpoint (2026-09-06): private full-runtime Preview 8 is
-installed on the Pixel with the shared Apple icon and the first measured CPU-side
-optimization. Original boots and its save bytes are preserved, but rendered
-attract mode still dips to approximately 39 FPS. Severe slowdowns, a matched
-menu/race retest and full physical/feature acceptance remain open.
-See `../docs/artifacts/2026-09-06/android/preview8-performance-iteration.md`.
+Current development checkpoint (2026-09-07): private full-runtime Preview 12,
+code 17, is installed in place on the Pixel. The fresh Original save export is
+byte-identical across the update. Actual user race play confirms warm slowdown;
+60 FPS and full physical/feature acceptance remain open. Export Private
+Diagnostics now includes coarse frame-time/CPU/GPU metrics and a bounded local
+thermal, battery and display-setting history, without background uploads.
+See `../docs/iterations/android-preview12-warm-performance.md` and the
+Apple v0.4.10 inventory in `../docs/iterations/android-v0410-parity-performance.md`.
 Do not publish private builds or infer gameplay/performance acceptance from the
 fixture and packaging checks below.
 

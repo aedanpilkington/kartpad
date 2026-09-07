@@ -4,7 +4,19 @@ This is the authoritative handoff for moving Android KartPad testing from the
 current development Mac to another machine and then to one physical Android
 phone.
 
-## Resumed development on 2026-09-06; physical acceptance still open
+## Current: Preview 12 on 2026-09-07; physical acceptance still open
+
+Private `0.4.10-android-preview.12`, code 17, is installed on the Pixel 9 Pro XL
+in place. A fresh Original save export is byte-identical before and after the
+update; owned data and installed Retro Rewind remain. Actual user race play on
+Preview 11 confirmed severe warm slowdown, not sustained 60 FPS. Preview 12
+retains the correctness-tested CPU candidate and adds exportable frame-time,
+CPU/GPU and bounded thermal/display-setting history. See
+`docs/iterations/android-preview12-warm-performance.md` for current hashes,
+evidence and open acceptance, and `docs/iterations/android-v0410-parity-performance.md`
+for Apple parity. Do not merge into main or publish Android packages.
+
+## Historical: resumed development on 2026-09-06
 
 After Apple v0.4.8 shipped, Android development resumed on this branch. Private
 Preview 8 (code 13) is installed in-place with the shared Apple icon, opt-in local
@@ -16,14 +28,14 @@ WBFS import, Original boot, Retro Rewind 6.12.7 play and byte-identical Original
 save preservation. Full physical and player-identity parity remain incomplete.
 Do not merge this branch to `main` or publish its packages. See
 `docs/artifacts/2026-09-06/android/preview8-performance-iteration.md`
-for current evidence and guarded resumption commands. Preview 5's pre-install
+for historical evidence and guarded resumption commands. Preview 5's pre-install
 checkpoint remains historical. The earlier pause record remains
 at `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 
 ## Historical Preview 3 source checkpoint
 
 The remaining Preview 3 commands and hashes below are historical; use the
-Preview 8 checkpoint above for the current candidate and explicit version guards.
+Preview 12 checkpoint above for the current candidate and explicit version guards.
 
 - Branch: `codex/android-a4-touch-settings`
 - Audited product base commit: `cdc96af`

@@ -81,6 +81,9 @@ if(KARTPAD_GAME_RUNTIME_SOURCE)
     "${KARTPAD_REPO_ROOT}/runtime/include" CACHE PATH "" FORCE)
   set(MKW_KARTPAD_REPO_ROOT "${KARTPAD_REPO_ROOT}" CACHE PATH "" FORCE)
   set(MKW_TRANSLATED_COMPILE_JOBS 2 CACHE STRING "" FORCE)
+  # Preserve arithmetic/rounding semantics while merging the scalar exception
+  # capture + clear at an opaque out-of-line ARM64 call boundary.
+  add_compile_definitions(KARTPAD_ANDROID_COMBINED_FENV=1)
   add_subdirectory("${KARTPAD_GAME_RUNTIME_SOURCE}" game-runtime)
   if(TARGET KartPadDual)
     set(KARTPAD_GAME_RUNTIME_TARGET KartPadDual)
@@ -98,6 +101,8 @@ if(KARTPAD_GAME_RUNTIME_SOURCE)
     "${KARTPAD_REPO_ROOT}/runtime/src/android/touch_input.cpp"
     "${KARTPAD_REPO_ROOT}/runtime/src/android/runtime_settings.cpp"
     "${KARTPAD_REPO_ROOT}/runtime/src/android/controller_mapping.cpp"
+    "${KARTPAD_REPO_ROOT}/runtime/src/android/scalar_fenv.cpp"
+    "${KARTPAD_REPO_ROOT}/runtime/src/android/diagnostic_log.cpp"
     "${KARTPAD_REPO_ROOT}/runtime/src/hle/net/android_mbedtls.cpp"
     "${KARTPAD_REPO_ROOT}/runtime/src/retro_rewind/archive_extract.cpp"
     "${KARTPAD_REPO_ROOT}/runtime/src/retro_rewind/archive_path.cpp"

@@ -2,6 +2,18 @@
 
 ## Current state
 
+Physical work resumed after the phone returned on 2026-09-07. Private
+`0.4.10-android-preview.12` / code 17 is now installed in place, with a fresh
+byte-identical before/after Original save export. User-driven Preview 11 race
+play reached roughly 51–58 FPS early, then much lower intervals as thermal status
+rose; sustained 60 FPS is not achieved. Preview 12 retains the differential-tested
+scalar exception helper and makes coarse native performance plus bounded Android
+health history available in the explicit local diagnostic export. Current hashes
+and limitations: `docs/iterations/android-preview12-warm-performance.md`.
+Full physical parity remains open. Keep Android separate from main and unpublished.
+
+### Earlier Preview 9–10 checkpoint
+
 Android resumed again on 2026-09-07, merging main `8ebefc9` (Apple v0.4.10)
 **into the Android branch**. Private Preview 9, code 14, was audited and installed
 in place on the Pixel 9 Pro XL (API 37, ARM64, 4096-byte pages). Both Original
@@ -24,7 +36,7 @@ owned-WBFS import and Original boot succeeded. License rename now updates its
 matching Mii like Apple; the real game's license screen reflects the new test
 name after cold restart, with only name/checksum bytes changed. Native/Kotlin
 transaction tests and 132 host contracts pass. The phone remains on code 14.
-Emulator Retro boot, short-press/title timing and keyboard-visible dialog
+At that checkpoint, emulator Retro boot, short-press/title timing and keyboard-visible dialog
 ergonomics remain follow-ups, alongside the unresolved Pixel performance gates.
 
 ### Previous Preview 8 checkpoint

@@ -330,9 +330,11 @@ class KartPadActivity : SDLActivity() {
         }
         refreshControllerHandoff()
         if (::motionSteering.isInitialized) motionSteering.start()
+        if (BuildConfig.GAME_RUNTIME) KartPadRuntimeHealth.start(this, runtimeProfile)
     }
 
     override fun onPause() {
+        KartPadRuntimeHealth.stop()
         kartPadMenu?.dismiss()
         if (::editorBar.isInitialized && editorBar.visibility == View.VISIBLE) {
             finishLayoutEditing(returnToSettings = false)
