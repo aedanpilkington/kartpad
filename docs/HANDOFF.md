@@ -10,10 +10,13 @@ a fresh save backup. Do not use the old Preview 15 online. The public signer
 must not be forced onto that installation by uninstalling it.
 
 The owner then requested a corrected iPhone/iPad IPA and an issue #94 response.
-The Apple 0.4.11/build 26 native rebuild and distribution are tracked in
-`docs/releases/v0.4.11.md`. Source correction, new binary verification and
-historical server-CSNum cleanup remain distinct; Mac/tvOS old binaries are not
-automatically fixed by the source merge.
+The iPhone/iPad 0.4.11/build 26 native rebuild is published and anonymously
+verified from `7f53ea0`; see `docs/artifacts/2026-09-07/ios-v0411-release.md`.
+The owner also requested the matching Mac rebuild, tracked as 0.4.11/build 26
+under `v0.4.11-macos.1` so the published IPA tag stays immutable. #94 has a
+maintainer response crediting patchzyy and linking verified fixed downloads.
+Source correction, new binary verification and historical server-CSNum cleanup
+remain distinct. Old experimental tvOS is still offline-only pending rebuild.
 
 2026-09-07: the owner accepted Android Preview 15/code 20 with Razer Kishi in
 Original Grand Prix; touch controls hide on connection and gameplay works.

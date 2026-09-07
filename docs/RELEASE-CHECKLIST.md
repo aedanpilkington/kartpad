@@ -7,12 +7,21 @@
 - [x] Inspect the linked serial routine: numeric byte reversal and a four-byte
       store replace the old string write; 140 Python tests and source/safety
       checks pass.
-- [ ] Merge release metadata, rebuild from exact main, package twice and audit.
-- [ ] Publish the new IPA/checksum, anonymously download and re-audit.
-- [ ] Update issue #94 with the verified download and remaining boundaries.
+- [x] Merge release metadata, rebuild from exact main, package twice and audit.
+- [x] Publish the new IPA/checksum, anonymously download and re-audit.
+- [x] Update issue #94 with the verified download and remaining boundaries.
 
 Old Mac/tvOS packages remain offline-only pending rebuild. No new physical
 online race or server-history cleanup is inferred from these checks.
+
+## macOS 0.4.11 console-serial hotfix
+
+- [ ] Rebuild both executable profiles from freshly patched source.
+- [ ] Audit the signed app and inspect the linked corrected serial write.
+- [ ] Run bounded local launch/close checks without touching installed saves.
+- [ ] Merge metadata, package exact main twice and audit extracted signatures.
+- [ ] Publish only Mac ZIP/checksum, anonymously download and re-audit.
+- [ ] Update issue #94 and the current download documentation.
 
 ## First Android community release (v0.4.10-android.1)
 
