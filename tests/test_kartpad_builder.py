@@ -11,6 +11,7 @@ import zipfile
 from pathlib import Path
 
 from kartpad_builder.packaging import PackageError, audit_app, package_unsigned_ipa
+from kartpad_builder.android_release_contract import render_android_release_contract
 from kartpad_builder.pipeline import build, cache_key, dependency_cache_key
 from kartpad_builder.profiles import Profile, ProfileError, load_profiles, select_profile, validate_profile
 from kartpad_builder.release_header import render_retro_rewind_header
@@ -98,6 +99,15 @@ class ProfileTests(unittest.TestCase):
             "the visible version and immutable archive URL must advance together",
         )
 
+    def test_android_release_contract_matches_profile(self) -> None:
+        profile = load_profiles(PROFILES)[0]
+        expected = render_android_release_contract(profile.data)
+        generated = (
+            REPO
+            / "android/app/src/main/java/dev/kartpad/android/RetroRewindRelease.java"
+        ).read_text()
+        self.assertEqual(generated, expected)
+
     def test_device_archive_hashing_uses_heap_storage(self) -> None:
         source = (REPO / "apple/ios/KartPadRetroRewindInstaller.mm").read_text()
         self.assertNotIn("uint8_t buffer[1024 * 1024]", source)
@@ -105,6 +115,22 @@ class ProfileTests(unittest.TestCase):
             "NSMutableData *bufferStorage = [NSMutableData dataWithLength:1024 * 1024]",
             source,
         )
+
+    def test_retro_rewind_archive_path_policy_is_shared(self) -> None:
+        installer = (REPO / "apple/ios/KartPadRetroRewindInstaller.mm").read_text()
+        ios_patch = (REPO / "patches/wiicompiled-ios-discio-import.patch").read_text()
+        tvos_patch = (REPO / "patches/wiicompiled-tvos-runtime.patch").read_text()
+        shared_sources = (
+            "runtime/src/retro_rewind/archive_path.cpp",
+            "runtime/src/retro_rewind/archive_scan.cpp",
+        )
+        self.assertIn('"kartpad/retro_rewind/archive_path.h"', installer)
+        self.assertIn('"kartpad/retro_rewind/archive_scan.h"', installer)
+        self.assertIn("ValidateArchiveMemberPath", installer)
+        self.assertIn("ArchiveScan", installer)
+        for shared_source in shared_sources:
+            self.assertIn(shared_source, ios_patch)
+            self.assertIn(shared_source, tvos_patch)
 
     def test_version_watch_opens_one_actionable_issue(self) -> None:
         workflow = (REPO / ".github/workflows/retro-rewind-version-watch.yml").read_text()

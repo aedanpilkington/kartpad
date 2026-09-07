@@ -1,5 +1,23 @@
 # KartPad release checklist
 
+## First Android community release (v0.4.10-android.1)
+
+- [x] Owner accepts Original/Kishi gameplay, automatic touch hiding and reports
+      Retro WFC worldwide live racing on the physical Pixel.
+- [x] Keep performance/device/controller limits explicit; preserve phone data.
+- [x] Integrate current main licensing and the upstream issue #94 serial backport.
+- [x] Rebuild the native runtime, pass host and ARM64 serial regressions, and
+      inspect the corrected linked four-byte write.
+- [x] Audit AAB/APK, reject debug signing and wrong versions, derive identical
+      signed APK bytes twice, and verify fresh emulator install/import entry.
+- [ ] Merge reviewed source and publish only APK, notices and checksums.
+- [ ] Download hosted files anonymously, compare and re-audit exact bytes.
+
+See [candidate verification](artifacts/2026-09-07/android/first-release-verification.md)
+and [release maintenance](RELEASING_ANDROID.md). Original public-signature
+physical installation, complete production-online results/reconnect, historical
+server CSNum cleanup and sustained 60 FPS are not claimed.
+
 ## tvOS experimental candidate
 
 - [x] Publish the physically untested artifact only as an explicit hardware-

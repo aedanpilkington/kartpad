@@ -86,6 +86,16 @@ conveyed (GPLv3 section 12).
 
 ## Game content, trademarks, and published artifacts
 
+On 7 September 2026, after physical Pixel and Razer Kishi gameplay testing,
+the maintainer authorized merging Android and publishing its first free Android
+community release, `v0.4.10-android.1`. The APK contains compiled ahead-of-time
+Original / Retro Rewind logic, not a disc image, extracted retail assets, Retro
+pack, saves, private translated source or signing keys. Its public certificate
+is not private signing material. The release includes companion notices and
+integration source/build instructions in `android/README.md`. This publication
+decision is not Google Play approval, a waiver of GPL obligations, or clearance
+of game-content rights. All license and Corresponding Source terms above apply.
+
 KartPad is an independent, unofficial community project, not affiliated with
 or endorsed by Nintendo. Mario Kart Wii's executable code, game data,
 characters, names, imagery, and trademarks remain subject to their respective
@@ -98,7 +108,7 @@ and relationship to the covered work matter (GPLv3 section 2). This is not an
 exemption from GPL obligations for runtime code included in generated output
 or for a combined application where the GPL applies.
 
-Published Apple artifacts contain ahead-of-time translated game logic. They
+Published Apple and Android artifacts contain ahead-of-time translated game logic. They
 omit disc images, extracted courses, textures, audio, saves, and private signing
 material. Users supply their own legally obtained supported PAL `RMCP01`
 revision 0 game data. The Retro Rewind asset pack is also omitted; the optional

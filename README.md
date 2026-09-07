@@ -1,19 +1,20 @@
 # KartPad
 
-KartPad is an Apple-platform fork and productization of
+KartPad is an Apple and Android fork and productization of
 [WiiCompiled](https://github.com/patchzyy/Wiicompiled), the original static-
 recompilation project for Mario Kart Wii. KartPad adds a first-class dual-game
-Original Mario Kart Wii / Retro Rewind runtime, native Apple controls, data
+Original Mario Kart Wii / Retro Rewind runtime, native platform controls, data
 management, packaging, and release workflows.
 
 <p align="center">
-  <strong>Mario Kart Wii and Retro Rewind, native for iOS, iPadOS, macOS, and tvOS.</strong><br>
-  Native static recompilation through Metal, with touch controls, motion steering, controllers, and optional Retro Rewind content. tvOS is currently an experimental preview.
+  <strong>Mario Kart Wii and Retro Rewind, native for Android, iOS, iPadOS, and macOS.</strong><br>
+  Native static recompilation through Vulkan on Android and Metal on Apple platforms, with touch controls, motion steering, controllers, and optional Retro Rewind content. tvOS is currently an experimental preview.
 </p>
 
 <p align="center">
   <img alt="Apple Silicon" src="https://img.shields.io/badge/Apple%20Silicon-arm64-0A84FF?logo=apple">
   <img alt="Metal renderer" src="https://img.shields.io/badge/renderer-Metal-5E5CE6">
+  <img alt="Android ARM64 with Vulkan" src="https://img.shields.io/badge/Android-ARM64%20%2F%20Vulkan-3DDC84?logo=android">
   <img alt="Ahead-of-time static recompilation" src="https://img.shields.io/badge/PowerPC-static%20recompilation-FF9F0A">
   <img alt="macOS development target" src="https://img.shields.io/badge/macOS%20target-14%2B-0A84FF">
   <img alt="iPhone and iPad physical builds accepted" src="https://img.shields.io/badge/iPhone%20%2F%20iPad-physical%20builds%20accepted-30D158">
@@ -33,7 +34,9 @@ management, packaging, and release workflows.
 > and clearer Mii/license editing. It retains the local-controller registration
 > fix, player-slot status, and face-button remapping from 0.4.9. Native private
 > rooms and production online-race verification remain open. Apple TV remains
-> experimental; Android development is paused.
+> experimental. **Android now has its first supported community release:**
+> [download the Android APK](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1).
+> See the [Android installation guide](docs/INSTALL_ANDROID.md) before updating a private preview.
 >
 > The downloads include ahead-of-time translated game logic, but no disc image,
 > extracted game assets, Retro Rewind pack, saves, signing identity, or
@@ -56,9 +59,30 @@ remains at 0.4.9.
 
 ## What is available now?
 
+### Android: first community release
+
+[Download Android APK, notices and SHA-256 checksums](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1)
+· [Install and update](docs/INSTALL_ANDROID.md) · [Build from source](android/README.md).
+
+The first Android release promotes the runtime tested on a **Pixel 9 Pro XL**.
+The maintainer accepted Original Mario Kart Wii gameplay with a **Razer Kishi**,
+including automatic touch-control hiding, and reported Retro Rewind 6.12.7
+Retro WFC login, worldwide matchmaking and live race play. Complete online
+results/reconnect and every controller model are not yet verified.
+
+Requires an **ARM64 Android device with Vulkan** and your own supported PAL
+`RMCP01` revision 0 image. The package minimum is Android 9/API 28; that oldest
+physical OS/GPU combination remains unverified. Start at **1x Native** resolution
+and increase it if your phone maintains good performance. The maintainer played
+at 3x, but startup shader compilation, track-dependent dips and warm slowdown
+remain known limitations—not a sustained-60-FPS guarantee. Android uses an
+**APK**, not an IPA, and no Play Store listing is implied.
+
+### Platform overview
+
 | Question | Answer |
 |---|---|
-| Is this Dolphin or streaming? | No. WiiCompiled translates the game's PowerPC code ahead of time, then KartPad compiles it for ARM64 and presents it through Metal. |
+| Is this Dolphin or streaming? | No. WiiCompiled translates the game's PowerPC code ahead of time, then KartPad compiles it for ARM64 and presents it through Metal on Apple platforms or Vulkan on Android. |
 | Are release downloads included? | **Yes.** `v0.4.10` includes the audited unsigned ARM64 iPhone/iPad IPA. The accepted ad-hoc-signed Apple Silicon Mac ZIP remains in `v0.4.9`. The experimental Apple TV hardware-bring-up IPA remains available from `v0.4.9`. They require user-supplied supported game data; the IPA also requires local re-signing. |
 | Can the source create an IPA? | Yes. The Personal IPA Builder can also translate a supported user-owned game executable and create a separate private unsigned IPA on an Apple Silicon Mac. |
 | Does it include Mario Kart Wii? | No. You must provide your own legally obtained supported PAL `RMCP01` revision 0 WBFS/ISO. |
@@ -67,7 +91,7 @@ remains at 0.4.9.
 | Do touch, tilt, and controllers work? | Touch, motion steering, and ordinary GameController-compatible pads are implemented, with general physical acceptance on iPhone and iPad. Direct Wii Remote/Nunchuk pairing is a separate experimental, macOS-only path that still needs external hardware testing. |
 | Can I rename or delete a license? | **Yes on iPhone and iPad.** Open **Game Data & Saves → Player Identity… → Rename or Delete Licenses…**, choose the exact game profile and slot, then rename it without losing its friend code/progress or delete only that slot after a second warning. Fully close KartPad from the app switcher and reopen it to apply the backed-up change; returning to its menu and resuming does not apply pending edits. |
 | Can I choose a Mii appearance? | **Appearance import remains experimental.** Open **Game Data & Saves → Player Identity… → Import Mii Appearance…** and choose a standard 74-byte `.mii` file. **Remove Mii Appearance…** never means delete a game license and refuses to remove a Mii that is still linked to one. |
-| Are Android and Apple TV supported? | Apple TV has an experimental native hardware-bring-up IPA in `v0.4.9`, but it is not accepted as supported until physical testers complete the matrix. Android implementation remains paused on its separate development branch; this release contains no Android APK. |
+| Are Android and Apple TV supported? | **Android is supported**, with the first APK in `v0.4.10-android.1` and physical Pixel/Kishi gameplay acceptance. Hardware coverage and performance limits are described above. Apple TV remains an experimental hardware-bring-up IPA in `v0.4.9`. |
 | How much storage does it need? | The app is about 80 MiB and extracted Mario Kart Wii data uses about 2.5 GiB. Retro Rewind downloads an additional 1.72 GiB archive and needs temporary installation space. Keeping the WBFS/ISO on the device requires more space. |
 
 ## Multiplayer and controller setup
@@ -78,7 +102,7 @@ Multiplayer menu covers both games and includes experimental private Wii-server
 configuration. This is a client setting; MeleePad room codes and chat are not
 ported, and Original Mario Kart Wii private-server gameplay is not yet verified.
 See [Multiplayer and controllers](docs/MULTIPLAYER.md) for DualShock/DualSense,
-GameCube-on-iPad details, friend rooms, and the paused Android handoff.
+GameCube-on-iPad details, friend rooms, and Android/Kishi setup.
 
 ## Original Mario Kart Wii or Retro Rewind
 
@@ -124,13 +148,13 @@ health and room feeds are active again as of 6 September 2026. That service
 recovery does not by itself prove the distributed KartPad builds' production
 login, matchmaking, complete-race, results, reconnect, or physical-device gates.
 
-KartPad packages a native Apple ARM64 app around a
+KartPad packages a native ARM64 app around a
 [WiiCompiled](https://github.com/patchzyy/Wiicompiled)-generated Mario Kart Wii
 module and its Aurora/Dawn compatibility runtime. PowerPC game code runs as
-ahead-of-time translated arm64 code, Dawn presents through Metal, and a narrow
-Apple host layer supplies audio, input, storage, timing, and lifecycle behavior.
+ahead-of-time translated arm64 code, Dawn presents through Metal or Vulkan, and
+platform host layers supply audio, input, storage, timing, and lifecycle behavior.
 
-This repository contains KartPad's Apple integration, reproducible patches,
+This repository contains KartPad's Apple and Android integration, reproducible patches,
 tests, documentation, and original artwork. The source tree does **not** contain
 Mario Kart Wii, a disc image, extracted Nintendo assets, generated game code,
 saves, or signing material. The separately downloadable preview IPAs contain
@@ -142,6 +166,7 @@ retail game data.
 
 | Area | Current result |
 |---|---|
+| Android runtime | Full ARM64 Original / Retro Rewind runtime through Vulkan; physically accepted Pixel 9 Pro XL gameplay with touch and Razer Kishi. First APK: `v0.4.10-android.1`; startup/warm frame pacing and broader device coverage remain active work |
 | macOS runtime | Native arm64 dual-game Original / Retro Rewind app with standard Game, Data, Controls, and Help menus; races, saves, ghosts, Battle, and split-screen gameplay render through Metal |
 | Track coverage | All 32 retail tracks have exact native completion evidence |
 | Correctness | Darwin memory, scheduler, ABI, integer, scalar-FP, and paired-single gates pass against their defined oracles |
@@ -612,7 +637,9 @@ Useful starting points:
 
 Yes. `v0.4.10` provides the unsigned iPhone/iPad IPA, which must be re-signed
 before installation. The accepted Apple Silicon Mac ZIP and experimental
-Apple TV IPA remain available from `v0.4.9`.
+Apple TV IPA remain available from `v0.4.9`. Android's installable APK is in
+[`v0.4.10-android.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1);
+follow [the Android guide](docs/INSTALL_ANDROID.md).
 They contain
 KartPad's compiled ARM64 translation but no disc image or extracted game assets,
 so you must supply your own legally obtained supported game data. The Personal
@@ -672,10 +699,12 @@ Apple Silicon Mac, iPhone, and iPad are supported. An experimental native Apple
 TV tester IPA is included in `v0.4.9`; it has passed build and package
 audits but still needs physical Apple TV acceptance before tvOS can be called
 supported. See [the tvOS implementation and acceptance plan](docs/TVOS.md).
-Native Android implementation is now active, beginning with a reproducible
-ARM64 toolchain, JNI shell, and Vulkan fixture. No Android APK or gameplay
-claim exists yet. See the [Android architecture and feasibility plan](docs/ANDROID.md)
-and [autonomous Android goal loop](docs/ANDROID-GOAL-LOOP.md).
+Android is supported with a full playable ARM64/Vulkan APK in
+[`v0.4.10-android.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1).
+Original with Razer Kishi and Retro Rewind online race play have maintainer
+physical testing on Pixel 9 Pro XL. Other GPUs, controllers and sustained
+performance need broader testing. See [installation](docs/INSTALL_ANDROID.md)
+and [source builds](android/README.md).
 
 ### How much storage does KartPad use?
 

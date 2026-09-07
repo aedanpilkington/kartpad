@@ -26,6 +26,8 @@ class TvOSContractTests(unittest.TestCase):
             patch.count("TARGET_OS_IOS || TARGET_OS_TV"), 16
         )
         self.assertIn("MINIZIP::minizip", patch)
+        self.assertIn("runtime/src/retro_rewind/archive_path.cpp", patch)
+        self.assertIn("runtime/src/retro_rewind/archive_scan.cpp", patch)
         self.assertIn("KARTPAD_TVOS_BUNDLE_IDENTIFIER", patch)
 
     def test_tvos_runtime_uses_an_a12_safe_cpu_baseline(self):
