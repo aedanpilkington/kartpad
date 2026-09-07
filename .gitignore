@@ -41,6 +41,11 @@ DerivedData/
 # Signing material, logs, saves, and captures
 *.mobileprovision
 *.p12
+*.jks
+*.keystore
+*.apk
+*.aab
+*.apks
 *.key
 *.pem
 *.log

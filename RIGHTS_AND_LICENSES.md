@@ -7,6 +7,16 @@ respective owners.
 
 ## Community-preview release boundary
 
+On 7 September 2026, after physical Pixel and Razer Kishi gameplay testing,
+the maintainer authorized merging the Android implementation and publishing its
+first free Android community release, `v0.4.10-android.1`. Its signed APK contains
+compiled ahead-of-time Original / Retro Rewind logic, not a disc image,
+extracted retail assets, Retro Rewind pack, saves, private translated source,
+or signing keys. Its public certificate is not private signing material.
+The release includes companion notices and corresponding integration source.
+This is direct community distribution, not Google Play or rights clearance;
+the unresolved upstream/game-code rights boundary below still applies.
+
 The maintainer authorized publication of the KartPad integration source and a
 free, unsigned iPhone/iPad community-preview IPA on 1 September 2026. The IPA
 contains KartPad's Apple integration and an ahead-of-time ARM64 translation of

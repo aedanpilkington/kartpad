@@ -1,5 +1,11 @@
 # KartPad native Android implementation plan
 
+Current, 2026-09-07: Android's first community release is
+[`v0.4.10-android.1`](releases/v0.4.10-android.1.md), with physical Pixel/Kishi
+acceptance. See [installation](INSTALL_ANDROID.md) and
+[source builds](../android/README.md). The plan and checkpoint statements below
+are historical engineering evidence, not the current download/support status.
+
 ## Status and decision
 
 - **Assessment updated:** 4 September 2026.

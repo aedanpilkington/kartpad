@@ -5,6 +5,11 @@ KartPad builds from exact dependency revisions recorded in
 notice files collected from the exact pinned sources and package build under
 `ThirdPartyLicenses/`.
 
+Android's release includes a companion notices ZIP with these documents and
+the license files from its pinned native dependencies. Keep that ZIP with the
+APK when redistributing it. Android uses Vulkan through Dawn and AndroidX
+WorkManager (Apache-2.0), rather than Apple's Metal/GameController host paths.
+
 | Component | Pin or version | License / role |
 |---|---|---|
 | WiiCompiled | `1912292c804ff9b1b79938de89369ec4496f9fff` | GPL-3.0; ahead-of-time translator and runtime |

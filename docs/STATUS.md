@@ -1,5 +1,17 @@
 # KartPad status
 
+## First Android community release — 2026-09-07
+
+`v0.4.10-android.1` promotes the Preview 15 native runtime accepted by the owner
+on Pixel 9 Pro XL with Razer Kishi. Original Grand Prix and automatic touch
+hiding are owner-accepted; Retro Rewind 6.12.7 Retro WFC login, worldwide
+matchmaking and live racing were owner-reported. APK/code 21 uses a dedicated
+release signer; the Pixel's debug-signed preview and saves are left intact.
+Startup compilation, warm frame pacing, broader devices/controllers and the
+remaining lifecycle/online-results matrix stay open. See
+[release notes](releases/v0.4.10-android.1.md) and [installation](INSTALL_ANDROID.md).
+This supersedes older Android-paused/no-release status entries below.
+
 ## 0.4.9 controller and multiplayer update
 
 Released from `8dd79d50b681a89fea9741f3da219332fa6c2196` on 2026-09-07.

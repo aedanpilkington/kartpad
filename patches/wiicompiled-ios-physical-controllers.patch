@@ -11,7 +11,7 @@
          "${MKW_KARTPAD_SUNPAD_DIR}/SunPadSettings.mm"
 --- a/src/hle/input/kpad.cpp
 +++ b/src/hle/input/kpad.cpp
-@@ -771,6 +771,13 @@
+@@ -771,5 +771,12 @@
  extern "C" bool KPAD_IsKeyboardChannelConnected(uint32_t chan)
  {
 +    // WPADProbe, SetDataFormat and GetInfoAsync must see the same devices

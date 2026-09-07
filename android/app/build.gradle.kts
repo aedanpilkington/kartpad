@@ -27,7 +27,7 @@ val kartpadVersionCode = providers.gradleProperty("kartpadVersionCode")
         value.toIntOrNull()?.takeIf { it > 0 }
             ?: error("kartpadVersionCode must be a positive integer")
     }
-    .getOrElse(8)
+    .getOrElse(21)
 val kartpadVersionName = providers.gradleProperty("kartpadVersionName")
     .map { value ->
         require(Regex("[0-9A-Za-z][0-9A-Za-z._-]{0,63}").matches(value)) {
@@ -35,7 +35,7 @@ val kartpadVersionName = providers.gradleProperty("kartpadVersionName")
         }
         value
     }
-    .getOrElse("0.4.0-android-preview.3")
+    .getOrElse("0.4.10-android.1")
 
 android {
     namespace = "dev.kartpad.android"

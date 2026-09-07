@@ -89,7 +89,17 @@ reconnect on an exact compatible backend still require acceptance, especially
 for Original Mario Kart Wii. Do not describe this setting as verified private
 online gameplay or MeleePad parity.
 
-## Android handoff
+## Android and Razer Kishi
+
+The first Android release, `v0.4.10-android.1`, includes the shared Multiplayer
+settings and Android SDL controller path. The maintainer accepted Original
+Grand Prix play with Razer Kishi on Pixel 9 Pro XL and confirmed automatic touch
+hiding. Retro Rewind Retro WFC login, worldwide matchmaking and live race play
+were also owner-reported. Rumble, reconnect, multiple physical pads and complete
+online results/reconnect are not established by that session. See
+[Android installation and controls](INSTALL_ANDROID.md).
+
+### Historical Apple 0.4.10 handoff (superseded)
 
 Android work remains paused on `codex/android-a4-touch-settings`. No Android APK
 is produced by this Apple update. Carry the shared private-service header and

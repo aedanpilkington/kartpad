@@ -1,6 +1,28 @@
 # Preview 15: owner touch layout and Kishi readiness
 
-2026-09-07. Android-only source checkpoint, not a public release.
+2026-09-07. Original Android-only source checkpoint, followed by physical acceptance.
+
+## Final owner acceptance
+
+The owner tested Original Grand Prix with Yoshi/bike/manual drift using Razer
+Kishi, confirmed touch controls hide when connected, and reported working
+controls/gameplay. They accepted this runtime for the first Android community
+release and explicitly authorized merging Android into main and publishing it.
+Earlier in the session they reported Retro Rewind 6.12.7 Retro WFC login,
+worldwide matchmaking and live race play at 3x over Wi-Fi. No completed results/
+reconnect, Kishi rumble/hotplug matrix, or sustained 60 FPS claim follows.
+
+Private logs preserve a startup interval at 19.11 FPS with 1,409 pipelines queued,
+recovering to 59.43 FPS once the queue emptied. Later windows were roughly
+50–59 FPS with zero pipelines queued and intermittent presentation delays;
+thermal status 2 and battery temperature 42.3 C were observed. The 30-second
+user-cycle profile captured 19,227 samples with zero lost. Compilation is a
+strong startup correlate; later CPU/presentation/thermal contributions and any
+network lag remain distinct questions. Raw logs/profiles stay private.
+
+All no-publication and hardware-unattached statements below describe earlier
+checkpoints and are superseded by this acceptance. See
+`../releases/v0.4.10-android.1.md` for the public artifact boundary.
 
 ## Owner acceptance and remaining performance work
 
@@ -87,8 +109,10 @@ prepared-source controller probe pass. The layout build is verified, but its
 default geometry has not yet been exercised on a clean emulator profile.
 Do not reset the owner's customized phone to do that test.
 
-Installation is pending: the phone locked before the new post-race save export
-completed. Preview 14/code 19 remains installed. Export a fresh save and private
-diagnostics after unlocking, then use the guarded update-in-place installer with
-the exact code 20 APK hash above. Preserve the owner's current 3x/Fill Screen and
-touch edits. No Android merge to main or package publication is authorized.
+Installation completed after the owner unlocked the phone. The guarded code 20
+update passed, both selector profiles remain present, and Original launches.
+Fresh post-race save exports before and after update match byte-for-byte
+(2,867,200 bytes). No uninstall, clearing, downgrade or preference reset occurred.
+The game was returned to the owner for testing, with UID-scoped logging active.
+The new full physical checklist and explicit health-journal ZIP export remain
+open. No Android merge to main or package publication is authorized.

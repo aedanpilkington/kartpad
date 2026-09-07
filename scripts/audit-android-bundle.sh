@@ -27,7 +27,15 @@ done
 
 "$java" -jar "$bundletool" validate --bundle="$bundle" >/dev/null
 manifest="$($java -jar "$bundletool" dump manifest --bundle="$bundle")"
-expected_version_name="${KARTPAD_ANDROID_EXPECTED_VERSION_NAME:-0.4.0-android-preview.3}"
+expected_version_name="${KARTPAD_ANDROID_EXPECTED_VERSION_NAME:-0.4.10-android.1}"
+if [[ -n "${KARTPAD_ANDROID_EXPECTED_VERSION_CODE:-}" ]]; then
+  [[ "$manifest" == *"android:versionCode=\"$KARTPAD_ANDROID_EXPECTED_VERSION_CODE\""* ]] || {
+    echo "ERROR: AAB version code does not match the requested code" >&2; exit 1;
+  }
+fi
+if [[ "$manifest" == *'android:debuggable="true"'* ]]; then
+  echo "ERROR: release AAB is debuggable" >&2; exit 1
+fi
 [[ "$manifest" == *'package="dev.kartpad.android"'* ]]
 [[ "$manifest" == *"android:versionName=\"$expected_version_name\""* ]] || {
   echo "ERROR: AAB version name is not $expected_version_name" >&2

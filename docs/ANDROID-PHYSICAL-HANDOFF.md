@@ -4,7 +4,23 @@ This is the authoritative handoff for moving Android KartPad testing from the
 current development Mac to another machine and then to one physical Android
 phone.
 
-## Current: Preview 14 on 2026-09-07; performance acceptance still open
+## Current: first Android community release authorized, 2026-09-07
+
+The owner accepted Preview 15/code 20 Original gameplay with Razer Kishi and
+automatic touch hiding, after reporting Retro Rewind 6.12.7 worldwide online
+race play. They authorized merging Android into main and publishing the first
+Android release. This supersedes all earlier no-merge/no-publication checkpoints.
+See [installation and signing-transition safety](INSTALL_ANDROID.md),
+[release notes](releases/v0.4.10-android.1.md), and the source-build guide in
+`android/README.md`. Do not install a differently signed public APK over the
+owner's working preview or remove its data. Warm/startup performance and broader
+device/controller coverage remain open; acceptance is not a 60 FPS guarantee.
+
+## Historical: Preview 14–15 installation checkpoints
+
+Installation follow-up: Preview 15/code 20 is now installed and Original launches.
+Fresh post-race save exports match byte-for-byte. The owner is testing with
+UID-scoped capture active; the pending-install paragraph below is historical.
 
 Latest owner session: gameplay is reported substantially better, with remaining
 menu dips; the owner selected 3x/Fill Screen and customized the touch layout.
