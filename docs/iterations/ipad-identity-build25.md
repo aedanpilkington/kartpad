@@ -35,3 +35,13 @@ Validation:
 The new IPA is an unsigned iPhone/iPad artifact. Mac and experimental Apple TV
 remain on 0.4.9, and Android development remains paused. Native private-room
 transport and safe in-process game switching remain separate unfinished work.
+
+## IPA evidence
+
+- Source: `404b74c319267126a44c5ae1e4a07a04cf3a213d`.
+- Artifact: `KartPad-v0.4.10-ios-unsigned.ipa` (40,800,024 bytes).
+- SHA-256: `cd7221b87447a638f8ea131d6581563301cd31fb1f7ca23c1e57ccb7e9bc4063`.
+- Two packages were byte-identical. The exact IPA passed ZIP, provenance,
+  signing-material, private-data, executable-path, and full app audits.
+- The local artifact was copied to the maintainer's Downloads folder and its
+  hash rechecked. No GitHub release or hosted-download verification was performed.
