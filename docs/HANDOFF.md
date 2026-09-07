@@ -19,6 +19,14 @@ opposite-landscape safe bounds. Current evidence and exact artifact hashes:
 `docs/iterations/android-v0410-parity-performance.md`.
 Keep `codex/android-a4-touch-settings` separate from `main`; no Android release.
 
+Emulator-only continuation produced audited private Preview 10, code 15. A fresh
+owned-WBFS import and Original boot succeeded. License rename now updates its
+matching Mii like Apple; the real game's license screen reflects the new test
+name after cold restart, with only name/checksum bytes changed. Native/Kotlin
+transaction tests and 132 host contracts pass. The phone remains on code 14.
+Emulator Retro boot, short-press/title timing and keyboard-visible dialog
+ergonomics remain follow-ups, alongside the unresolved Pixel performance gates.
+
 ### Previous Preview 8 checkpoint
 
 Android work resumed on 2026-09-06 and now includes stable Apple v0.4.8 source.

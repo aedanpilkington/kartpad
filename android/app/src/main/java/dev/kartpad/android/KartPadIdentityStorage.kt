@@ -69,6 +69,14 @@ internal object KartPadIdentityStorage {
         if (profile == "mii") paths.keys.filter { it != "mii" && target(files, it).isFile }.forEach {
             result[it] = nativeEdit(readTarget(files, it), 3, slot, id, name)
         }
+        else if (!delete && target(files, "mii").isFile) {
+            // Match Apple's license rename: keep the selected license and its Mii
+            // in sync, without directly rewriting other profiles' saves.
+            val database = readTarget(files, "mii")
+            val matching = nativeRecords(database, true).toList().chunked(3)
+                .firstOrNull { it[2] == id }
+            if (matching != null) result["mii"] = nativeEdit(database, 2, matching[0].toInt(), id, name)
+        }
         return result
     }
     /** Called before SDL starts. Interrupted multi-file edits finish before guest writes resume. */

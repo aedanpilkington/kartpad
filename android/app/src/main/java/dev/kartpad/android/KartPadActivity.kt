@@ -1105,7 +1105,7 @@ class KartPadActivity : SDLActivity() {
                 menuButton.post {
                     if (miis) editIdentityName(record)
                     else AlertDialog.Builder(this).setTitle("${KartPadIdentityStorage.titles[record.profile]} • Slot ${record.slot + 1}")
-                        .setMessage("Rename keeps this license's account and progress. Delete removes only this slot after another confirmation. Fully close KartPad from Recents and reopen to apply.")
+                        .setMessage("Rename updates this license and its matching Mii, keeping the account and progress. Other licenses may share that Mii. Delete removes only this license slot after another confirmation. Fully close KartPad from Recents and reopen to apply.")
                         .setPositiveButton("Rename License…") { _, _ -> menuButton.post { editIdentityName(record) } }
                         .setNeutralButton("Delete License…") { _, _ -> menuButton.post {
                             AlertDialog.Builder(this).setTitle("Delete This License?")

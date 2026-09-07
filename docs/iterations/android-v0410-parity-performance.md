@@ -139,6 +139,45 @@ before the phone left for the gym. Local continuation does not require it.
 - Emulator rendering, timings and synthetic inputs are not Pixel GPU/FPS,
   controller or physical-touch acceptance.
 
+### Preview 10 emulator identity iteration
+
+- The separate API 36 ARM64 AVD imported the supported local user-owned WBFS
+  through Android's real document picker and Dolphin extraction successfully.
+  Original booted, created a fresh emulator-only license and reached Single
+  Player, Grand Prix, class and character selection via touch controls. No owner
+  saves were copied to this AVD. Retro Rewind is not yet installed in this AVD.
+- Found and fixed a concrete Apple parity omission: Android license-specific
+  rename previously changed only `rksys.dat`. It now also renames the matching
+  Mii by create ID, in the same latest-data, recoverable transaction. It does
+  not directly rewrite other profile saves. Delete still leaves the Mii intact.
+  The confirmation explains that other licenses can share this Mii.
+- Host JNI/Kotlin tests now cover matching-Mii rename, preservation of a newer
+  appearance edit, interruption between license and Mii publication, roll-forward
+  recovery, other-profile byte preservation and deletion/Mii isolation. These
+  tests and all **132** source/builder contracts pass.
+- Private `0.4.10-android-preview.10`, code **15**, complete dual AAB:
+  **91,411,824 bytes**, SHA-256
+  `cb9f0654fcf7f5026110f30786a3618be8479348e388b1fe64c723c97d809c63`.
+- Locally debug-signed universal APK: **110,503,250 bytes**, SHA-256
+  `ef5a3409b50574cee113409bc14169af6095e962ad4b2ef4baba023223158552`.
+  Both unchanged audits pass: ARM64, API 28 minimum, target 36,
+  non-debuggable, profileable private candidate. No package was published.
+- Code 15 was installed with `adb install -r` onto the dedicated emulator only.
+  Its save was byte-identical across installation. The Pixel remains on code 14.
+- Through the actual identity UI, renamed the disposable license to `EmuRacer`,
+  cold-restarted, and visually confirmed that name in the game's Select Licence
+  screen. Original save and Mii database comparisons found **zero changed bytes
+  outside their name fields and checksums**. Private evidence remains ignored
+  under `.android-bootstrap/v15-emulator-*`; no screenshots or saves are in Git.
+- The landscape keyboard obscured the dialog's Save hit target during synthetic
+  interaction; dismissing the keyboard allowed Save. A one-second A hold
+  advanced the title after shorter injected presses did not visibly advance it;
+  the hold activated A-lock, subsequently released. Short-press/title timing and
+  keyboard-visible dialog ergonomics remain explicit follow-up checks.
+- No new floating-point optimization is integrated. Emulator FPS does not close
+  the severe Pixel performance issue. The emulator was left at the paused
+  KartPad chooser; no further phone interaction occurred.
+
 ## Acceptance gates
 
 Fresh runtime preparation, host contracts, arithmetic equivalence, pinned full
