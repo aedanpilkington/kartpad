@@ -72,6 +72,16 @@ retains the native Mac controls and data-management flows.
 
 ## What is available now?
 
+| Platform | Current corrected download | Installation |
+|---|---|---|
+| Android ARM64 | [0.4.10-android.1, code 21](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1) | [APK guide](docs/INSTALL_ANDROID.md) |
+| iPhone / iPad | [0.4.11, build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11) | [Unsigned IPA guide](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.4.11, build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1) | [Mac ZIP guide](docs/INSTALL_MACOS.md) |
+
+All three contain the corrected online console-serial implementation. Platform
+release tags are independent; identical version strings are not required for
+the shared fix. Experimental tvOS remains offline-only pending its rebuild.
+
 ### Android: first community release
 
 [Download Android APK, notices and SHA-256 checksums](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1)
