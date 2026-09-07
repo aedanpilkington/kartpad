@@ -8,7 +8,8 @@ Earlier that session they reported Retro Rewind 6.12.7 Retro WFC login,
 worldwide matchmaking and live race play. They explicitly authorized the first
 Android community release and merge into main. This supersedes historical
 no-merge/no-publish restrictions below. Release: `v0.4.10-android.1`, code 21,
-same tested native runtime with forward package metadata and a dedicated public
+tested native runtime plus the required issue #94 console-serial backport,
+forward package metadata and a dedicated public
 release signer. Preserve the debug-signed Pixel installation; do not uninstall
 for a signer change. See `INSTALL_ANDROID.md` and `releases/v0.4.10-android.1.md`.
 Startup compilation and warm slowdowns remain; no blanket 60 FPS or full-matrix

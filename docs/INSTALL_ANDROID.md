@@ -40,6 +40,12 @@ The maintainer's tested Pixel was deliberately left on Preview 15/code 20.
 The public package is code 21; changing its signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
+Earlier previews also lack the issue #94 console-serial correction. Do not use
+those builds online. The fix writes the full numeric serial expected by the
+game; it does not reset your identity or saves. Incorrect CSNums already stored
+in a server account's history may require server-admin cleanup. Do not delete
+licenses, regenerate identities or clear app data to work around a server ban.
+
 ## Controls and performance
 
 The three-dot menu contains Controls, Display, Game Data & Saves, Multiplayer,

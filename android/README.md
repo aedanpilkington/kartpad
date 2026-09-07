@@ -81,6 +81,8 @@ The keystore and key must use the same password for this simple PKCS12 flow.
 Do not put passwords in commands, Git, screenshots or issue reports. This
 derivation audits a candidate; it does not authorize publication by itself.
 
+Maintainers: [release packaging, notices and hosted verification](../docs/RELEASING_ANDROID.md).
+
 ## Historical development and fixture evidence
 
 The checkpoints below predate first-release authorization on 2026-09-07 and do
