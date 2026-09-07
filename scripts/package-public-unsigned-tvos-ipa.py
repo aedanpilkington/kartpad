@@ -74,6 +74,7 @@ def main() -> int:
         "RELEASE_NOTES.md": repo / "docs/releases/v0.4.9.md",
         "MULTIPLAYER.md": repo / "docs/MULTIPLAYER.md",
         "TVOS_TESTING.md": repo / "docs/TVOS-TESTING.md",
+        "LICENSE": repo / "LICENSE",
         "LICENSES/GPL-3.0.txt": repo / "LICENSES/GPL-3.0.txt",
         "RIGHTS_AND_LICENSES.md": repo / "RIGHTS_AND_LICENSES.md",
         "THIRD_PARTY_NOTICES.md": repo / "THIRD_PARTY_NOTICES.md",

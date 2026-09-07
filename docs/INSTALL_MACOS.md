@@ -56,4 +56,7 @@ The workflow fetches and verifies pinned public dependencies and the exact
 Retro Rewind inputs, translates both executable profiles from the supported
 user-owned image, builds the dual app, configures both private data roots, and
 audits the result. Generated inputs and the resulting personalized app remain
-ignored local files and must not be redistributed.
+ignored local files because KartPad does not clear redistribution rights in
+the game-derived material. This publication policy does not restrict your
+rights to modify or redistribute GPL-covered software under the GPL; see
+[`RIGHTS_AND_LICENSES.md`](../RIGHTS_AND_LICENSES.md).
