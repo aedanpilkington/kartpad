@@ -6,11 +6,12 @@ import plistlib
 import stat
 import tempfile
 import unittest
+from unittest.mock import patch
 import zipfile
 from pathlib import Path
 
 from kartpad_builder.packaging import PackageError, audit_app, package_unsigned_ipa
-from kartpad_builder.pipeline import cache_key, dependency_cache_key
+from kartpad_builder.pipeline import build, cache_key, dependency_cache_key
 from kartpad_builder.profiles import Profile, ProfileError, load_profiles, select_profile, validate_profile
 from kartpad_builder.release_header import render_retro_rewind_header
 from kartpad_builder.retro_rewind import (
@@ -260,18 +261,44 @@ class PackagingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             app = self.make_app(root)
-            notice = root / "RIGHTS_AND_LICENSES.md"
-            notice.write_text("community preview\n")
             first = root / "first.ipa"
             second = root / "second.ipa"
             provenance = {"schemaVersion": 1, "releaseTag": "v0.2.0-preview.2"}
-            entries = {"RIGHTS_AND_LICENSES.md": notice}
+            entries = {
+                name: REPO / name
+                for name in ("LICENSE", "RIGHTS_AND_LICENSES.md", "THIRD_PARTY_NOTICES.md")
+            }
             first_hash = package_unsigned_ipa(app, first, provenance, entries)
             second_hash = package_unsigned_ipa(app, second, provenance, entries)
             self.assertEqual(first_hash, second_hash)
             self.assertEqual(first.read_bytes(), second.read_bytes())
             with zipfile.ZipFile(first) as archive:
-                self.assertEqual(archive.read("RIGHTS_AND_LICENSES.md"), b"community preview\n")
+                for name, source in entries.items():
+                    self.assertEqual(archive.read(name), source.read_bytes())
+                self.assertEqual(archive.read("LICENSE"), (REPO / "LICENSES/GPL-3.0.txt").read_bytes())
+
+    def test_personal_builder_packages_gpl_notices_and_scopes_game_rights(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            app = self.make_app(root)
+            # Reuse a synthetic app; this packaging check needs no game or network inputs.
+            with patch("kartpad_builder.pipeline.prepare_inputs"):
+                result = build(
+                    repo=REPO,
+                    profile=load_profiles(PROFILES)[0],
+                    image=root / "unused.wbfs",
+                    image_sha256="a" * 64,
+                    output=root / "personal.ipa",
+                    work_root=root / "work",
+                    app_override=app,
+                )
+            with zipfile.ZipFile(result.ipa) as archive:
+                for name in ("LICENSE", "RIGHTS_AND_LICENSES.md", "THIRD_PARTY_NOTICES.md"):
+                    self.assertEqual(archive.read(name), (REPO / name).read_bytes())
+                provenance = json.loads(archive.read("KartPadBuilderProvenance.json"))
+                self.assertEqual(provenance["softwareLicense"], "GPL-3.0-only")
+                self.assertEqual(provenance["gameCodeRedistributionRights"], "not-cleared")
+                self.assertNotIn("redistributionAllowed", provenance)
 
     def test_unsafe_additional_entry_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
