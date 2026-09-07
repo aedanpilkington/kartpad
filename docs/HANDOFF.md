@@ -2,6 +2,19 @@
 
 ## Current state
 
+Android `v0.4.10-android.1` is published from main `e4ac47f`, including the
+upstream issue #94 serial backport. Hosted APK/notices match local checksums;
+downloaded APK audit passes. A private debug-identity code 21 APK with the same
+correction is ready for a guarded in-place Pixel update after reattachment and
+a fresh save backup. Do not use the old Preview 15 online. The public signer
+must not be forced onto that installation by uninstalling it.
+
+The owner then requested a corrected iPhone/iPad IPA and an issue #94 response.
+The Apple 0.4.11/build 26 native rebuild and distribution are tracked in
+`docs/releases/v0.4.11.md`. Source correction, new binary verification and
+historical server-CSNum cleanup remain distinct; Mac/tvOS old binaries are not
+automatically fixed by the source merge.
+
 2026-09-07: the owner accepted Android Preview 15/code 20 with Razer Kishi in
 Original Grand Prix; touch controls hide on connection and gameplay works.
 Earlier that session they reported Retro Rewind 6.12.7 Retro WFC login,

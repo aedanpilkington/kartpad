@@ -1,12 +1,18 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.10` is an unsigned ARM64 IPA for iPhone and iPad. It is a free
+KartPad `v0.4.11` is an unsigned ARM64 IPA for iPhone and iPad. It is a free
 community release, not an App Store or TestFlight build, and it will not
 install until it is re-signed with your own Apple identity or compatible
 personal sideloading tool.
 
-1. Download `KartPad-v0.4.10-ios-unsigned.ipa` and `SHA256SUMS` from the
-   [0.4.10 release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10).
+**Update before online play:** 0.4.11/build 26 fixes the incorrect console-serial
+value reported in [issue #94](https://github.com/chrissotraidis/kartpad/issues/94).
+Older IPAs should remain offline. This does not erase incorrect serial history
+already held by a server or clear bans; affected accounts may need service-admin
+help. Never reset identities or delete saves as a workaround.
+
+1. Download `KartPad-v0.4.11-ios-unsigned.ipa` and `SHA256SUMS` from the
+   [0.4.11 release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11).
 2. Verify the IPA with `shasum -a 256 -c SHA256SUMS` on a Mac.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary
