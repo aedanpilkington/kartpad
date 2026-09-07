@@ -25,10 +25,10 @@ management, packaging, and release workflows.
 ![KartPad running a race on DK Summit on iPad](docs/images/kartpad-dk-summit-ipad.png)
 
 > [!IMPORTANT]
-> **KartPad 0.4.11 build 26 is the current iPhone/iPad release.** It fixes the
+> **KartPad 0.4.11 build 26 is the current iPhone/iPad and Mac release.** It fixes the
 > serious online console-serial bug reported in [#94](https://github.com/chrissotraidis/kartpad/issues/94).
 > Update before online play; older iOS, Mac and tvOS packages should stay offline.
-> The Apple Silicon Mac build remains available in 0.4.9. The IPA requires local
+> The Mac package is in `v0.4.11-macos.1`. The IPA requires local
 > re-signing and your own legally obtained supported game image. Retro Rewind
 > 6.12.7 installs separately through KartPad.
 >
@@ -51,9 +51,9 @@ patchzyy, while preserving stored identities, friend codes and saves. The old
 function could make different serials collapse to the same online identity and
 overwrite adjacent guest memory. Tests cover the actual corrected function;
 the fix does not clear old server-side identity history or reverse existing bans.
-See the [release notes](docs/releases/v0.4.11.md). Mac/tvOS binary rebuilds and
-server-admin remediation are tracked separately; source fixes do not repair old
-downloads automatically.
+See the [iPhone/iPad notes](docs/releases/v0.4.11.md) and
+[Mac notes](docs/releases/v0.4.11-macos.1.md). The old tvOS binary and
+server-admin remediation remain separate; source fixes do not repair old downloads.
 
 ### Earlier physical layout acceptance (0.4.10)
 
@@ -66,9 +66,9 @@ review does not establish a completed online race.
 
 [Download the corrected iPhone/iPad IPA and checksum](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11).
 The menu names below follow 0.4.10; 0.4.9 calls them **Manage Existing Licenses…**
-and **Set Player Name…**. The accepted
-[macOS download](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.9)
-remains at 0.4.9.
+and **Set Player Name…**. The corrected
+[macOS download](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1)
+retains the native Mac controls and data-management flows.
 
 ## What is available now?
 
@@ -96,7 +96,7 @@ remain known limitations—not a sustained-60-FPS guarantee. Android uses an
 | Question | Answer |
 |---|---|
 | Is this Dolphin or streaming? | No. WiiCompiled translates the game's PowerPC code ahead of time, then KartPad compiles it for ARM64 and presents it through Metal on Apple platforms or Vulkan on Android. |
-| Are release downloads included? | **Yes.** `v0.4.11` provides the corrected unsigned iPhone/iPad IPA, and `v0.4.10-android.1` provides the Android APK. Mac and experimental tvOS remain in `v0.4.9` and should stay offline pending their CSNum rebuild. Supply your own supported game data; the IPA also requires local re-signing. |
+| Are release downloads included? | **Yes.** Corrected downloads: iPhone/iPad `v0.4.11`, Mac `v0.4.11-macos.1`, Android `v0.4.10-android.1`. Experimental tvOS remains in `v0.4.9` and should stay offline pending its CSNum rebuild. Supply your own supported game data; the IPA also requires local re-signing. |
 | Can the source create an IPA? | Yes. The Personal IPA Builder can also translate a supported user-owned game executable and create a separate private unsigned IPA on an Apple Silicon Mac. |
 | Does it include Mario Kart Wii? | No. You must provide your own legally obtained supported PAL `RMCP01` revision 0 WBFS/ISO. |
 | Does it support Retro Rewind? | **Yes.** Choose Original Mario Kart Wii or Retro Rewind when KartPad opens. KartPad can download, verify, and install the official Retro Rewind 6.12.7 pack. The maintainer accepted Retro Rewind launch and menu navigation on iPad build 25; production online races remain a separate check. |
@@ -190,7 +190,7 @@ retail game data.
 | iPhone/iPad | The full 29,065-function ARM64 retail app has been packaged as an unsigned IPA; locally signed builds have been installed and physically accepted on both iPhone and iPad, reaching live races, importing a supported private WBFS, and preserving saves |
 | Game content | Version-locked dual-mode Original Mario Kart Wii / Retro Rewind 6.12.7 flow without bundling either game's private data; 6.12.7 launch and menu navigation were accepted on physical iPad build 25; complete production-online races remain unverified |
 | Online multiplayer | Local Mac-to-iPad-Simulator race/results evidence passes; Android Retro WFC login, worldwide matchmaking and live racing are owner-reported. Complete production results/reconnect and server CSNum-history remediation remain open |
-| Distribution | Corrected iPhone/iPad IPA in `v0.4.11`, Android APK in `v0.4.10-android.1`; Mac/tvOS `v0.4.9` are not yet rebuilt with the serial fix. Downloads contain compiled translated logic, but no disc images, extracted retail assets, Retro pack, saves or private signing material |
+| Distribution | Corrected iPhone/iPad IPA in `v0.4.11`, Mac ZIP in `v0.4.11-macos.1`, Android APK in `v0.4.10-android.1`; tvOS `v0.4.9` still needs rebuilding. Downloads contain compiled translated logic, but no disc images, extracted retail assets, Retro pack, saves or private signing material |
 
 The evidence ledger, exact open rows, and known risks live in
 [`docs/STATUS.md`](docs/STATUS.md). The 67-row release matrix is in
@@ -317,8 +317,8 @@ provide the required direct Wii Remote HID pairing path.
 
 ### Download the Apple Silicon Mac app
 
-Download `KartPad-v0.4.9-macos-arm64.zip` and `SHA256SUMS` from the
-[macOS release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.9).
+Download `KartPad-v0.4.11-macos.1-arm64.zip` and `SHA256SUMS` from the
+[macOS release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1).
 The app is ad-hoc signed, requires macOS 14 or newer on Apple Silicon, and does
 not include Mario Kart Wii or Retro Rewind data. Follow
 [`docs/INSTALL_MACOS.md`](docs/INSTALL_MACOS.md) for checksum, Gatekeeper, game
@@ -326,8 +326,8 @@ data, game switching, keyboard, controller, and mouse guidance.
 
 ### Download the unsigned iPhone/iPad IPA
 
-Download `KartPad-v0.4.10-ios-unsigned.ipa` and `SHA256SUMS` from the
-[0.4.10 release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10).
+Download `KartPad-v0.4.11-ios-unsigned.ipa` and `SHA256SUMS` from the
+[0.4.11 release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11).
 Verify the checksum, re-sign the IPA with AltStore Classic plus AltServer or
 another compatible personal-signing workflow, and select your own supported
 PAL `RMCP01` revision 0 image on first launch. See
@@ -649,8 +649,9 @@ Useful starting points:
 ### Can I download an IPA or playable app?
 
 Yes. `v0.4.11` provides the corrected unsigned iPhone/iPad IPA, which must be re-signed
-before installation. The accepted Apple Silicon Mac ZIP and experimental
-Apple TV IPA remain available from `v0.4.9`. Android's installable APK is in
+before installation. The corrected Apple Silicon Mac ZIP is in
+[`v0.4.11-macos.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1).
+The old experimental Apple TV IPA in `v0.4.9` should stay offline. Android's APK is in
 [`v0.4.10-android.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1);
 follow [the Android guide](docs/INSTALL_ANDROID.md).
 They contain
@@ -678,9 +679,9 @@ physical iPad build 25; a complete production online race remains unverified.
 
 ### Does KartPad support Retro Rewind?
 
-Yes. The current Mac 0.4.9 and iPhone/iPad 0.4.10 builds support Original /
-Retro Rewind and install a separately downloaded, hash-verified Retro Rewind
-6.12.7 pack. KartPad does not bundle Mario Kart Wii or Retro Rewind content.
+Yes. The current Mac/iPhone/iPad 0.4.11 and Android 0.4.10-android.1 builds support
+Original / Retro Rewind using the separately installed, hash-verified Retro
+Rewind 6.12.7 pack. KartPad does not bundle Mario Kart Wii or Retro Rewind content.
 The maintainer accepted Retro Rewind launch and menu navigation on physical
 iPad build 25. Earlier physical tests covered pack download, verification,
 installation, and initial single-player gameplay on the tested pack version.

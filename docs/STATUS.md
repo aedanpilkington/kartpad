@@ -1,13 +1,15 @@
 # KartPad status
 
-## iPhone/iPad 0.4.11 console-serial correction
+## Current console-serial correction releases
 
-The 0.4.11/build 26 release rebuilds the iPhone/iPad native runtime with the
-upstream issue #94 correction. Android's fixed first release is already
-published and anonymously verified. Older iOS IPAs and the currently published
-Mac/tvOS binaries should remain offline until updated. Stored identities and
-saves are not reset; existing erroneous server CSNum history requires separate
-service-admin remediation. See [0.4.11 notes](releases/v0.4.11.md).
+The iPhone/iPad 0.4.11/build 26 release is published and anonymously verified,
+as is Android 0.4.10-android.1/code 21. macOS 0.4.11/build 26 is the matching
+fresh native rebuild, tracked under its own `v0.4.11-macos.1` source tag. These
+include the upstream issue #94 correction without resetting identities or saves.
+Older binaries and experimental tvOS remain offline-only until updated. Existing
+erroneous server CSNum history requires separate service-admin remediation.
+See [iPhone/iPad verification](artifacts/2026-09-07/ios-v0411-release.md) and
+[Mac release notes](releases/v0.4.11-macos.1.md).
 
 ## First Android community release — 2026-09-07
 
