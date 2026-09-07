@@ -27,6 +27,7 @@ internal object KartPadSaveStorage {
     }
 
     fun writePending(filesDir: File, data: ByteArray) {
+        require(!KartPadIdentityStorage.hasPending(filesDir)) { "Apply pending identity edits before restoring a save." }
         validate(data)
         val file = pending(filesDir)
         check(file.parentFile?.let { it.isDirectory || it.mkdirs() } == true) {

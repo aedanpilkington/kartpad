@@ -133,6 +133,15 @@ internal object KartPadTouchSettings {
 
     // Matches KartPadSeedTouchLayoutDefaults; stored edits still win.
     private fun defaultControlSize(context: Context, identifier: String): Float {
+        if (context.resources.configuration.smallestScreenWidthDp >= 600) {
+            when (identifier) {
+                "A" -> return 1.2150695f
+                "B" -> return 1.2253858f
+                "X" -> return 1.2577279f
+                "Y" -> return 1.3797839f
+                "Z" -> return 1.2058642f
+            }
+        }
         return when (identifier) {
             "L" -> 0.97919405f
             "R" -> 0.60f

@@ -19,13 +19,18 @@ restore_orientation() {
   "$adb" shell settings put system accelerometer_rotation 0 >/dev/null 2>&1 || true
   "$adb" shell settings put system user_rotation 1 >/dev/null 2>&1 || true
 }
-trap restore_orientation EXIT
-
-device_count="$("$adb" devices | sed -n '2,$p' | grep -c '[[:space:]]device$' || true)"
-[[ "$device_count" == 1 ]] || {
-  echo "ERROR: expected exactly one connected Android emulator/device" >&2
+emulator_targets="$("$adb" devices 2>/dev/null | awk '$1 ~ /^emulator-[0-9]+$/ && $2 == "device" {print $1}')"
+emulator_count="$(printf '%s\n' "$emulator_targets" | awk 'NF {count++} END {print count+0}')"
+[[ "$emulator_count" == 1 ]] || {
+  echo "ERROR: expected exactly one authorized Android emulator; no physical device will be modified" >&2
   exit 1
 }
+export ANDROID_SERIAL="$emulator_targets"
+[[ "$("$adb" shell getprop ro.kernel.qemu | tr -d '\r')" == 1 ]] || {
+  echo "ERROR: target is not an emulator" >&2
+  exit 1
+}
+trap restore_orientation EXIT
 
 "$repo_root/scripts/build-android-fixture.sh"
 apk="$repo_root/android/app/build/outputs/apk/debug/app-debug.apk"
@@ -57,7 +62,7 @@ start_menu() {
     --ez dev.kartpad.android.TEST_MENU true >/dev/null
   for _ in {1..20}; do
     dump_tree
-    grep -Fq 'text="Switch Game Version…"' "$tree" && return 0
+    grep -Fq 'text="Return to KartPad Menu"' "$tree" && return 0
     sleep 1
   done
   echo "ERROR: KartPad menu did not open" >&2
@@ -141,7 +146,7 @@ open_submenu_action() {
 
 top=(
   "KartPad"
-  "Switch Game Version…"
+  "Return to KartPad Menu"
   "Multiplayer…"
   "Show FPS Counter"
   "Controls"
@@ -183,14 +188,14 @@ assert_labels \
   "Remove Stored Game Data…" \
   "Manage Retro Rewind…" \
   "Manage Saves…" \
-  "Manage Miis…"
+  "Player Identity…"
 assert_icon_count 6
 
-open_top_action "Switch Game Version…"
-assert_labels "Switch Game Version" "RESTART TO SELECTOR" "CANCEL"
+open_top_action "Return to KartPad Menu"
+assert_labels "Resume Mario Kart Wii" "Current game • Paused" "Retro Rewind" "Switch on next launch"
 
 open_top_action "Multiplayer…"
-assert_labels "Multiplayer" "SET UP RETRO REWIND" "BACK"
+assert_labels "Multiplayer" "Local Split-Screen…" "Controller Setup…" "Experimental Server Settings…" "BACK"
 
 open_top_action "Report a Problem…"
 assert_labels "Report a Problem" "SHARE REPORT…" "REPORT ON GITHUB" "CANCEL"
@@ -258,13 +263,16 @@ fi
 open_submenu_action "Game Data & Saves" "Manage Saves…"
 assert_labels "Manage Saves" "EXPORT SAVE BACKUP…" "RESTORE SAVE BACKUP…" "DONE"
 
-open_submenu_action "Game Data & Saves" "Manage Miis…"
+open_submenu_action "Game Data & Saves" "Player Identity…"
 assert_labels \
-  "Manage Miis (Experimental)" \
+  "Player Identity" "Edit Mii Name…" "Rename or Delete Licenses…" "Mii Appearance…" \
   "BACK"
 
 open_submenu_action "Game Data & Saves" "Manage Retro Rewind…"
-assert_labels "KartPad" "Retro Rewind 6.12.5"
+retro_version="$(sed -nE 's/.*String VERSION = "([^"]+)";.*/\1/p' \
+  "$repo_root/android/app/src/main/java/dev/kartpad/android/RetroRewindRelease.java")"
+[[ -n "$retro_version" ]] || { echo "ERROR: missing pinned Retro Rewind version" >&2; exit 1; }
+assert_labels "KartPad" "Retro Rewind $retro_version"
 
 if [[ "$lane" == phone ]]; then
   "$adb" shell cmd window user-rotation free >/dev/null

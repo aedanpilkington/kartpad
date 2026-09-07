@@ -41,6 +41,10 @@
             android:launchMode="singleTask"
             android:screenOrientation="sensorLandscape" />
         <activity
+            android:name=".KartPadPausedMenuActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
+        <activity
             android:name=".KartPadLaunchActivity"
             android:exported="true"
             android:process=":launcher"

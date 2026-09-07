@@ -2,6 +2,25 @@
 
 ## Current state
 
+Android resumed again on 2026-09-07, merging main `8ebefc9` (Apple v0.4.10)
+**into the Android branch**. Private Preview 9, code 14, was audited and installed
+in place on the Pixel 9 Pro XL (API 37, ARM64, 4096-byte pages). Both Original
+and the retained Retro Rewind 6.12.7 boot; the fresh Original save remains
+byte-identical after update. Paused chooser/resume, next-launch profile switching,
+identity read/cancel/keyboard behavior, and partial multiplayer settings checks
+passed on the phone. No owner license was renamed/deleted for testing.
+
+The severe performance issue is **not closed**. Vulkan/Mali-G715 is confirmed,
+with significant CPU floating-point/TLS costs and startup shader prewarming.
+No single-player matched performance, physical controller, or long race thermal
+acceptance is claimed. The user took the phone away for the gym; all subsequent
+work is emulator-only. The emulator menu suite passed all 16 destinations and
+opposite-landscape safe bounds. Current evidence and exact artifact hashes:
+`docs/iterations/android-v0410-parity-performance.md`.
+Keep `codex/android-a4-touch-settings` separate from `main`; no Android release.
+
+### Previous Preview 8 checkpoint
+
 Android work resumed on 2026-09-06 and now includes stable Apple v0.4.8 source.
 Private Preview 8 (code 13) is installed in-place on the Pixel with the Apple icon,
 opt-in profiling and an Android-only scalar-mode optimization. Physical arithmetic

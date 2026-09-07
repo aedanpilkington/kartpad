@@ -918,16 +918,16 @@ class KartPadOverlayView(context: Context) : View(context) {
     }
 
     private fun tabletControlCenter(id: String): PointF = when (id) {
-        "move" -> PointF(0.13f, 0.83f)
-        "c" -> PointF(0.91f, 0.90f)
-        "A" -> PointF(0.93f, 0.75f)
-        "B" -> PointF(0.82f, 0.82f)
-        "X" -> PointF(0.14f, 0.60f)
-        "Y" -> PointF(0.06f, 0.63f)
-        "L" -> PointF(0.93f, 0.60f)
-        "R" -> PointF(0.815f, 0.64f)
-        "Z" -> PointF(0.84f, 0.52f)
-        "Start" -> PointF(0.94f, 0.50f)
+        "move" -> PointF(0.14756955f, 0.91391391f)
+        "c" -> PointF(0.90377745f, 0.87147147f)
+        "A" -> PointF(0.90181552f, 0.74799800f)
+        "B" -> PointF(0.82915081f, 0.81399399f)
+        "X" -> PointF(0.12901903f, 0.66706707f)
+        "Y" -> PointF(0.06256223f, 0.68205205f)
+        "L" -> PointF(0.91096633f, 0.64904905f)
+        "R" -> PointF(0.80767936f, 0.72758759f)
+        "Z" -> PointF(0.83304539f, 0.65063063f)
+        "Start" -> PointF(0.95537335f, 0.57607608f)
         else -> PointF(0.26866764f, 0.79472595f)
     }
 

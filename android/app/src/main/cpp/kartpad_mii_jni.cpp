@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "kartpad/mii/mii_database.h"
+#include "kartpad/mii/player_identity.h"
 
 namespace {
 
@@ -77,6 +78,63 @@ jstring ToJavaString(JNIEnv* env, std::string_view utf8) {
 }
 
 }  // namespace
+
+extern "C" JNIEXPORT jobjectArray JNICALL
+Java_dev_kartpad_android_KartPadIdentityStorage_nativeRecords(
+    JNIEnv* env, jobject, jbyteArray data_array, jboolean mii) {
+  const auto data = CopyBytes(env, data_array);
+  const auto valid = mii ? kartpad::mii::ValidateDatabase(data) : kartpad::mii::ValidateRksys(data);
+  if (!valid) { Throw(env, "java/lang/IllegalArgumentException", valid.message); return nullptr; }
+  std::vector<std::string> fields;
+  auto append = [&](size_t slot, const std::string& name, const auto& id) {
+    std::string hex;
+    for (uint8_t byte : id) { hex += "0123456789abcdef"[byte >> 4]; hex += "0123456789abcdef"[byte & 15]; }
+    fields.insert(fields.end(), {std::to_string(slot), name, hex});
+  };
+  if (mii) for (const auto& record : kartpad::mii::ListMiis(data))
+    append(record.slot, record.name, kartpad::mii::MiiCreateId(data, record.slot));
+  else for (const auto& record : kartpad::mii::ListLicenses(data)) append(record.slot, record.name, record.createId);
+  auto result = env->NewObjectArray(fields.size(), env->FindClass("java/lang/String"), nullptr);
+  if (!result) return nullptr;
+  for (size_t i = 0; i < fields.size(); ++i) {
+    jstring value = ToJavaString(env, fields[i]);
+    env->SetObjectArrayElement(result, i, value);
+    env->DeleteLocalRef(value);
+  }
+  return result;
+}
+
+extern "C" JNIEXPORT jbyteArray JNICALL
+Java_dev_kartpad_android_KartPadIdentityStorage_nativeEdit(
+    JNIEnv* env, jobject, jbyteArray data_array, jint operation, jint slot,
+    jstring id_string, jbyteArray name_array) {
+  auto data = CopyBytes(env, data_array);
+  const auto name = CopyBytes(env, name_array);
+  if (!id_string || env->ExceptionCheck()) return nullptr;
+  const char* raw = env->GetStringUTFChars(id_string, nullptr);
+  if (!raw) return nullptr;
+  std::string hex(raw);
+  env->ReleaseStringUTFChars(id_string, raw);
+  std::array<uint8_t, kartpad::mii::kCreateIdByteSize> id{};
+  if (hex.size() != id.size() * 2 || hex.find_first_not_of("0123456789abcdef") != std::string::npos) {
+    Throw(env, "java/lang/IllegalArgumentException", "Invalid identity token."); return nullptr;
+  }
+  for (size_t i = 0; i < id.size(); ++i) id[i] = std::stoul(hex.substr(i * 2, 2), nullptr, 16);
+  kartpad::mii::DatabaseResult result{false, "Invalid identity operation."};
+  if (operation == 0) result = kartpad::mii::RenameLicense(data, slot, id, name);
+  else if (operation == 1) result = kartpad::mii::DeleteLicense(data, slot, id);
+  else if (operation == 2) {
+    result = kartpad::mii::ValidateDatabase(data);
+    if (result && kartpad::mii::MiiCreateId(data, slot) != id)
+      result = {false, "The selected Mii changed before it could be renamed."};
+    if (result) result = kartpad::mii::RenameMii(data, slot, name);
+  } else if (operation == 3) {
+    size_t updated = 0;
+    result = kartpad::mii::RenameMatchingLicenses(data, id, name, updated);
+  }
+  if (!result) { Throw(env, "java/lang/IllegalArgumentException", result.message); return nullptr; }
+  return ToByteArray(env, data);
+}
 
 extern "C" JNIEXPORT jobjectArray JNICALL
 Java_dev_kartpad_android_KartPadActivity_nativeListMiis(

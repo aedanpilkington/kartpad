@@ -22,7 +22,9 @@ import android.widget.TextView
 import java.util.concurrent.Executors
 
 /** Production owner for choosing the immutable runtime profile before SDL starts. */
-class KartPadLaunchActivity : Activity() {
+open class KartPadLaunchActivity : Activity() {
+    protected open fun pausedProfile(): String? = null
+    private fun requestedProfileFile() = java.io.File(filesDir, "KartPad/RequestedRuntimeProfile")
     private lateinit var status: TextView
     private lateinit var original: ModeButton
     private lateinit var retro: ModeButton
@@ -42,6 +44,21 @@ class KartPadLaunchActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        pausedProfile()?.let { current ->
+            progress.visibility = View.GONE
+            original.isEnabled = true
+            retro.isEnabled = true
+            setModeText(original, if (current == "base") "Resume Mario Kart Wii" else "Mario Kart Wii",
+                if (current == "base") "Current game • Paused" else "Switch on next launch")
+            setModeText(retro, if (current == "retro_rewind") "Resume Retro Rewind" else "Retro Rewind",
+                if (current == "retro_rewind") "Current game • Paused" else "Switch on next launch")
+            hideStatus("Current game paused")
+            return
+        }
+        if (pendingProfile == null) {
+            pendingProfile = runCatching { requestedProfileFile().readText() }.getOrNull()
+                ?.takeIf { it == "base" || it == "retro_rewind" }
+        }
         validateRetroRewind()
     }
 
@@ -123,6 +140,26 @@ class KartPadLaunchActivity : Activity() {
     }
 
     private fun selectMode(profile: String) {
+        pausedProfile()?.let { current ->
+            if (profile == current) {
+                finish()
+            } else {
+                AlertDialog.Builder(this)
+                    .setTitle("Switch on Next Launch")
+                    .setMessage("Fully close KartPad from Recents and reopen it to switch games. Saved progress and controls are kept; unsaved race progress is not carried over. Resume does not apply pending changes.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Use on Next Launch") { _, _ ->
+                        val file = android.util.AtomicFile(requestedProfileFile())
+                        requestedProfileFile().parentFile?.mkdirs()
+                        runCatching {
+                            val output = file.startWrite()
+                            try { output.write(profile.toByteArray()); file.finishWrite(output) }
+                            catch (error: Throwable) { file.failWrite(output); throw error }
+                        }.onFailure { showStatus("The next-launch choice could not be saved.") }
+                    }.show()
+            }
+            return
+        }
         if (!gameDataReady) {
             pendingProfile = profile
             startActivityForResult(
@@ -143,6 +180,7 @@ class KartPadLaunchActivity : Activity() {
     }
 
     private fun launch(profile: String) {
+        requestedProfileFile().delete()
         Log.i(LOG_TAG, "A3 mode chooser selected=$profile")
         startActivity(
             Intent(this, KartPadActivity::class.java)
@@ -225,7 +263,8 @@ class KartPadLaunchActivity : Activity() {
         )
         column.addView(
             label(
-                "Your own RMCP01 disc image or extracted game data is required before play.",
+                if (pausedProfile() != null) "Your current game is paused. Resume below. Switching games requires fully closing and reopening KartPad."
+                else "Your own RMCP01 disc image or extracted game data is required before play.",
                 17f,
                 Color.argb(158, 255, 255, 255),
             ),

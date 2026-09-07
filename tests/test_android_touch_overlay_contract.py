@@ -8,6 +8,16 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 class AndroidTouchOverlayContractTests(unittest.TestCase):
+    def test_paused_chooser_preserves_pending_import_selection(self) -> None:
+        source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadLaunchActivity.kt").read_text()
+        self.assertIn('if (pendingProfile == null) {', source)
+        self.assertIn('requestedProfileFile().readText()', source)
+        self.assertIn('"Resume Mario Kart Wii"', source)
+        self.assertIn('"Switch on Next Launch"', source)
+        paused = source[source.index('private fun selectMode'):source.index('private fun continueSelectedMode')]
+        self.assertIn('finish()', paused)
+        self.assertNotIn('KartPadActivity::class.java', paused)
+
     def test_overlay_exposes_complete_classic_control_set(self) -> None:
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadOverlayView.kt").read_text()
         for control in (
@@ -277,13 +287,13 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
         native = (REPO / "android/app/src/main/cpp/kartpad_runtime_settings_jni.cpp").read_text()
         for title in (
-            '"KartPad"', '"Switch Game Version…"', '"Multiplayer…"',
+            '"KartPad"', '"Return to KartPad Menu"', '"Multiplayer…"',
             '"Show FPS Counter"', '"Controls"', '"Display"',
             '"Game Data & Saves"', '"Controller Player Setup…"',
             '"Controller Button Mapping…"',
             '"Touch Control Settings…"', '"Motion Steering…"',
             '"Experimental Wii Remote + Nunchuk…"', '"Aspect Ratio…"',
-            '"Render Resolution…"', '"Manage Retro Rewind…"', '"Manage Miis…"',
+            '"Render Resolution…"', '"Manage Retro Rewind…"', '"Player Identity…"',
             '"Import or Reimport Wii Disc Image…"',
             '"Import from Extracted Folder…"', '"Remove Stored Game Data…"',
             '"Manage Saves…"',
@@ -393,9 +403,9 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('"move" -> PointF(172f, 172f)', source)
         self.assertIn('"R" -> PointF(132f, 62f)', source)
         self.assertIn('"Start" -> PointF(116f, 62f)', source)
-        self.assertIn('"move" -> PointF(0.13f, 0.83f)', source)
-        self.assertIn('"Z" -> PointF(0.84f, 0.52f)', source)
-        self.assertIn('"Start" -> PointF(0.94f, 0.50f)', source)
+        self.assertIn('"move" -> PointF(0.14756955f, 0.91391391f)', source)
+        self.assertIn('"Z" -> PointF(0.83304539f, 0.65063063f)', source)
+        self.assertIn('"Start" -> PointF(0.95537335f, 0.57607608f)', source)
         self.assertIn('else -> PointF(0.26866764f, 0.79472595f)', source)
         self.assertIn("DEBUG_EXTRA_TOUCH_OVERLAY", activity)
         self.assertIn("BuildConfig.GAME_RUNTIME || debugTouchOverlay", activity)
@@ -424,7 +434,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
         runner = (REPO / "scripts/test-android-menu-parity.sh").read_text()
         for label in (
-            "Switch Game Version…",
+            "Return to KartPad Menu",
             "Multiplayer…",
             "Show FPS Counter",
             "Controller Player Setup…",
@@ -439,7 +449,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
             "Remove Stored Game Data…",
             "Manage Retro Rewind…",
             "Manage Saves…",
-            "Manage Miis…",
+            "Player Identity…",
             "Report a Problem…",
         ):
             self.assertIn(f'"{label}"', activity)
@@ -459,7 +469,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('open_submenu_action "Controls" "Touch Control Settings…"', runner)
         self.assertIn('open_submenu_action "Display" "Aspect Ratio…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Manage Saves…"', runner)
-        self.assertIn('open_submenu_action "Game Data & Saves" "Manage Miis…"', runner)
+        self.assertIn('open_submenu_action "Game Data & Saves" "Player Identity…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Import or Reimport Wii Disc Image…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Import from Extracted Folder…"', runner)
         self.assertIn("topResumedActivity=.*com.google.android.documentsui", runner)

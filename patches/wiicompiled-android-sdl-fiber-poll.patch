@@ -55,7 +55,7 @@
  
  #include <aurora/aurora.h>
  #include <aurora/event.h>
-@@ -139,6 +140,26 @@
+@@ -139,9 +140,29 @@
  }
  
 +#if defined(__ANDROID__)
@@ -72,6 +72,9 @@
 +    g_androidAuroraPollPending.store(false, std::memory_order_release);
 +#endif
      ProcessAuroraEvents(aurora_update());
+ #if defined(__APPLE__) && TARGET_OS_IOS
+     KartPadMobileServiceMainMenu();
+ #endif
  }
 +
 +inline void ServicePendingAuroraEventsOnScheduler() {

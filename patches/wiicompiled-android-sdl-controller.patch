@@ -74,10 +74,8 @@ diff --git a/src/hle/input/kpad.cpp b/src/hle/input/kpad.cpp
  uint32_t ClassicButtonsForGhost(const GhostSample& sample)
  {
      uint32_t buttons = 0;
-@@ -777,8 +829,12 @@
- 
- extern "C" bool KPAD_IsKeyboardChannelConnected(uint32_t chan)
- {
+@@ -785,6 +837,10 @@
+ #endif
 -    return chan < g_keyboardConnected.size() &&
 -           (chan == 0 || g_keyboardConnected[chan].load(std::memory_order_acquire));
 +    if (chan >= g_keyboardConnected.size()) return false;

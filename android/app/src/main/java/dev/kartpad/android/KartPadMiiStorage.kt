@@ -25,6 +25,7 @@ internal object KartPadMiiStorage {
     fun hasPending(filesDir: File): Boolean = pendingFile(filesDir).isFile
 
     fun writePending(filesDir: File, database: ByteArray) {
+        require(!KartPadIdentityStorage.hasPending(filesDir)) { "Apply pending identity edits before changing Mii appearances." }
         require(isValidDatabase(database)) { "The updated Mii database is invalid." }
         val file = pendingFile(filesDir)
         file.parentFile?.mkdirs()

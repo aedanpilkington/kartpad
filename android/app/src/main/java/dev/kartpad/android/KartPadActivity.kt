@@ -76,24 +76,36 @@ class KartPadActivity : SDLActivity() {
 
     override fun createSDLSurface(context: Context): SDLSurface = KartPadSurface(context)
 
+    override fun loadLibraries() {
+        super.loadLibraries()
+        // SDL catches library/startup failures and does not start the guest.
+        // Resume never runs this hook, so pending edits apply only at cold launch.
+        if (BuildConfig.GAME_RUNTIME && !identityStartupChecked) {
+            KartPadIdentityStorage.applyPending(filesDir)?.let { error ->
+                throw IllegalStateException(error)
+            }
+            identityStartupChecked = true
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recover(filesDir)
-            KartPadSaveStorage.applyPending(filesDir)?.let { error ->
-                Log.e(TAG, error)
-            }
-            KartPadMiiStorage.applyPending(filesDir)?.let { error ->
-                Log.e(TAG, error)
+            if (!identityStartupChecked) {
+                KartPadSaveStorage.applyPending(filesDir)?.let { error -> Log.e(TAG, error) }
+                KartPadMiiStorage.applyPending(filesDir)?.let { error -> Log.e(TAG, error) }
             }
             KartPadRuntimeResources.install(this)
             configureRuntimeProfile()
+            if (!identityStartupChecked) KartPadPrivateServerSettings.configureLaunch(this)
             configureDebugLocalWfcRoute()
             configureDebugRkgInput()
             configureDebugStateTrace()
         }
         super.onCreate(savedInstanceState)
+        if (mBrokenLibraries) return
         nativeEnableActivityRecreation()
         inputManager = getSystemService(InputManager::class.java)
         runDebugRetroRewindExtractionFixture()
@@ -311,6 +323,7 @@ class KartPadActivity : SDLActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (mBrokenLibraries) return
         if (::inputManager.isInitialized && !inputListenerRegistered) {
             inputManager.registerInputDeviceListener(inputDeviceListener, null)
             inputListenerRegistered = true
@@ -474,8 +487,11 @@ class KartPadActivity : SDLActivity() {
         showKartPadMenuPage(
             "KartPad",
             listOf(
-                MenuRow("Switch Game Version…", R.drawable.ic_kartpad_gobackward) {
-                    closeKartPadMenu(::confirmSwitchGameVersion)
+                MenuRow("Return to KartPad Menu", R.drawable.ic_kartpad_gobackward) {
+                    closeKartPadMenu {
+                        startActivity(Intent(this, KartPadPausedMenuActivity::class.java)
+                            .putExtra(EXTRA_RUNTIME_PROFILE, runtimeProfile))
+                    }
                 },
                 MenuRow("Multiplayer…", R.drawable.ic_kartpad_multiplayer) {
                     closeKartPadMenu(::showMultiplayer)
@@ -571,8 +587,8 @@ class KartPadActivity : SDLActivity() {
             MenuRow("Manage Saves…", R.drawable.ic_kartpad_folder) {
                 closeKartPadMenu(::showSaveManager)
             },
-            MenuRow("Manage Miis…", R.drawable.ic_kartpad_mii) {
-                closeKartPadMenu(::showMiiManager)
+            MenuRow("Player Identity…", R.drawable.ic_kartpad_mii) {
+                closeKartPadMenu(::showPlayerIdentity)
             },
         ),
         showBack = true,
@@ -779,17 +795,22 @@ class KartPadActivity : SDLActivity() {
 
     private fun showMultiplayer() {
         val retro = runtimeProfile == "retro_rewind"
-        val message = if (retro) {
-            "Retro Rewind is active. Choose Nintendo WFC in the game for Retro WFC online play."
-        } else {
-            "Online multiplayer is available only through Retro Rewind. The original Mario Kart Wii online service is no longer available."
-        }
+        val choices = mutableListOf("Local Split-Screen…", "Controller Setup…")
+        if (retro) choices += "Retro WFC Friend Rooms…"
+        choices += "Experimental Server Settings…"
         AlertDialog.Builder(this)
             .setTitle("Multiplayer")
-            .setMessage(message)
-            .apply {
-                if (!retro) setPositiveButton("Set Up Retro Rewind") { _, _ ->
-                    startActivity(Intent(this@KartPadActivity, RetroRewindInstallActivity::class.java))
+            .setItems(choices.toTypedArray()) { dialog, index ->
+                dialog.dismiss()
+                menuButton.post {
+                    when (choices[index]) {
+                        "Controller Setup…" -> showControllerPlayers()
+                        "Experimental Server Settings…" -> KartPadPrivateServerSettings.show(this)
+                        "Local Split-Screen…" -> showParityBoundary("Local Split-Screen",
+                            "Pair Android-supported controllers, assign Player 1–4 in Controller Setup, then choose Multiplayer in the game. Press the mapped A button on each pad at Register Controllers. Touch shares Player 1. PlayStation defaults: Cross = A, Circle = B, Square = X, Triangle = Y; Customize Face Buttons changes these positions.")
+                        else -> showParityBoundary("Retro WFC Friend Rooms",
+                            "Use Nintendo WFC → Friends in Retro Rewind. Everyone needs matching content and a compatible service. After login, exchange friend codes and join through the friend roster. This is not a native room-code or host/join service. Online race acceptance remains separate.")
+                    }
                 }
             }
             .setNegativeButton("Back", null)
@@ -1050,6 +1071,85 @@ class KartPadActivity : SDLActivity() {
         dialog.show()
     }
 
+    private fun showPlayerIdentity() {
+        val choices = arrayOf("Edit Mii Name…", "Rename or Delete Licenses…", "Mii Appearance…", "About Player Identity")
+        AlertDialog.Builder(this).setTitle("Player Identity")
+            .setItems(choices) { dialog, which ->
+                dialog.dismiss()
+                menuButton.post {
+                    when (which) {
+                        0 -> showIdentityRecords(true)
+                        1 -> showIdentityRecords(false)
+                        2 -> showMiiManager()
+                        else -> showParityBoundary("Player Identity",
+                            "A Mii is your identity and appearance; a license holds progress for one game profile. Create a license with New inside the game, then choose your Mii. Renaming a Mii updates its linked licenses without changing friend codes or progress. Fully close KartPad from Recents and reopen to apply edits; returning to the menu and resuming does not apply them.")
+                    }
+                }
+            }.setNegativeButton("Back", null).show()
+    }
+
+    private fun showIdentityRecords(miis: Boolean) {
+        val records = runCatching { KartPadIdentityStorage.records(filesDir, miis) }.getOrElse {
+            showParityBoundary("Identity Could Not Be Read", "The save or Mii database failed validation. Nothing was changed.")
+            return
+        }
+        if (records.isEmpty()) {
+            showParityBoundary("No Existing ${if (miis) "Miis" else "Licenses"}",
+                "Start the game once. Create a license using New inside the game, then choose your Mii.")
+            return
+        }
+        AlertDialog.Builder(this).setTitle(if (miis) "Edit Mii Name" else "Rename or Delete Licenses")
+            .setItems(records.map { "${KartPadIdentityStorage.titles[it.profile]} • Slot ${it.slot + 1} — ${it.name}" }.toTypedArray()) { dialog, index ->
+                dialog.dismiss()
+                val record = records[index]
+                menuButton.post {
+                    if (miis) editIdentityName(record)
+                    else AlertDialog.Builder(this).setTitle("${KartPadIdentityStorage.titles[record.profile]} • Slot ${record.slot + 1}")
+                        .setMessage("Rename keeps this license's account and progress. Delete removes only this slot after another confirmation. Fully close KartPad from Recents and reopen to apply.")
+                        .setPositiveButton("Rename License…") { _, _ -> menuButton.post { editIdentityName(record) } }
+                        .setNeutralButton("Delete License…") { _, _ -> menuButton.post {
+                            AlertDialog.Builder(this).setTitle("Delete This License?")
+                                .setMessage("Delete ${record.name} from ${KartPadIdentityStorage.titles[record.profile]}, slot ${record.slot + 1}? Other licenses remain intact. A private backup is retained when this applies on next launch.")
+                                .setNegativeButton("Cancel", null)
+                                .setPositiveButton("Delete License") { _, _ -> stageIdentity(record, true, "") }.show()
+                        } }.setNegativeButton("Cancel", null).show()
+                }
+            }.setNegativeButton("Back", null).show()
+    }
+
+    private fun editIdentityName(record: KartPadIdentityStorage.Record) {
+        val field = EditText(this).apply {
+            isSingleLine = true
+            setText(record.name)
+            setSelection(text.length)
+        }
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(if (record.profile == "mii") "Edit Mii Name" else "Rename Existing License")
+            .setMessage("Use 1–10 characters. Fully close KartPad from Recents and reopen to apply. Resume does not apply pending edits.")
+            .setView(field).setNegativeButton("Cancel", null)
+            .setPositiveButton("Save for Next Launch", null).create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                val name = field.text.toString().trim()
+                runCatching { KartPadIdentityStorage.stage(filesDir, record, false, name) }
+                    .onFailure { field.error = it.message ?: "The name could not be staged." }
+                    .onSuccess { dialog.dismiss(); menuButton.post { identityScheduled() } }
+            }
+        }
+        dialog.show()
+    }
+
+    private fun stageIdentity(record: KartPadIdentityStorage.Record, delete: Boolean, name: String) {
+        val failure = runCatching { KartPadIdentityStorage.stage(filesDir, record, delete, name) }.exceptionOrNull()
+        menuButton.post {
+            if (failure == null) identityScheduled()
+            else showParityBoundary("Identity Change Not Scheduled", failure.message ?: "No changes were made.")
+        }
+    }
+
+    private fun identityScheduled() = showParityBoundary("Identity Change Scheduled",
+        "Fully close KartPad from Recents and reopen to apply. Returning to the KartPad menu and resuming keeps the current identity. Private recovery backups will be retained.")
+
     private fun showMiiManager() {
         kartPadOverlay.clearTouchInput()
         val database = runCatching { KartPadMiiStorage.readWorking(filesDir) }
@@ -1192,10 +1292,19 @@ class KartPadActivity : SDLActivity() {
     }
 
     private fun confirmMiiRemoval(record: MiiRecord) {
+        val unlinked = runCatching {
+            val mii = KartPadIdentityStorage.records(filesDir, true).first { it.slot == record.slot }
+            KartPadIdentityStorage.records(filesDir, false).none { it.createId == mii.createId }
+        }.getOrDefault(false)
+        if (!unlinked) {
+            showParityBoundary("Mii Is Linked to a License",
+                "Use Player Identity → Rename or Delete Licenses first. Removing a linked appearance could leave its license unusable.")
+            return
+        }
         AlertDialog.Builder(this)
             .setTitle("Remove ${record.name}?")
             .setMessage(
-                "The removal will apply after restarting the game. KartPad retains a backup and always keeps at least one Mii.",
+                "Only this unused appearance is removed. Fully close KartPad from Recents and reopen to apply. KartPad retains a backup and always keeps at least one Mii.",
             )
             .setNegativeButton("Cancel", null)
             .setPositiveButton("Remove") { _, _ ->
@@ -2022,6 +2131,7 @@ class KartPadActivity : SDLActivity() {
     private external fun nativeRemoveMii(database: ByteArray, slot: Int): ByteArray
 
     companion object {
+        private var identityStartupChecked = false
         private const val SELECTOR_RESTART_DELAY_MS = 250L
         private const val REQUEST_IMPORT_MII = 4_301
         private const val REQUEST_MANAGE_GAME_DATA = 4_302
