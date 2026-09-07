@@ -29,6 +29,9 @@ const char *KartPadMobileSelectedRuntimeProfile();
 // Called after Aurora has created its SDL/UIKit Metal window.
 void KartPadMobileRuntimeHostInstall(void *sdlWindow);
 void KartPadMobileRuntimeHostUninstall();
+// Called at the guest event-pump boundary. Holds guest execution in the native
+// chooser until the current game is resumed; does not reinitialize the runtime.
+void KartPadMobileServiceMainMenu();
 
 // Reads the persisted settings owned by the exact SunPad shell before Aurora
 // creates the mobile render surface. Aspect modes match SunPadSettings:
