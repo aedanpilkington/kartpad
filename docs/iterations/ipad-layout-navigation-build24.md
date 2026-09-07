@@ -1,7 +1,10 @@
 # iPad layout and navigation iteration — 0.4.10 build 24
 
-Private physical-acceptance candidate; no IPA or public release is produced for
-this iteration. The latest public release remains 0.4.9.
+Build 24 was installed as a private physical-acceptance candidate without an
+IPA. The maintainer subsequently exercised menu navigation, switching after
+reopening, and Retro Rewind license deletion and creation on iPad, and requested
+the [build 25 clarity update](ipad-identity-build25.md) and a new IPA. The latest
+published GitHub release remains 0.4.9.
 
 The iPad defaults now match the maintainer's edited physical iPad layout captured
 on 2026-09-07, including per-button sizes. Fresh iPad defaults and Reset This

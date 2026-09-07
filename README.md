@@ -46,6 +46,14 @@ management, packaging, and release workflows.
 > provisioning profile. Retro WFC is active again; exact KartPad production
 > login, matchmaking, race, results, and reconnect acceptance remain separate.
 
+## iPhone and iPad 0.4.10 update
+
+The 0.4.10 build 25 IPA adds the revised iPad touch defaults, a return-to-menu
+flow, and clearer player identity controls described below. The menu names in
+this README follow 0.4.10; 0.4.9 calls them **Manage Existing Licenses…** and
+**Set Player Name…**. The latest published GitHub release remains 0.4.9 until
+the new IPA is published.
+
 ## What is available now?
 
 | Question | Answer |
@@ -57,7 +65,7 @@ management, packaging, and release workflows.
 | Does it support Retro Rewind? | **Yes.** Choose Original Mario Kart Wii or Retro Rewind when KartPad opens. KartPad can download, verify, and install the official Retro Rewind 6.12.7 pack. The 6.12.7 graph and package are current; physical acceptance remains separate. |
 | Does online play work? | The online-capable build passes login, matchmaking, a two-player race, results, ratings, and lobby return against a compatible isolated WFC server. Retro WFC is active again as of 6 September 2026. Production compatibility of the exact 0.4.9 KartPad artifacts still needs end-to-end and physical-device acceptance. |
 | Do touch, tilt, and controllers work? | Touch, motion steering, and ordinary GameController-compatible pads are implemented, with general physical acceptance on iPhone and iPad. Direct Wii Remote/Nunchuk pairing is a separate experimental, macOS-only path that still needs external hardware testing. |
-| Can I rename or delete a license? | **Yes on iPhone and iPad.** Open **Game Data & Saves → Player Identity… → Manage Existing Licenses…**, choose the exact game profile and slot, then rename it without losing its friend code/progress or delete only that slot after a second warning. Restart KartPad to apply the backed-up change. |
+| Can I rename or delete a license? | **Yes on iPhone and iPad.** Open **Game Data & Saves → Player Identity… → Rename or Delete Licenses…**, choose the exact game profile and slot, then rename it without losing its friend code/progress or delete only that slot after a second warning. Fully close KartPad from the app switcher and reopen it to apply the backed-up change; returning to its menu and resuming does not apply pending edits. |
 | Can I choose a Mii appearance? | **Appearance import remains experimental.** Open **Game Data & Saves → Player Identity… → Import Mii Appearance…** and choose a standard 74-byte `.mii` file. **Remove Mii Appearance…** never means delete a game license and refuses to remove a Mii that is still linked to one. |
 | Are Android and Apple TV supported? | Apple TV has an experimental native hardware-bring-up IPA in `v0.4.9`, but it is not accepted as supported until physical testers complete the matrix. Android implementation remains paused on its separate development branch; this release contains no Android APK. |
 | How much storage does it need? | The app is about 80 MiB and extracted Mario Kart Wii data uses about 2.5 GiB. Retro Rewind downloads an additional 1.72 GiB archive and needs temporary installation space. Keeping the WBFS/ISO on the device requires more space. |
@@ -81,6 +89,19 @@ an unrelated setup path. The opening screen offers two choices:
   characters, saves, local multiplayer, and KartPad controls.
 - **Retro Rewind** adds its expanded tracks, characters, features, and Retro
   WFC integration while using the same native KartPad runtime and controls.
+
+On iPhone and iPad in 0.4.10, open **••• → Return to KartPad Menu** to pause
+the current game and return to the chooser. **Resume** continues that same
+session. The other game is labeled **Switch on next launch**: choose **Use on
+Next Launch**, fully close KartPad from the app switcher, then reopen it.
+Returning to the chooser alone does not restart the game or apply pending
+license edits. An online connection may time out while the game is paused.
+
+Original Mario Kart Wii no longer offers the unusable private friend-room
+instructions. **Experimental Server Settings…** is an override for an
+already-running compatible Wii service; it does not create a private lobby.
+Retro Rewind retains **Retro WFC Friend Rooms…** guidance. Native MeleePad-style
+room hosting and joining remain unfinished.
 
 KartPad does not bundle either game's private data. After you import your own
 supported Mario Kart Wii image, choosing Retro Rewind checks the official
@@ -197,7 +218,7 @@ the remaining acceptance checks.
 
 ### Rename or delete an existing license
 
-Open **••• → Game Data & Saves → Player Identity… → Manage Existing
+Open **••• → Game Data & Saves → Player Identity… → Rename or Delete
 Licenses…**. KartPad lists each active license as **Original Mario Kart Wii** or
 **Retro Rewind**, followed by its one-based slot and current name.
 
@@ -206,8 +227,11 @@ Licenses…**. KartPad lists each active license as **Original Mario Kart Wii** 
 - Choose **Delete License…** only for the exact unwanted slot. A second warning
   names the profile and slot because deletion removes that license's friend
   code, account data, records, and progress.
-- Close and reopen KartPad before playing. The change is applied to the newest
-  live save only after it is revalidated and backed up.
+- Fully close KartPad from the app switcher and reopen it before playing.
+  Returning to the KartPad menu and resuming does not apply pending edits. The
+  newest live save is revalidated and backed up before the change is applied.
+- Deleting a license leaves the other slots in place. Deleting slot 1 does not
+  move the license in slot 2 into slot 1.
 
 If an older license already has a friend code and a newly created duplicate
 does not, rename the established license first. Verify its friend code remains,
@@ -216,14 +240,16 @@ to change its name.
 
 ### Set a Mii name or appearance
 
-On iPhone or iPad, open **Game Data & Saves → Player Identity…**. Choose **Set
-Player Name…** to give the built-in or an imported Mii a 1–10 character name.
+On iPhone or iPad, open **Game Data & Saves → Player Identity…**. Choose **Edit
+Mii Name…** to give the built-in or an imported Mii a 1–10 character name.
 On the next launch, KartPad updates that Mii and every linked original-game or
 Retro Rewind license while retaining friend codes, online account data, and
-progress. New licenses created with that Mii inherit the chosen name.
+progress. This edits your Mii identity; it does not create a game license.
+To create one, choose **New** on the license screen inside Mario Kart Wii or
+Retro Rewind, then select that Mii. The new license inherits its name.
 
-**Set Player Name…** remains available for naming a Mii and every license that
-is already linked to it. For an older or unlinked license, use **Manage Existing
+**Edit Mii Name…** remains available for naming a Mii and every license that
+is already linked to it. For an older or unlinked license, use **Rename or Delete
 Licenses…** instead.
 
 KartPad still does not include the Wii Menu's full appearance editor. To change

@@ -1,8 +1,9 @@
 # Multiplayer and controllers
 
 Open **••• → Multiplayer…** on iPhone/iPad, **Controls → Multiplayer…** on
-Mac, or **Multiplayer…** on the Apple TV game chooser. The same options cover
-Original Mario Kart Wii and Retro Rewind.
+Mac, or **Multiplayer…** on the Apple TV game chooser. The menu covers
+Original Mario Kart Wii and Retro Rewind; available online guidance depends on
+the game profile. The 0.4.10 changes below apply to iPhone and iPad.
 
 ## Local split-screen
 
@@ -43,11 +44,16 @@ not interchangeable support claims.
 
 ## Private friend rooms
 
-The existing Wii friend-room flow lives inside the game: **Nintendo WFC →
-Friends**. Everyone must use the same game profile, content version and online
-service. Exchange friend codes; the host creates a room and friends join from
-their friend roster. Retro Rewind normally uses Retro WFC. Original Nintendo WFC
-is closed.
+In iPhone/iPad 0.4.10, **Retro WFC Friend Rooms…** is shown only for Retro
+Rewind. Its friend-room flow lives inside the game: **Nintendo WFC → Friends**.
+Everyone must use matching Retro Rewind content and a compatible online service.
+After a successful service login, exchange friend codes, create a room, and
+join through the friend roster. Exact production login and races still need
+acceptance for the distributed KartPad build.
+
+Original Nintendo WFC is closed. Original Mario Kart Wii's Multiplayer menu
+therefore has no private friend-room instruction action in 0.4.10. The
+experimental server setting below does not restore that service by itself.
 
 This is different from MeleePad's Dolphin/ENet synchronized-input rooms.
 MeleePad room codes, native host/join controls, traversal, ready state and peer
@@ -55,7 +61,9 @@ chat have **not** been ported. A shared menu does not establish that parity.
 
 ## Experimental private Wii-server routing
 
-**Private Wii Server…** saves a hostname or IPv4 address for the next launch.
+**Experimental Server Settings…** on iPhone/iPad 0.4.10 saves a hostname or
+IPv4 address for the next launch. The older Apple builds label it **Private
+Wii Server…**.
 Quit/fully close and reopen KartPad after saving or restoring the default.
 The launch-time route is shared by both game profiles. This is a client route,
 not a server installed or hosted by KartPad, and is not a room-code service.
