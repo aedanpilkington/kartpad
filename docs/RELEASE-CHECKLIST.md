@@ -16,12 +16,12 @@ online race or server-history cleanup is inferred from these checks.
 
 ## macOS 0.4.11 console-serial hotfix
 
-- [ ] Rebuild both executable profiles from freshly patched source.
-- [ ] Audit the signed app and inspect the linked corrected serial write.
-- [ ] Run bounded local launch/close checks without touching installed saves.
-- [ ] Merge metadata, package exact main twice and audit extracted signatures.
-- [ ] Publish only Mac ZIP/checksum, anonymously download and re-audit.
-- [ ] Update issue #94 and the current download documentation.
+- [x] Rebuild both executable profiles from freshly patched source.
+- [x] Audit the signed app and inspect the linked corrected serial write.
+- [x] Run bounded local launch/close checks without touching installed saves.
+- [x] Merge metadata, package exact main twice and audit extracted signatures.
+- [x] Publish only Mac ZIP/checksum, anonymously download and re-audit.
+- [x] Update issue #94 and the current download documentation.
 
 ## First Android community release (v0.4.10-android.1)
 
