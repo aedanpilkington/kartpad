@@ -27,10 +27,13 @@
 ## Updating safely
 
 Install future public APKs over the existing public app. Keep the same signing
-identity and use a forward version code. Export saves for **both profiles**
-through **Game Data & Saves → Manage Saves…** before updating, and keep your
-owned image separately. Save export is not a complete backup of preferences,
-Miis or downloaded content. Never uninstall or clear storage as an update step.
+identity and use a forward version code. Export the **Original Mario Kart Wii**
+save through
+**Game Data & Saves → Manage Saves…** before updating, and keep your owned image
+separately. The current save manager does not back up Retro Rewind saves, Miis,
+preferences, or downloaded content; opening it from Retro Rewind still targets
+Original. See [save transfer and its limits](SUPPORT.md#android-save-transfer).
+Never uninstall or clear storage as an update step.
 
 **Private preview users:** earlier hardware previews use a different local
 debug certificate. Android will reject the public release as an in-place update
@@ -68,12 +71,22 @@ track-dependent slowdown remains. This release does not promise sustained 60 FPS
 Retro WFC login, worldwide matchmaking and live race play were owner-reported;
 complete results, reconnect and network-transition coverage remain open.
 
+## Save location and PC transfer
+
+Saves live in internal app-private storage, so they are not visible in a normal
+file manager under `Android/data`. Use **••• → Game Data & Saves → Manage Saves…**
+to export or restore an Original `rksys.dat` through the system picker. Follow
+the [transfer steps and profile limitations](SUPPORT.md#android-save-transfer);
+root access is not needed.
+
 ## Report a problem
 
 Include the Android app version, phone model, OS/API, game/profile and track,
 render resolution/aspect, controller model, how long it ran, and whether it was
 a cold or repeat launch. Enable **Show FPS Counter** and describe when it dips.
-Use **Export Private Diagnostics…** to save logs locally after reproducing it.
+Use **Export Private Diagnostics…** on the launch chooser to save logs locally
+after reproducing it. The [support guide](SUPPORT.md#collect-a-useful-report)
+explains which excerpts to share and how this differs from **Report a Problem…**.
 Runtime, renderer-phase and bounded battery/thermal diagnostics are retained
 locally; the app does not upload those reports automatically. Shell profiling
 is enabled in this first release, but the app is non-debuggable.
