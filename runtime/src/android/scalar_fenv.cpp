@@ -10,6 +10,9 @@ extern "C" __attribute__((noinline)) int KartPadAndroidCaptureScalarFlags() noex
   std::uint64_t status;
   asm volatile("mrs %0, fpsr" : "=r"(status) :: "memory");
   const auto cleared = status & ~std::uint64_t(FE_ALL_EXCEPT);
-  asm volatile("msr fpsr, %0" :: "r"(cleared) : "memory");
+  // Exact operations commonly leave every exception bit clear. Avoid a
+  // redundant system-register write, while retaining QC and all other bits.
+  if (cleared != status)
+    asm volatile("msr fpsr, %0" :: "r"(cleared) : "memory");
   return status & (FE_OVERFLOW | FE_UNDERFLOW | FE_INEXACT);
 }

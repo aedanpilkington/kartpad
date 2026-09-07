@@ -131,7 +131,8 @@ internal object KartPadTouchSettings {
         .getFloat(CONTROL_SIZE_PREFIX + identifier, defaultControlSize(context, identifier))
         .coerceIn(MIN_CONTROL_SIZE, MAX_CONTROL_SIZE)
 
-    // Matches KartPadSeedTouchLayoutDefaults; stored edits still win.
+    // Tablet defaults retain Apple parity. Phone defaults capture the owner's
+    // 2026-09-07 Pixel layout; stored edits still win and are never migrated.
     private fun defaultControlSize(context: Context, identifier: String): Float {
         if (context.resources.configuration.smallestScreenWidthDp >= 600) {
             when (identifier) {
@@ -143,6 +144,8 @@ internal object KartPadTouchSettings {
             }
         }
         return when (identifier) {
+            "X" -> 1.20f
+            "Y" -> 1.24f
             "L" -> 0.97919405f
             "R" -> 0.60f
             "Dpad" -> 0.78272003f

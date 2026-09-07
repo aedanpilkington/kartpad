@@ -1,6 +1,18 @@
 # KartPad Android source-only fixture
 
-Current development checkpoint (2026-09-07): private full-runtime Preview 12,
+Latest candidate: Preview 15/code 20, with the owner's Pixel touch layout as
+phone defaults. Audits pass; installation is pending a fresh post-race save
+export after unlocking. Preview 14 remains installed. Kishi readiness and exact
+hashes: `../docs/iterations/android-preview15-owner-layout-kishi.md`.
+
+Current development checkpoint (2026-09-07): private full-runtime Preview 14,
+code 19, is installed in place with unchanged saves. Android game classification,
+exportable renderer phase timing, and a differential-tested scalar FPSR fast
+path are included. Sustained 60 FPS and full physical parity remain open.
+Current evidence and hashes: `../docs/iterations/android-preview14-phase-performance.md`.
+Do not merge Android into main or publish private builds.
+
+Earlier checkpoint (2026-09-07): private full-runtime Preview 12,
 code 17, is installed in place on the Pixel. The fresh Original save export is
 byte-identical across the update. Actual user race play confirms warm slowdown;
 60 FPS and full physical/feature acceptance remain open. Export Private

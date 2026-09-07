@@ -4,7 +4,27 @@ This is the authoritative handoff for moving Android KartPad testing from the
 current development Mac to another machine and then to one physical Android
 phone.
 
-## Current: Preview 12 on 2026-09-07; physical acceptance still open
+## Current: Preview 14 on 2026-09-07; performance acceptance still open
+
+Latest owner session: gameplay is reported substantially better, with remaining
+menu dips; the owner selected 3x/Fill Screen and customized the touch layout.
+Preview 15/code 20 captures that layout as phone defaults and passes both
+package audits, but installation awaits unlocking and a fresh post-race save
+export. See `docs/iterations/android-preview15-owner-layout-kishi.md` for hashes
+and Kishi testing. Do not reset the owner's layout or reuse a pre-race save as
+the current update backup.
+
+Private `0.4.10-android-preview.14`, code 19, is installed in place on the
+Pixel 9 Pro XL (API 37, 4096-byte pages). Fresh Original save exports match
+byte-for-byte across the updates. Android now recognizes KartPad as a game;
+renderer phase timing is exportable, and a differential-tested scalar FPSR
+fast path avoids redundant register writes. Actual race profiling confirms
+substantial CPU bookkeeping costs, but sustained 60 FPS and complete physical
+parity are **not** established. Current hashes, tests and measurement limits:
+`docs/iterations/android-preview14-phase-performance.md`. Do not merge to main
+or publish Android packages.
+
+## Historical: Preview 12 on 2026-09-07
 
 Private `0.4.10-android-preview.12`, code 17, is installed on the Pixel 9 Pro XL
 in place. A fresh Original save export is byte-identical before and after the
@@ -35,7 +55,7 @@ at `docs/artifacts/2026-09-06/android/a6-physical-phone-pause.md`.
 ## Historical Preview 3 source checkpoint
 
 The remaining Preview 3 commands and hashes below are historical; use the
-Preview 12 checkpoint above for the current candidate and explicit version guards.
+Preview 14 checkpoint above for the current candidate and explicit version guards.
 
 - Branch: `codex/android-a4-touch-settings`
 - Audited product base commit: `cdc96af`

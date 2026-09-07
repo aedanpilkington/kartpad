@@ -8,6 +8,26 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 class AndroidTouchOverlayContractTests(unittest.TestCase):
+    def test_owner_pixel_defaults_preserve_custom_layouts(self) -> None:
+        overlay = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadOverlayView.kt").read_text()
+        settings = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadTouchSettings.kt").read_text()
+        for center in ("0.12649165f, centerY = 0.77888889f",
+                       "0.11336516f, 0.49777778f", "0.04773270f, 0.55944444f",
+                       "0.93651551f, 0.19111111f"):
+            self.assertIn(center, overlay)
+        self.assertIn('"X" -> 1.20f', settings)
+        self.assertIn('"Y" -> 1.24f', settings)
+        self.assertIn("if (customOrigin != null)", overlay)
+        self.assertIn("safe.top + dp(54f) + controlHeight * 0.5f", overlay)
+        # Reconstruct the captured Pixel's safe-relative centers (pixel rounding
+        # may differ by one); defaults do not replace existing stored origins.
+        safe_left, safe_top, safe_width, safe_height = 149, 54, 2095, 900
+        for x, y, expected in ((.11336516, .49777778, (386.5, 502)),
+                               (.04773270, .55944444, (249, 557.5)),
+                               (.93651551, .19111111, (2111, 226))):
+            self.assertAlmostEqual(safe_left + x * safe_width, expected[0], places=3)
+            self.assertAlmostEqual(safe_top + y * safe_height, expected[1], places=3)
+
     def test_paused_chooser_preserves_pending_import_selection(self) -> None:
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadLaunchActivity.kt").read_text()
         self.assertIn('if (pendingProfile == null) {', source)
@@ -393,7 +413,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
 
     def test_z_has_clear_spacing_from_x(self) -> None:
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadOverlayView.kt").read_text()
-        self.assertIn('0.12563889f, 0.5348536f, Color.argb(235, 184, 184, 184)', source)
+        self.assertIn('0.11336516f, 0.49777778f, Color.argb(235, 184, 184, 184)', source)
         self.assertIn('0.8459167f, 0.37832206f, Color.argb(240, 97, 46, 148)', source)
 
     def test_touch_overlay_preserves_ipad_default_geometry_on_tablets(self) -> None:

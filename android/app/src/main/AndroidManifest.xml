@@ -12,6 +12,7 @@
     <uses-feature android:name="android.hardware.vulkan.version" android:required="false" android:version="0x00401000" />
 
     <application
+        android:appCategory="game"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

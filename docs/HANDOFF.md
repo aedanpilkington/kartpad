@@ -2,6 +2,22 @@
 
 ## Current state
 
+Latest follow-up: the owner reports improved Preview 14 gameplay and selected
+3x/Fill Screen. Preview 15/code 20 packages their touch layout as phone defaults;
+its audits pass, but the phone locked before the fresh post-race save export,
+so it is **not installed yet**. Kishi software-path checks pass; no physical
+Kishi is connected. See `docs/iterations/android-preview15-owner-layout-kishi.md`.
+
+Private Android Preview 14 / code 19 is installed on the physical Pixel as of
+2026-09-07. Both package audits and fresh byte-identical save checks pass.
+Android game classification, exportable renderer phase timings, and a tested
+redundant-FPSR-write fast path are included. Race profiling identifies CPU
+bookkeeping as a substantial cost; this is not a sustained-60-FPS fix or full
+parity acceptance. Current evidence: `docs/iterations/android-preview14-phase-performance.md`.
+Keep Android separate from main and unpublished.
+
+### Earlier Preview 12 checkpoint
+
 Physical work resumed after the phone returned on 2026-09-07. Private
 `0.4.10-android-preview.12` / code 17 is now installed in place, with a fresh
 byte-identical before/after Original save export. User-driven Preview 11 race

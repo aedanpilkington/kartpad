@@ -79,6 +79,8 @@ patch --batch -p1 -d "$runtime_source" < \
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-exportable-metrics.patch"
 patch --batch -p1 -d "$runtime_source" < \
+  "$repo_root/patches/aurora-android-phase-metrics.patch"
+patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-scalar-ni-transition.patch"
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-network-tls.patch"

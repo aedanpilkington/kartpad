@@ -8,6 +8,10 @@ ANDROID = "{http://schemas.android.com/apk/res/android}"
 
 
 class AndroidProfileIconContractTests(unittest.TestCase):
+    def test_android_recognizes_the_product_as_a_game(self):
+        app = ET.parse(REPO / "android/app/src/main/AndroidManifest.xml").getroot().find("application")
+        self.assertEqual(app.get(ANDROID + "appCategory"), "game")
+
     def test_scalar_mode_optimization_only_enters_the_android_patch_stack(self):
         patch_name = "wiicompiled-android-scalar-ni-transition.patch"
         android = (REPO / "scripts/prepare-android-game-runtime.sh").read_text()

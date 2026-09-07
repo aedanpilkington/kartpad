@@ -20,3 +20,8 @@ flags=(-std=c++20 -O2 -fno-fast-math -ffp-contract=off -fno-slp-vectorize -I"$re
 "$repo/scripts/check-android-physical-device.sh" >/dev/null
 "$adb" -d push "$out/differential" /data/local/tmp/kartpad-fenv-differential >/dev/null 2>&1
 "$adb" -d shell /data/local/tmp/kartpad-fenv-differential
+"$cxx" "${flags[@]}" -static-libstdc++ \
+  "$repo/runtime/tests/android_fenv_capture_tests.cpp" \
+  "$repo/runtime/src/android/scalar_fenv.cpp" -o "$out/capture-tests"
+"$adb" -d push "$out/capture-tests" /data/local/tmp/kartpad-fenv-capture-tests >/dev/null 2>&1
+"$adb" -d shell /data/local/tmp/kartpad-fenv-capture-tests

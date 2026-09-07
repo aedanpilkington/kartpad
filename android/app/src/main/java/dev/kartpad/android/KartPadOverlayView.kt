@@ -800,7 +800,7 @@ class KartPadOverlayView(context: Context) : View(context) {
     private fun buildControls() {
         val dark = Color.argb(225, 56, 56, 56)
         controls += Control("move", "", Kind.LEFT_STICK, width = 126f, height = 126f,
-            centerX = 0.12347222f, centerY = 0.7803491f, fill = Color.argb(220, 33, 33, 33))
+            centerX = 0.12649165f, centerY = 0.77888889f, fill = Color.argb(220, 33, 33, 33))
         controls += Control("c", "", Kind.RIGHT_STICK, width = 86f, height = 86f,
             centerX = 0.9233056f, centerY = 0.81300676f,
             fill = Color.argb(230, 232, 168, 20))
@@ -809,9 +809,9 @@ class KartPadOverlayView(context: Context) : View(context) {
         controls += button("B", "B", BUTTON_B, 67.19f, 67.19f,
             0.8398611f, 0.6898649f, Color.argb(235, 199, 26, 33))
         controls += button("X", "X", BUTTON_X, 46f, 46f,
-            0.12563889f, 0.5348536f, Color.argb(235, 184, 184, 184), true)
+            0.11336516f, 0.49777778f, Color.argb(235, 184, 184, 184), true)
         controls += button("Y", "Y", BUTTON_Y, 46f, 46f,
-            0.05547222f, 0.56739867f, Color.argb(235, 184, 184, 184), true)
+            0.04773270f, 0.55944444f, Color.argb(235, 184, 184, 184), true)
         controls += button("L", "L", BUTTON_L, 94f, 46f,
             0.9358057f, 0.42246622f, dark)
         controls += button("R", "R", BUTTON_R, 94f, 46f,
@@ -819,7 +819,7 @@ class KartPadOverlayView(context: Context) : View(context) {
         controls += button("Z", "Z", BUTTON_ZR, 46f, 46f,
             0.8459167f, 0.37832206f, Color.argb(240, 97, 46, 148))
         controls += button("Start", "START", BUTTON_PLUS, 92f, 46f,
-            0.09022222f, 0.11289414f, Color.argb(235, 71, 71, 71))
+            0.93651551f, 0.19111111f, Color.argb(235, 71, 71, 71))
 
         val dpadX = 0.08450000f
         val dpadY = 0.34521396f
@@ -875,7 +875,12 @@ class KartPadOverlayView(context: Context) : View(context) {
                 centerY = safe.bottom - margin - camera - controlHeight * 0.5f - dp(18f) * baseScale
             } else {
                 centerX = safe.left + control.centerX * safe.width()
-                centerY = safe.top + control.centerY * safe.height()
+                // The owner's upper-right Start sits below the 44 dp menu
+                // (8 dp top margin). Keep that separation on shorter phones.
+                centerY = if (control.id == "Start") max(
+                    safe.top + control.centerY * safe.height(),
+                    safe.top + dp(54f) + controlHeight * 0.5f,
+                ) else safe.top + control.centerY * safe.height()
             }
             val boundedCenterX = centerX.coerceIn(
                 safe.left + controlWidth * 0.5f,
