@@ -26,9 +26,11 @@ Root access is not needed for the built-in Original save transfer:
 **Current limit:** Android `0.4.10-android.1` Manage Saves always targets the
 Original PAL save, even when opened while playing Retro Rewind. It does not
 export or restore Retro Rewind's separate save files. Do not use it expecting
-a Retro Rewind migration. If that is your goal, say so in
-[#105](https://github.com/chrissotraidis/kartpad/issues/105); explicit profile
-selection and separate-save backup/restore still need implementation and tests.
+a Retro Rewind migration. The confirmed PC WiiCompiled → Android KartPad
+Retro Rewind/PAL transfer is tracked in
+[#105](https://github.com/chrissotraidis/kartpad/issues/105). Explicit profile
+selection and separate-save backup/restore still need implementation and tests;
+there is no supported Retro Rewind transfer route in the current APK.
 
 The importer accepts a raw 2,867,200-byte `RKSD0006` save with a valid core
 checksum. That validation does not prove cross-region, cross-mod, or online
