@@ -45,3 +45,12 @@ transport and safe in-process game switching remain separate unfinished work.
   signing-material, private-data, executable-path, and full app audits.
 - The local artifact was copied to the maintainer's Downloads folder and its
   hash rechecked. No GitHub release or hosted-download verification was performed.
+
+## Maintainer acceptance
+
+On 2026-09-07 the maintainer accepted the current Mac, iPhone and iPad builds
+for general use and authorized merging and publishing. The latest physical
+check was build 25 on iPad: Retro Rewind launched, Game Data & Saves was clear,
+and the Retro WFC menu allowed scrolling to Friends. This observation does
+not establish a completed production-online race. The accepted app behavior
+is frozen for the release; only documentation and release provenance change.
