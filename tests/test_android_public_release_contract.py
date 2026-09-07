@@ -20,6 +20,7 @@ class AndroidPublicReleaseTests(unittest.TestCase):
         for required in ("sourceCommit", "apkSHA256", "nativeLibraries", "noticesSHA256",
                          "containsTranslatedGameCode", "upstreamRightsConfirmed",
                          "certificate_sha256", "CN=Android Debug", '"--porcelain"',
+                         "APPROVED_MAIN_SHA256", "issue #94-corrected release library",
                          "GPL-3.0.txt", "Dawn-BSD.txt", "SDL3-Zlib.txt", "package.testzip()"):
             self.assertIn(required, source)
 
