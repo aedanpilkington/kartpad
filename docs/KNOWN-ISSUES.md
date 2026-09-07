@@ -7,7 +7,7 @@ steps. Open reports are not treated as verified root causes.
 
 | Issue | Current boundary / next evidence |
 | --- | --- |
-| [#105](https://github.com/chrissotraidis/kartpad/issues/105) save location/transfer | Original save transfer already exists on Android; its guide incorrectly implied both profiles. Retro Rewind profile-aware backup/restore remains missing. Source app/region/profile requested. |
+| [#105](https://github.com/chrissotraidis/kartpad/issues/105) save location/transfer | Reporter confirmed PC WiiCompiled → Android KartPad, Retro Rewind/PAL on both. This needs profile-aware save import/export, including the separate-save option; no logs are needed to establish the missing feature. Current Android picker targets only Original. Implementation and transfer acceptance remain open. |
 | [#102](https://github.com/chrissotraidis/kartpad/issues/102), [#104](https://github.com/chrissotraidis/kartpad/issues/104) Android geometry/textures | Device/OS/build, repeat 1x/4:3 scene, renderer startup/errors requested. Working S25+ report prevents a blanket Adreno-failure conclusion. |
 | [#103](https://github.com/chrissotraidis/kartpad/issues/103) Android frame drops | Reporter improved behavior after changing Game Booster+ mode and resolution. Same-mode, same-scene resolution comparison and phase/thermal excerpts requested. |
 | [#101](https://github.com/chrissotraidis/kartpad/issues/101) Fill Screen distortion | 16:9/4:3 fallback; paired scene screenshots and technical report requested. Shared projection correction needs reproduction and cross-platform checks. |
