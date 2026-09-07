@@ -54,3 +54,11 @@ check was build 25 on iPad: Retro Rewind launched, Game Data & Saves was clear,
 and the Retro WFC menu allowed scrolling to Friends. This observation does
 not establish a completed production-online race. The accepted app behavior
 is frozen for the release; only documentation and release provenance change.
+
+## Published release
+
+The accepted app was released from merged main as v0.4.10. The release package
+updates documentation and provenance while preserving every app file from the
+accepted build. See [hosted release verification](../artifacts/2026-09-07/apple/v0410-release-verification.md)
+for its final checksum and anonymous-download audit. The earlier IPA evidence
+above describes the pre-merge local candidate.
