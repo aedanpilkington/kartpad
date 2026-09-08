@@ -51,3 +51,12 @@ No external-output fix or physical acceptance is established by this source
 review. For this release cycle, an iPhone/iPad candidate must remain local for
 owner testing before a formal IPA is published. Each platform needs its own
 acceptance; Android or Mac success does not establish iPad support.
+
+## Surface recreation ownership finding
+
+The [bounded recovery audit](artifacts/2026-09-09/external-display-surface-ownership.md)
+identified new SDL Metal views replacing the root during surface recreation while
+KartPad controls remain on the previous root. Reuse/destruction and control
+ownership need a forced-recovery test; display attachment causing that recovery
+and TV-only black video remain unconfirmed. This is separate from dedicated
+external output and does not authorize a scheduled IPA publication.
