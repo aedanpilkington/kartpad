@@ -18,5 +18,5 @@ esac
   "${translation}" "${runtime_source}" "${runtime_build}" "${product}"
 "${repo_root}/scripts/package-macos-runtime.sh" \
   "${runtime_build}" "${app}" "${product_target}"
-"${repo_root}/scripts/audit-macos-package.sh" "${app}"
+"${repo_root}/scripts/audit-macos-package.sh" "${app}" "${product}"
 echo "Built and audited local KartPad app: ${app}"
