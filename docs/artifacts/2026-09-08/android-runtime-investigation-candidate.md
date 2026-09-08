@@ -94,3 +94,26 @@ validation setting remains enabled for diagnostic continuation; physical devices
 existing worktrees/builds and user saves remain untouched. Build/runtime logs,
 private ZIPs and screenshots stay under this worktree's ignored
 `build/investigation/`. The broader investigation goal remains active.
+
+## Owner-authorized physical installation checkpoint
+
+Christopher subsequently offered the attached Pixel for testing. Read-only checks
+identified Pixel 9 Pro XL / Android17 API37, preview.15 code20, chooser foreground
+and no active game process. The installed certificate matched the audited local
+candidate, so `adb install -r` updated in place successfully. No uninstall, data
+clear, signing change or rebuild was performed. This remains a debug test build.
+
+Before gameplay, a private state archive was read and verified: 429 tar entries,
+15,319,552 bytes, covering settings, identity, NAND, Retro saves and ghosts. This
+backup was taken after package installation enabled run-as, not before the
+package update. A second capture after the attempted startup confirms all 406
+regular files byte-identical, zero removed/changed and zero new state files.
+Private backups and the prior installed APK are retained in ignored hardware
+evidence; do not publish them.
+
+The game activity launch returned successfully but immediately paused as the
+phone locked. A bounded app-process log capture completed, and a fresh window
+query still reports keyguard showing. There is no completed physical gameplay,
+freeze reproduction or renderer acceptance from this attempt. Christopher has
+been asked to unlock and leave KartPad visible; no further installation is needed.
+The next useful physical observation requires that interaction.
