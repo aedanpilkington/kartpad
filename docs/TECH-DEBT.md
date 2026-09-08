@@ -11,14 +11,15 @@ gates are stated explicitly below.
 Reviewed 9 September 2026 against [known issues](KNOWN-ISSUES.md), the
 [maintenance board](MAINTENANCE-BOARD.md) and their dated evidence. This document
 records engineering gaps and what would demonstrate progress; the board owns
-assignments and candidate status. Open reports are not automatically one shared
+assignments and candidate status. The [Android investigation handoff](ANDROID-PERFORMANCE-HANDOFF.md)
+contains the current ranked experiments and installed/candidate build distinctions. Open reports are not automatically one shared
 bug. The tvOS experiments below remain useful, but are not the whole debt queue.
 
 ### Android stability and performance
 
 Android is the main current stability priority. Public preview 1/code 28 adds
-rating restore and diagnostics; it is **not** a verified fix for the reports
-below. Preview 2/code 29 is a local candidate, not a published download.
+rating restore and diagnostics, with offline rating transfer now reporter-confirmed.
+It is **not** a verified graphics, freeze or crash fix. Preview 2/code 29 is a local candidate, not a published download.
 
 | Work / reports | Established evidence and remaining gap | Next discriminating check / acceptance |
 | --- | --- | --- |
@@ -28,14 +29,16 @@ below. Preview 2/code 29 is a local candidate, not a published download.
 | End-of-cup crashes: [#128](https://github.com/chrissotraidis/kartpad/issues/128), [#131](https://github.com/chrissotraidis/kartpad/issues/131) | Reported after Next at the final race, before awards, with Original and Retro both reported affected. Shared awards/resource paths are identified; the matching termination cause is not. | Use the requested exit/console evidence to classify the failure, then exercise the affected awards transition. Do not infer a Retro-only bug or require destructive reimports. [Investigation](artifacts/2026-09-09/cup-transition-investigation.md). |
 | Game-launch crash: [#143](https://github.com/chrissotraidis/kartpad/issues/143) | Honor X7D / Snapdragon 685 report after import and Launch. Exact build/profile and matching termination evidence are still needed. | Separate importer completion from native launch and identify the failing boundary before choosing a CPU/GPU correction. Do not infer incompatibility from the chipset name alone. |
 | System bars and aspect: [#119](https://github.com/chrissotraidis/kartpad/issues/119), [#101](https://github.com/chrissotraidis/kartpad/issues/101) | System-bar handling has shipped changes but reporter/device confirmation remains separate. Fill Screen distortion needs its own projection/presentation reproduction. | Verify focus, chooser/game transitions and system UI on the affected device; compare the same scene in 4:3, 16:9 and Fill. Keep UI lifecycle separate from character corruption. |
-| Save/rating/Mii migration: [#105](https://github.com/chrissotraidis/kartpad/issues/105) | Preview 1 implements reviewed, backed-up, matched offline rating restore. Real-save acceptance is pending; raw save export does not carry the Mii database, and file copying is not online rating synchronization. | Complete the existing offline restore test with matching profiles before separate online checks. Design Mii transfer and Apple UI parity independently, preserving unrelated identities and licenses. [Support workflow](SUPPORT.md). |
+| Save/rating/Mii migration: [#105](https://github.com/chrissotraidis/kartpad/issues/105) | Preview 1 implements reviewed, backed-up, matched offline rating restore; the reporter confirmed successful offline transfer on 8 September. Raw save export does not carry the Mii database, and file copying is not online rating synchronization. | Preserve that confirmed result rather than repeating the completed test request. Design Mii transfer, server-sync tests and Apple UI parity independently, preserving unrelated identities and licenses. [Support workflow](SUPPORT.md). |
 
 ### Apple and shared runtime gaps
 
 - **Older-device launch (#135):** iPhone/iPad 0.4.13 build 29 ships the reviewed
   generic ARM64/RCpc-disabled correction. The final binary and initializer were
-  audited; A10X physical launch and a matching original crash PC/UUID remain
-  necessary before attributing the reporter's crash to that defect. This is
+  audited. The reporter has now supplied original crash text for **0.4.0/build 15**;
+  correlate it with that exact old binary, rather than the inspected 0.4.11.
+  Do not request the same report again. Build 29 physical A10X launch remains
+  pending. This is
   distinct from the tvOS A12 gate below. [Build evidence](artifacts/2026-09-09/ios-preview-build29.md).
 - **External displays (#100):** source review found that surface recovery can
   replace the SDL Metal view and detach its controls. A real mirroring trigger
