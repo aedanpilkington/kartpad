@@ -2,13 +2,13 @@
 
 ## Testing update
 
-[**0.4.12-android.1 / code 22**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.1)
-is an Android testing update for profile-specific save transfer and incomplete
-or low-storage disc imports. It uses the same public signer and installs over
-code 21. Download its APK, notices ZIP and SHA256SUMS together. Physical-device
-acceptance of these changes is pending; graphics corruption, frame drops and
-external displays are not fixed by this build. The earlier release remains
-available below.
+[**0.4.12-android.2 / code 23**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.2)
+is an Android diagnostic beta with optional game-renderer validation and OS exit
+history. It retains the profile-specific save transfer and checked disc imports
+from code 22, uses the same public signer, and installs over public codes 21/22.
+Download its APK, notices ZIP and SHA256SUMS together. Follow the
+[targeted beta test](releases/v0.4.12-android.2.md); physical acceptance remains
+pending. It is not a verified graphics, frame-drop or external-display fix.
 
 ## Download and first launch
 
@@ -52,7 +52,8 @@ debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
 The maintainer's tested Pixel was deliberately left on Preview 15/code 20.
-The first public package is code 21; the testing update is code 22; changing its signature is not a save migration.
+The first public package is code 21; the current diagnostic beta is code 23;
+changing its signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
 Earlier previews also lack the issue #94 console-serial correction. Do not use

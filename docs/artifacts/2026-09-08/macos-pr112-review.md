@@ -47,3 +47,44 @@ those paths. No contributor build has been approved, merged or released here.
 Recheck the final contributor head against current main before integration;
 retain contributor attribution. Source-local build notes are not a substitute
 for a portable upstream support guide.
+
+## Second local pass
+
+The maintainer's `codex/pr112-local-validation` branch now includes the trigger
+correction and `f2bc5b6`, which widens the settings viewport and provides a
+horizontal-scrolling fallback. Visual inspection confirms the right-hand Clear
+buttons fit the default native window. Windowed → borderless fullscreen →
+windowed rendering and F10 settings access in fullscreen also pass locally.
+Reduced-height resize and the notch/exclusive variants remain unaccepted.
+
+A local **macOS 0.4.12/build 27** dual candidate was packaged from `f2bc5b6`.
+Its unsigned runtime SHA-256 is
+`bacfc8cf7893340cae8a3c2c9f27f3b3b51391c18b403556b95979be4a4cf0c7`.
+The package audit passes with explicit version/build expectations; profile
+and 200-case trigger-output tests pass. These changes were sent to the author.
+At that point PR #112 remained at the initial reviewed contributor head and
+was not approved.
+This Mac candidate does not change Android, iPadOS or tvOS. It is not published.
+
+## Revised contributor head
+
+Contributor head `271fdc135a03e4e067778f7683176c581ad2b75f` incorporates the
+maintainer trigger correction as `3b97827` and a different, narrower layout.
+The full Original/Retro dual runtime rebuilt successfully. The actual prepared
+trigger-output block passes all 200 cases; controller-profile tests pass.
+
+A fresh local 0.4.12/build 27 app passes strict signature and package checks.
+For its version assertions only, the audit uses the maintainer's explicit
+version/build override support from `b561626`; the author script still defaults
+to 0.4.11/build 26. Unsigned runtime SHA-256:
+`669f1520b07fbb4e0d265aac0a6dd39b81854cad2e430ad30d51e3b7fb25e4c2`.
+Bundle content hash:
+`fc9542e6bf2ffdab7d3dd4ecc19b71fbe4d419c5ccb1b591da6cf52311f41a52`.
+
+An isolated, separately identified app launched Original with networking off.
+Cmd-comma opened native settings and visual inspection confirms all right-hand
+Clear buttons fit the default window. Physical controllers were absent. The
+earlier fullscreen result belongs to the maintainer candidate; it is not
+relabelled as a final-head hardware test. Final-head controller/race/Retro and
+small-height/notch acceptance remain open, as does replacing author-local paths
+in the support notes. PR #112 remains unapproved and this candidate is local.

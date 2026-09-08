@@ -96,6 +96,7 @@ class KartPadActivity : SDLActivity() {
             ?.takeIf { it in KartPadSaveStorage.profiles }
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
+        KartPadRendererDiagnostics.configure(this)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recover(filesDir)
             if (!identityStartupChecked) {
@@ -110,6 +111,7 @@ class KartPadActivity : SDLActivity() {
             configureDebugStateTrace()
         }
         super.onCreate(savedInstanceState)
+        KartPadExitDiagnostics.mark(this, runtimeProfile)
         if (mBrokenLibraries) return
         nativeEnableActivityRecreation()
         inputManager = getSystemService(InputManager::class.java)
@@ -376,6 +378,22 @@ class KartPadActivity : SDLActivity() {
             verifyDebugLifecycleClear("focus-loss")
         }
         super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideGameSystemBars()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun hideGameSystemBars() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.insetsController?.let { controller ->
+                controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.hide(WindowInsets.Type.systemBars())
+            }
+        } else {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

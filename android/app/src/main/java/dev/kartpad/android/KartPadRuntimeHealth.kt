@@ -54,6 +54,7 @@ internal object KartPadRuntimeHealth {
             .put("version_code", BuildConfig.VERSION_CODE)
             .put("api", Build.VERSION.SDK_INT)
             .put("profile", profile)
+            .put("renderer_validation", KartPadRendererDiagnostics.active)
             .put("thermal_status", if (Build.VERSION.SDK_INT >= 29) power.currentThermalStatus else JSONObject.NULL)
             .put("thermal_headroom", headroom ?: JSONObject.NULL)
             .put("battery_c", temp ?: JSONObject.NULL)
