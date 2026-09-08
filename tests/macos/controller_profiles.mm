@@ -1,0 +1,86 @@
+#import <AppKit/AppKit.h>
+#import <CommonCrypto/CommonDigest.h>
+#include <filesystem>
+#include <algorithm>
+#include <cmath>
+#include "runtime_config.h"
+static NSURL *testRoot;
+static NSURL *ApplicationSupportURL() { return testRoot; }
+static void AppendSessionLine(NSString *) {}
+#include "KartPadControllers.inc.mm"
+#include <cassert>
+static SDL_Gamepad *testPad;
+static int testPort=0;
+static std::array<PADButtonMapping,12> testButtons;
+static std::array<PADButtonMapping,12> testAlternates;
+static PADDeadZones testZones{true,true,8000,9000,30000,31000};
+extern "C" {
+u32 PADCount(){return testPad ? 1:0;}
+s32 PADGetIndexForPort(u32 p){return (int)p==testPort ? 0:-1;}
+SDL_Gamepad *PADGetSDLGamepadForIndex(u32){return testPad;}
+void PADClearPort(u32){testPort=-1;}
+void PADSetPortForIndex(u32,u32 port){testPort=port;}
+PADButtonMapping *PADGetButtonMappings(u32,u32 *count){*count=12;return testButtons.data();}
+PADButtonMapping *PADGetAltButtonMappings(u32,u32 *count){*count=12;return testAlternates.data();}
+PADDeadZones *PADGetDeadZones(u32){return &testZones;}
+void PADSetButtonMapping(u32,PADButtonMapping m){for(auto &b:testButtons)if(b.padButton==m.padButton)b=m;}
+void PADSetAltButtonMapping(u32,PADButtonMapping m){for(auto &b:testAlternates)if(b.padButton==m.padButton)b=m;}
+void PADRestoreDefaultMapping(u32){}
+}
+namespace Wup028Adapter { void SetPortAssignment(uint32_t,int){} }
+int main(){@autoreleasepool {
+ char path[]="/tmp/kartpad-profile-test-XXXXXX";assert(mkdtemp(path));
+ testRoot=[NSURL fileURLWithPath:@(path)];
+ assert(SDL_Init(SDL_INIT_GAMEPAD));
+ SDL_VirtualJoystickDesc desc{};SDL_INIT_INTERFACE(&desc);desc.type=SDL_JOYSTICK_TYPE_GAMEPAD;
+ desc.nbuttons=SDL_GAMEPAD_BUTTON_COUNT;desc.naxes=SDL_GAMEPAD_AXIS_COUNT;desc.name="Profile test";
+ SDL_JoystickID id=SDL_AttachVirtualJoystick(&desc);assert(id);
+ testPad=SDL_OpenGamepad(id);assert(testPad);
+ for(int i=0;i<12;++i){testButtons[i]={uint32_t(i),KPButtons[i]};testAlternates[i]={PAD_NATIVE_BUTTON_INVALID,KPButtons[i]};}
+ testAlternates[0].nativeButton=SDL_GAMEPAD_BUTTON_MISC1;
+ KPControllerSettings *first=[KPControllerSettings new];first.selectedID=id;
+ [first remember];[first save:nil];assert(!first.dirty);
+ auto key=KPProfileKey(testPad);assert(key.length==64);
+ testButtons[0].nativeButton=19;testZones.stickDeadZone=0;
+ KPControllerSettings *second=[KPControllerSettings new];
+ [second applyProfile:second.profiles[key] port:0];
+ assert(testButtons[0].nativeButton==0);assert(testAlternates[0].nativeButton==SDL_GAMEPAD_BUTTON_MISC1);
+ assert(testZones.stickDeadZone==8000 && testZones.substickDeadZone==9000);
+ assert(testZones.leftTriggerActivationZone==30000 && testZones.rightTriggerActivationZone==31000);
+ second.selectedID=id;second.capture=0;
+ [second bind:1];assert(second.capture==-1 && testButtons[0].nativeButton==1); // shared binding allowed
+ second.capture=0;
+ [second bind:PAD_NATIVE_BUTTON_INVALID];assert(second.capture==-1 && testButtons[0].nativeButton==PAD_NATIVE_BUTTON_INVALID);
+ NSMutableDictionary *bad=[second.profiles[key] mutableCopy];bad[@"buttons"]=@[@999];
+ [second applyProfile:bad port:0];assert(testButtons[0].nativeButton==PAD_NATIVE_BUTTON_INVALID);
+ // A OR RT round trips independently and uses the runtime's real SDL predicate.
+ second.capture=0;second.captureAlternate=NO;[second bind:SDL_GAMEPAD_BUTTON_SOUTH];
+ second.capture=0;second.captureAlternate=YES;[second bind:kartpad::binding::RightTrigger];
+ assert(testButtons[0].nativeButton==SDL_GAMEPAD_BUTTON_SOUTH);
+ assert(testAlternates[0].nativeButton==kartpad::binding::RightTrigger);
+ [second save:nil];
+ KPControllerSettings *reloaded=[KPControllerSettings new];
+ testAlternates[0].nativeButton=PAD_NATIVE_BUTTON_INVALID;
+ [reloaded applyProfile:reloaded.profiles[key] port:0];
+ assert(testAlternates[0].nativeButton==kartpad::binding::RightTrigger);
+ auto *joy=SDL_GetGamepadJoystick(testPad);
+ auto active=[] { return kartpad::binding::pressed(testPad,testButtons[0].nativeButton,10000,10000) ||
+                          kartpad::binding::pressed(testPad,testAlternates[0].nativeButton,10000,10000); };
+ SDL_SetJoystickVirtualAxis(joy,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER,-32768);SDL_UpdateJoysticks();
+ assert(!active());
+ SDL_SetJoystickVirtualButton(joy,SDL_GAMEPAD_BUTTON_SOUTH,true);SDL_UpdateJoysticks();assert(active());
+ SDL_SetJoystickVirtualButton(joy,SDL_GAMEPAD_BUTTON_SOUTH,false);
+ SDL_SetJoystickVirtualAxis(joy,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER,32767);SDL_UpdateJoysticks();assert(active());
+ SDL_SetJoystickVirtualAxis(joy,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER,-32768);SDL_UpdateJoysticks();assert(!active());
+ assert(!kartpad::binding::pressed(testPad,kartpad::binding::RightTrigger,0,0));
+ NSData *invalid=[@"invalid json" dataUsingEncoding:NSUTF8StringEncoding];
+ assert([invalid writeToURL:[first profileURL] atomically:YES]);
+ KPControllerSettings *third=[KPControllerSettings new];assert(third.profileReadFailed);
+ [third save:nil];assert([[NSData dataWithContentsOfURL:[third profileURL]] isEqual:invalid]);
+ assert([KPControllerDiagnostics() containsString:@"Detected controllers: 1"]);
+ assert([KPButtonLabel(nullptr,SDL_GAMEPAD_BUTTON_START) isEqual:@"Menu"]);
+ assert([KPButtonLabel(nullptr,SDL_GAMEPAD_BUTTON_LEFT_SHOULDER) isEqual:@"LB"]);
+ SDL_CloseGamepad(testPad);testPad=nullptr;SDL_DetachVirtualJoystick(id);SDL_Quit();
+ [[NSFileManager defaultManager] removeItemAtURL:testRoot error:nil];
+ puts("PASS: profile round trip, legacy secondary bindings, dead zones, shared bindings, A OR RT via virtual SDL input, clear, corrupt-file preservation, Xbox labels");
+}}

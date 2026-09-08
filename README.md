@@ -6,6 +6,46 @@ recompilation project for Mario Kart Wii. KartPad adds a first-class dual-game
 Original Mario Kart Wii / Retro Rewind runtime, native platform controls, data
 management, packaging, and release workflows.
 
+## About this fork
+
+This repository is a community-maintained fork of
+[KartPad](https://github.com/chrissotraidis/kartpad) by Chris Sotraidis,
+itself based on [WiiCompiled](https://github.com/patchzyy/Wiicompiled).
+
+This fork focuses primarily on improving the native macOS experience,
+with particular attention to controller support, settings, shortcuts,
+display behaviour and macOS-specific integration.
+
+### macOS enhancements in this fork
+
+Current additions include:
+
+- Redesigned native macOS settings interface
+- Improved controller detection and configuration
+- Controller assignment and mapping improvements
+- Improved Xbox controller support
+- Controller profile persistence
+- Improved trigger and input handling
+- Keyboard shortcuts for opening settings
+- Unified access to controller and application settings
+- macOS display behaviour allowing the game to extend into the area surrounding the MacBook display notch
+- Additional macOS controller and settings tests
+- Supporting runtime and packaging improvements
+
+Development of these modifications began in September 2026.
+
+### Credits
+
+- **KartPad** — Chris Sotraidis and KartPad contributors
+- **WiiCompiled** — patchzyy and contributors
+- **macOS enhancements in this fork** — Aedan Pilkington
+
+KartPad is an unofficial community project and is not affiliated with, endorsed by, or associated with Nintendo.
+
+No Mario Kart Wii game data is included in this repository. Users must provide their own compatible game data.
+
+This derivative work remains distributed under the GNU General Public License v3.0. See `LICENSE`, `RIGHTS_AND_LICENSES.md` and `THIRD_PARTY_NOTICES.md` for licensing and third-party attribution.
+
 <p align="center">
   <strong>Mario Kart Wii and Retro Rewind, native for Android, iOS, iPadOS, and macOS.</strong><br>
   Native static recompilation through Vulkan on Android and Metal on Apple platforms, with touch controls, motion steering, controllers, and optional Retro Rewind content. tvOS is currently an experimental preview.
