@@ -240,7 +240,7 @@ open class KartPadLaunchActivity : Activity() {
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            translationY = -dp(18).toFloat()
+            setPadding(0, dp(16), 0, dp(16))
         }
         column.addView(ImageView(this).apply {
             setImageResource(R.drawable.kartpad_app_icon)
@@ -390,7 +390,7 @@ open class KartPadLaunchActivity : Activity() {
             addView(column, FrameLayout.LayoutParams(
                 contentWidth,
                 FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER,
+                Gravity.TOP or Gravity.CENTER_HORIZONTAL,
             ))
         }
         return FrameLayout(this).apply {
