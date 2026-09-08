@@ -80,3 +80,26 @@ public-signer emulator acceptance. Fingerprints alone do not replace these.
 The coordinator must resolve and record those gates before publication, then
 verify anonymous downloads. No second signing operation or device installation
 was performed by this review.
+
+## Source and repeat-derivation gates completed
+
+The packaging owner completed fresh current runtime preparation: all 876 files
+compare byte-for-byte with the compiled inputs. Repository safety and pinned
+source/input verification pass (full disc hash was not repeated). The translator
+suite passes 585 tests and the G6 semantic differential; native subsystem smoke,
+Android controller four-slot/20-probe checks and prepared-runtime controller
+registration checks pass. A second independently derived public-signed APK is
+byte-identical to the candidate SHA-256 above. Public-signer disposable emulator
+chooser startup passes; final picker/Original acceptance is recorded separately.
+
+## Final public-signer emulator acceptance
+
+The exact public-signed APK passed fresh install/chooser/default-validation-off
+and incomplete-data guard checks in a disposable read-only AVD overlay. Disc
+import opened DocumentsUI; cancellation returned without import. An existing
+owned extracted fixture was then seeded, and Original startup/intro rendered
+for at least 1201 frames (prewarm 22.8 seconds). This is not a positive full-disc
+import test, Retro/online/cup acceptance or a performance comparison. The overlay
+was stopped; original emulator disk and physical Pixel were preserved. All
+listed local packaging gates are now complete. Public download verification
+remains a coordinator step after release publication.

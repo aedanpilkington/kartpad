@@ -129,7 +129,7 @@ def main() -> None:
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
         "physicalAcceptance": "Pending for this exact APK; earlier owner runs do not establish acceptance",
-        "emulatorAcceptance": "Packaging-owner evidence: same-AAB alternate-signer APK, API 36 ARM64 chooser/Original startup/menu/export; this public-signer APK was not installed. No sustained performance, Retro real-save or online-race acceptance claimed",
+        "emulatorAcceptance": "API 36 ARM64: actual public-signer fresh install/chooser, default validation off, incomplete-data guard, disc-picker cancellation, seeded Original intro rendering >=1201 frames; same-AAB alternate-signer diagnostics export. No positive full-disc import, sustained performance, Retro real-save or online-race acceptance claimed",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
