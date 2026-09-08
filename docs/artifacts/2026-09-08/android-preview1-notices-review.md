@@ -103,3 +103,26 @@ import test, Retro/online/cup acceptance or a performance comparison. The overla
 was stopped; original emulator disk and physical Pixel were preserved. All
 listed local packaging gates are now complete. Public download verification
 remains a coordinator step after release publication.
+
+## Published Android prerelease
+
+[Android preview 1](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)
+is published as a prerelease, not stable latest. PR #133 merged at
+`6f0a3fed0ab2f9efceba1d86e3fe7a8c1c6abffc`; the release tag deliberately resolves
+to the exact APK source `cecd69c504f66aa0d8a40f485406618b9b616791`, an ancestor
+of that merge. Packaging source is `3c547a2cc8a19ef336858afb504f4f1de77c04fa`.
+
+Final notices ZIP: 94209 bytes, SHA-256
+`f79fb8e97e303686bba009747fc939427d5dbb1fbdffef8d5269221df745044b`.
+SHA256SUMS: 222 bytes, SHA-256
+`bc821c6392b9369d85d673536cf44c66b59fb5337cfec2e750c0dbbb08452fd4`.
+Two independent final notices runs are byte-identical; all 28 allowlisted text
+entries, privacy/source attribution and rejection of a wrong AAB pass.
+Anonymous downloads of all three assets match the audited local originals byte
+for byte. The downloaded APK passes package/signature checks with the single
+approved certificate; all 28 notices entries, checksums and source/native
+provenance pass. Stable latest remains `v0.4.11`.
+
+[#105 offline real-save verification](https://github.com/chrissotraidis/kartpad/issues/105#issuecomment-5586204311)
+was requested on 8 September; the response and physical acceptance are pending.
+No Apple binary was published.
