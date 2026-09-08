@@ -8,6 +8,7 @@
 #import "KartPadMotionSteering.h"
 #import "KartPadPhysicalControllers.h"
 #import "KartPadRetroRewindInstaller.h"
+#import "KartPadDiagnosticContext.h"
 #import "KartPadMiiManager.h"
 #import "SunPadDiagnostics.h"
 #import "SunPadGameOverlay.h"
@@ -3267,12 +3268,20 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 
 - (NSString *)gameOverlayDiagnosticContext:(SunPadGameOverlay *)overlay {
   (void)overlay;
-  return @"product=KartPad\nsurface=SDL UIKit+Metal\ncore=full-retail\nprivateDataIncluded=false";
+  SunPadSettings *settings = SunPadSettings.sharedSettings;
+  return KartPadDiagnosticContext(
+      [KartPadRetroRewindInstaller.installedRootPath stringByAppendingPathComponent:@"version.txt"],
+      KartPadRetroRewindInstaller.requiredVersion,
+      gKartPadRetroRewindSelected ? @"retro_rewind" : @"base",
+      settings.renderScaleFloat, settings.aspectRatioMode);
 }
 
 - (NSString *)gameOverlayPerformanceProfile:(SunPadGameOverlay *)overlay {
   (void)overlay;
-  return @"full-retail-simulator";
+  SunPadSettings *settings = SunPadSettings.sharedSettings;
+  return [NSString stringWithFormat:@"%@; scale=%.2fx; aspect=%ld",
+      gKartPadRetroRewindSelected ? @"retro_rewind" : @"base",
+      settings.renderScaleFloat, (long)settings.aspectRatioMode];
 }
 
 @end

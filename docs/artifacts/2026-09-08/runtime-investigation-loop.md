@@ -67,3 +67,46 @@ and whether reports identify content/runtime mismatch precisely.
 The rating importer remains on `codex/rating-companion-validation` at `ab1f88b`.
 No changes were made to existing candidate builds, app containers or signing
 material. Only ignored dependency copies/build outputs are created here.
+
+## Second result: report context and compatibility-path audit
+
+Android short reports and private ZIPs now include structured schema-1 context;
+iPhone/iPad technical reports use the same field semantics. Supported Retro
+version and installed version are distinct, with absent/invalid/mismatched versus
+version-only-match states. Reading is bounded to 129 bytes and only numeric
+version text can enter the report. This deliberately does not label a matching
+version file as a code/hash or online-compatibility check. Captured Unix time and
+named platform-monotonic clocks provide correlation anchors. Export-time context
+does not claim to describe every historical log. Android export README explains
+unfinished versus completed network records and their limits.
+
+The iPhone/iPad performance-report string also no longer claims every runtime
+is "full-retail-simulator"; it reports the actual selected profile and configured
+resolution/aspect. No macOS/tvOS report integration is claimed in this step.
+Build-source/compiled-runtime provenance, historical session identifiers and
+cross-platform runtime watchdog integration remain goal work.
+
+Executable Android/Kotlin and Apple/Foundation formatter tests pass against
+missing/current/newer/oversized/malformed private-text fixtures. Both reject raw
+private text and omit paths. Android Kotlin compilation and release lint pass.
+66 Android contract tests pass in 4.571 seconds. Retro Java version, installed
+content and recovery suites compile with warnings-as-errors and pass. These
+exercise malformed/version responses, numeric version ordering, mismatched
+code/hash inputs, unsafe paths and storage recovery using synthetic inputs.
+
+Launch-path findings: Android validates the installed contract in both chooser
+and runtime launch. Its official-newer-version check runs in the installer,
+not on each normal launch. iPhone/iPad checks the official manifest before Retro
+launch, offers the installed validated version if that check fails, and requires
+a newer KartPad build when the feed identifies a newer Retro release. This is a
+platform behavior difference, not evidence that either installer silently
+replaces compiled code with an arbitrary latest pack. No new launch blocker or
+network dependency was introduced. Remaining audit: the intended offline/online
+policy for newer releases and actual compiled guest update paths.
+
+The current full iOS overlay source compiles to an IOS/minOS-16.0 object using
+Xcode 26.5's iPhoneOS SDK and the current audio header. Two pre-existing warnings
+remain (deprecated UI idiom helper and nullable mapping argument). The historical
+check script initially failed due to stale include paths/audio API, so its old
+response file was supplemented with current shared/mobile/runtime includes.
+All output is isolated; this is compilation, not an IPA build or device test.
