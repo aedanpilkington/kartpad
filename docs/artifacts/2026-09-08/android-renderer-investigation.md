@@ -117,3 +117,21 @@ These are synthetic graphics stages, not a replay of GX-generated game shaders,
 compressed textures, actual staging-buffer use, multithreaded encoding or
 presentation. No renderer correction is claimed. Version 0.2.0 publication and
 affected-device results remain pending at this source checkpoint.
+
+## Version 0.2.0 publication and additional replies
+
+[Published diagnostic](https://github.com/chrissotraidis/kartpad/releases/tag/renderer-probe-v0.2.0),
+source `d07d819e912ce2c8af730a3ddc1e965f7b659284`. APK is 14,739,004 bytes,
+SHA-256 `1d37bed8c7f4178ecbd2815fdcb537271df29fcf3c9222d0b61f978518578500`.
+The merged-source rebuild/sign matches the emulator-tested candidate exactly.
+Fresh anonymous APK/provenance/checksum downloads match their local artifacts;
+the downloaded APK passes the standalone audit. This remains a diagnostic
+prerelease, not the latest game release.
+
+Two further version-0.1.0 results arrived: Adreno 750 driver 512.762.39 in
+[#102](https://github.com/chrissotraidis/kartpad/issues/102#issuecomment-5577877999)
+and 512.762.41 in
+[#104](https://github.com/chrissotraidis/kartpad/issues/104#issuecomment-5578103113).
+Both pass all four compute checks, with uniform/storage alignment 256/64.
+Both threads received the expanded diagnostic, with its additional scope and
+limitations explained. No game saves or general private logs were requested.
