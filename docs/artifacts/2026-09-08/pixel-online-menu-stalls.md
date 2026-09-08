@@ -42,5 +42,7 @@ Validation: the C++17 host harness compiled with warnings as errors, verified th
 fast-call threshold, 32-record process cap, command metadata and unavailable CPU
 sentinel. Patch normal/recount checks and application pass against the existing
 prepared Android diagnostic source. Shell syntax and diff whitespace checks pass.
-No complete APK build, Pixel runtime reproduction, gameplay fix, or release is
-claimed. This change leaves guest networking behavior intact.
+The patched socket/SSL files also pass an ARM64 Android NDK syntax check in
+the existing network unity compilation, using an isolated copy and the existing
+Android compiler flags. No complete APK build, Pixel runtime reproduction,
+gameplay fix, or release is claimed. This change leaves guest networking behavior intact.
