@@ -96,6 +96,7 @@ class KartPadActivity : SDLActivity() {
             ?.takeIf { it in KartPadSaveStorage.profiles }
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
+        KartPadRendererDiagnostics.configure(this)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recover(filesDir)
             if (!identityStartupChecked) {
@@ -110,6 +111,7 @@ class KartPadActivity : SDLActivity() {
             configureDebugStateTrace()
         }
         super.onCreate(savedInstanceState)
+        KartPadExitDiagnostics.mark(this, runtimeProfile)
         if (mBrokenLibraries) return
         nativeEnableActivityRecreation()
         inputManager = getSystemService(InputManager::class.java)

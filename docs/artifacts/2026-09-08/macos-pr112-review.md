@@ -47,3 +47,20 @@ those paths. No contributor build has been approved, merged or released here.
 Recheck the final contributor head against current main before integration;
 retain contributor attribution. Source-local build notes are not a substitute
 for a portable upstream support guide.
+
+## Second local pass
+
+The maintainer's `codex/pr112-local-validation` branch now includes the trigger
+correction and `f2bc5b6`, which widens the settings viewport and provides a
+horizontal-scrolling fallback. Visual inspection confirms the right-hand Clear
+buttons fit the default native window. Windowed → borderless fullscreen →
+windowed rendering and F10 settings access in fullscreen also pass locally.
+Reduced-height resize and the notch/exclusive variants remain unaccepted.
+
+A local **macOS 0.4.12/build 27** dual candidate was packaged from `f2bc5b6`.
+Its unsigned runtime SHA-256 is
+`bacfc8cf7893340cae8a3c2c9f27f3b3b51391c18b403556b95979be4a4cf0c7`.
+The package audit passes with explicit version/build expectations; profile
+and 200-case trigger-output tests pass. These changes were sent to the author.
+PR #112 itself remains at the reviewed contributor head and is not approved.
+This Mac candidate does not change Android, iPadOS or tvOS. It is not published.

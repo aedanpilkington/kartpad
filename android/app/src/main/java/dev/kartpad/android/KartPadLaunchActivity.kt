@@ -37,6 +37,7 @@ open class KartPadLaunchActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        KartPadExitDiagnostics.mark(this, pausedProfile() ?: "chooser")
         setContentView(buildContent())
         original.setOnClickListener { selectMode("base") }
         retro.setOnClickListener { selectMode("retro_rewind") }
@@ -337,6 +338,29 @@ open class KartPadLaunchActivity : Activity() {
                             type = "application/zip"
                             putExtra(Intent.EXTRA_TITLE, "KartPad-private-diagnostics.zip")
                         }, REQUEST_DIAGNOSTICS)
+                    }.show()
+            }
+        }, layout(0))
+
+        if (pausedProfile() == null) column.addView(Button(this).apply {
+            fun refresh() {
+                text = "Renderer Validation: " + if (KartPadRendererDiagnostics.enabled(context)) "On" else "Off"
+            }
+            refresh()
+            isAllCaps = false
+            setTextColor(Color.argb(184, 255, 255, 255))
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnClickListener {
+                val enable = !KartPadRendererDiagnostics.enabled(context)
+                AlertDialog.Builder(this@KartPadLaunchActivity)
+                    .setTitle("Renderer Validation")
+                    .setMessage("Checks the actual game renderer and enables buffer bounds protection. This may slow the game down; it is a diagnostic mode, not a graphics fix. Applies when you next open a game. After reproducing once, close KartPad, reopen this chooser and export private diagnostics. Turn it off here for normal play.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton(if (enable) "Enable" else "Turn Off") { _, _ ->
+                        if (!KartPadRendererDiagnostics.setEnabled(context, enable)) {
+                            showStatus("The diagnostic setting could not be saved. Please try again.")
+                        }
+                        refresh()
                     }.show()
             }
         }, layout(0))

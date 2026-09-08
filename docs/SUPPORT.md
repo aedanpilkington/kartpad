@@ -107,6 +107,16 @@ See [#100](https://github.com/chrissotraidis/kartpad/issues/100).
 
 ## Collect a useful report
 
+The [Android 0.4.12-android.2 diagnostic beta](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.2)
+adds optional **Renderer Validation** on the chooser, off by default. When
+requested for a graphics report, compare the same scene/settings with it off
+and on, then turn it off for normal play. It enables actual game-renderer
+validation and bounds protection and may slow gameplay; it is not a fix.
+The private export also includes bounded `process-exits.json` OS metadata on
+Android 11+. A missing record does not establish no crash, and a manual stop
+can produce a user-requested exit. Review before sharing; do not upload the
+whole archive. See the [beta test steps](releases/v0.4.12-android.2.md).
+
 **Android:** **••• → Report a Problem… → Share Report…** produces a short
 version/device/profile summary and your answers. It does **not** include the
 runtime/renderer log history. For that history, reproduce once, fully close

@@ -11,11 +11,11 @@ import re
 import subprocess
 import zipfile
 
-TAG = "v0.4.12-android.1"
-VERSION = "0.4.12-android.1"
-CODE = 22
+TAG = "v0.4.12-android.2"
+VERSION = "0.4.12-android.2"
+CODE = 23
 # Exact rebuilt native libraries validated for this testing release.
-APPROVED_MAIN_SHA256 = "68af841be72ea90c1c9d43ae276afd0d3a2a150cee46906e6201c1ab1daf4b37"
+APPROVED_MAIN_SHA256 = "23a348c3d11d23ae027208d4055f97a0b900a7fa1b6c3d211ae1f4084bd4d78d"
 # APK libraries have Gradle release stripping applied.
 APPROVED_DISCIO_SHA256 = "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b"
 REPO = Path(__file__).resolve().parents[1]
@@ -101,7 +101,7 @@ def main() -> None:
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
         "physicalAcceptance": "Pending for this build; earlier Preview 15 physical gameplay is historical evidence only",
-        "emulatorAcceptance": "API 36 ARM64 host Vulkan: full disc import, Original startup, profile save picker and storage-failure preservation",
+        "emulatorAcceptance": "API 36 ARM64 host Vulkan: Original startup/rendering with validation off/on, universal/split APKs, durable data preservation; debug fixture verifies OS exit history/export",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()

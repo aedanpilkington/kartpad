@@ -27,6 +27,12 @@ fatal report is an earlier missing-DVD-root startup, followed by successful
 game loads. A same-scene 4:3 comparison and closed-versus-frozen distinction
 are requested. These are separate observations, not one established GPU bug.
 
+The [Android 0.4.12-android.2 diagnostic beta](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.2)
+adds opt-in validation/bounds protection for the actual game renderer and
+bounded OS exit history. Normal mode keeps the previous renderer toggles.
+Local host/emulator checks pass; affected Adreno testing and a failing game
+draw remain open. This is an Android diagnostic, not a macOS/iPadOS fix.
+
 ## macOS contribution under local review
 
 [#112](https://github.com/chrissotraidis/kartpad/pull/112) proposes controller
@@ -34,8 +40,9 @@ assignment/profiles, trigger bindings, native settings and menu integration.
 The reviewed head builds and passes its package audit, focused host tests and
 basic local native UI checks. It is **not approved**: final analogue trigger
 pressure overwrites the proposed isolation, and the default Controllers tab
-clips its right-hand controls. A tested trigger correction is available for
-the contributor. See the [local review record](artifacts/2026-09-08/macos-pr112-review.md)
+clips its right-hand controls. Tested trigger and layout corrections, plus a
+local Mac candidate, are available on the maintainer's review branch for the
+contributor. See the [local review record](artifacts/2026-09-08/macos-pr112-review.md)
 for exact source and acceptance limits.
 
 Next work prioritizes completing this bounded controller fix and verifying
