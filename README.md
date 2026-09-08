@@ -55,6 +55,8 @@ This describes KartPad’s workflow, not the authorship of its upstream projects
 The [new iPhone/iPad IPA](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1)
 uses the KartPad app artwork above the Mario Kart Wii / Retro Rewind chooser
 and includes richer problem reports with build/source and runtime context.
+Physical iOS code now uses a generic ARM64 CPU baseline, correcting an M2-only
+instruction dependency on older devices; affected-device confirmation is pending.
 See the [Apple release notes](docs/releases/v0.4.13-ios.1.md) for exact scope and
 validation. Physical iPhone/iPad acceptance of this build remains open; it does
 not claim fixes for external displays, Mac two-player rendering, or Android
