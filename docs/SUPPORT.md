@@ -66,6 +66,14 @@ cause of any particular server rating. The #105 reporter confirmed WiiCompiled
 friend codes; the rating still differed after a completed race. The diagnostic
 beta does not fix this migration gap. See [#105](https://github.com/chrissotraidis/kartpad/issues/105).
 
+`RRRating.pul` is local rating data, not a synchronization service. Retro loads
+it into memory, and separate network code handles rating downloads/reports.
+Do not replace it while the game is running. The next migration step is a
+matched, validated save/rating transfer with backups, applied while stopped,
+then restart and offline verification. Automatic two-way folder sync also needs
+conflict handling and an Android-accessible transfer location; it is not yet
+implemented. The Mii database remains separate.
+
 On Mac, **Data → Show KartPad Data** opens KartPad's support directory. Quit
 the game before backing it up. On Apple TV, use
 [`backup-tvos-state.sh`](../scripts/backup-tvos-state.sh) as described in the
