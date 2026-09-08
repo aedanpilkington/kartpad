@@ -150,6 +150,28 @@ fun testRatingStorage() {
             verify(!KartPadSaveStorage.hasPending(root))
             verify(rating.readBytes().contentEquals(beforeCancel))
             KartPadRatingStorage.cancelPending(root)
+            // Completion/cancellation terminal markers survive restart without replay.
+            for (cancel in listOf(false, true)) {
+                KartPadRatingStorage.stage(root, profile, source)
+                android.system.Os.failSyncSuffix = "/KartPad"
+                android.system.Os.failSyncSkip = if (cancel) 0 else 1
+                if (cancel) reject { KartPadRatingStorage.cancelPending(root) }
+                else verify(KartPadRatingStorage.applyPending(root) != null)
+                val terminal = File(root, "KartPad/PendingRating.json")
+                verify(terminal.readText() == "{\"finalized\":true}")
+                // Restart with barrier still failing must stop, keeping terminal record.
+                verify(KartPadRatingStorage.applyPending(root) != null)
+                verify(terminal.isFile)
+                android.system.Os.failSyncSuffix = null
+                val newer = ratings(10, 40).also { view(it).putFloat(12, 123.5f) }
+                rating.writeBytes(newer)
+                verify(KartPadRatingStorage.applyPending(root) == null)
+                verify(rating.readBytes().contentEquals(newer))
+                verify(!KartPadRatingStorage.hasPending(root))
+                // A later restart still cannot replay the original source.
+                verify(KartPadRatingStorage.applyPending(root) == null)
+                verify(rating.readBytes().contentEquals(newer))
+            }
             rating.delete()
             reject { KartPadRatingStorage.stage(root, profile, source) }
         } finally { AtomicFile.failSuffix = null; AtomicFile.silentFailSuffix = null; AtomicFile.silentBackupOnly = false; AtomicFile.silentSyncFailureSuffix = null; android.system.Os.failSyncSuffix = null; root.deleteRecursively() }

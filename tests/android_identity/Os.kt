@@ -12,6 +12,7 @@ object OsConstants { const val O_RDONLY = 0 }
 /** Checked sync seam; Android uses libc fsync, including the parent directory. */
 object Os {
     var failSyncSuffix: String? = null
+    var failSyncSkip = 0
     private val paths = IdentityHashMap<FileDescriptor, String>()
     private val directories = IdentityHashMap<FileDescriptor, FileChannel>()
     fun register(fd: FileDescriptor, path: String) { paths[fd] = path }
@@ -23,7 +24,9 @@ object Os {
         return fd
     }
     fun fsync(fd: FileDescriptor) {
-        if (failSyncSuffix?.let { paths[fd]?.endsWith(it) } == true) throw IOException("injected sync failure")
+        if (failSyncSuffix?.let { paths[fd]?.endsWith(it) } == true) {
+            if (failSyncSkip > 0) failSyncSkip-- else throw IOException("injected sync failure")
+        }
         directories[fd]?.force(true) ?: fd.sync()
     }
     fun close(fd: FileDescriptor) { directories.remove(fd)?.close(); paths.remove(fd) }

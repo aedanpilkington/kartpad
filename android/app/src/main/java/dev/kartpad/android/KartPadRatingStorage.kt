@@ -13,12 +13,17 @@ import org.json.JSONObject
 /** Manual companion restore to an existing Retro save; publication happens before SDL starts. */
 internal object KartPadRatingStorage {
     private fun pending(files: File) = File(files, "KartPad/PendingRating.json")
-    fun hasPending(files: File) = pending(files).isFile
+    // Keep a durable terminal record rather than unlinking the request: an
+    // interrupted directory sync must never resurrect a completed restore.
+    private val finalized = "{\"finalized\":true}".toByteArray()
+    private fun isFinalized(file: File) = file.isFile &&
+        file.length() == finalized.size.toLong() && file.readBytes().contentEquals(finalized)
+    fun hasPending(files: File) = pending(files).let { it.isFile && !isFinalized(it) }
 
     /** Chooser-only cancellation while no game is paused; preserves current ratings and backups. */
     fun cancelPending(files: File) {
         val file = pending(files)
-        check(!file.exists() || file.delete()) { "The staged rating restore could not be cancelled." }
+        if (file.exists()) write(file, finalized)
     }
 
     fun profileIds(save: ByteArray): Set<Int> {
@@ -94,6 +99,12 @@ internal object KartPadRatingStorage {
         val requestFile = pending(files)
         if (!requestFile.isFile) return null
         return runCatching {
+            if (isFinalized(requestFile)) {
+                // Retry the checked barrier even if the previous terminal write
+                // became visible but failed before durability was established.
+                write(requestFile, finalized)
+                return@runCatching
+            }
             check(!KartPadIdentityStorage.hasPending(files))
             require(requestFile.length() <= 4096) { "Invalid pending rating restore." }
             val request = JSONObject(requestFile.readText())
@@ -108,9 +119,9 @@ internal object KartPadRatingStorage {
             val backup = File(files, "KartPad/SaveBackups/ratings-${UUID.randomUUID()}.pul")
             write(backup, current)
             write(active, replacement)
-            check(requestFile.delete())
+            write(requestFile, finalized)
         }.exceptionOrNull()?.let {
-            "The pending rating restore could not be completed. Gameplay is stopped; the staged request and any backups are retained."
+            "The pending rating restore could not be completed. Gameplay is stopped; the request or completion record and any backups are retained."
         }
     }
 
