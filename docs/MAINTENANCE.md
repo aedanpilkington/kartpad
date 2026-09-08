@@ -5,8 +5,24 @@ testable builds. Reply counts, new diagnostics, commits and elapsed hours alone
 are not success measures. A run should reduce a specific uncertainty, complete
 a useful implementation/test step, or identify the exact dependency that stops it.
 
+## Coordinator and engineering roles
+
+Astra Light owns triage, prioritization, public replies, work tracking and
+coordination. Substantive debugging, implementation, code review, regression
+testing and candidate build/validation are assigned to bounded Astra Medium
+workers. Routine documentation and metadata updates can stay with the coordinator.
+Use at most two temporary workers concurrently; reuse existing work owners and
+collect their results. Workers do not spawn further workers or publish releases.
+If Medium is unavailable, record the capacity blocker and continue useful light
+triage; do not silently substitute Light for deep engineering or claim it finished.
+
+The coordinator checks the evidence before integration and owns public communication.
+A worker saying “done” is a review handoff, not automatic merge/release acceptance.
+
 ## Records and ownership
 
+- [Maintenance board](MAINTENANCE-BOARD.md): canonical public work queue and
+  build/test-request ledger. Keep current rows updated; link evidence for history.
 - [Known issues](KNOWN-ISSUES.md): public issue/theme index, confirmed evidence,
   current limits and next evidence. Link source comments and investigation records.
 - [Investigation records](artifacts/): dated reproduction, experiment, review and
@@ -18,7 +34,8 @@ a useful implementation/test step, or identify the exact dependency that stops i
 - Local `build/maintenance/CURRENT.md`: compact active work board with one owner,
   source/branch, state, next action and completion condition per workstream.
   Local `build/maintenance/HANDOFF.md`: retained historical context and paths.
-  Both are ignored and must not be the only record of merged technical findings.
+  Both are ignored supplements for machine-specific ownership/artifact paths.
+  They do not replace the tracked maintenance board or public technical records.
 
 Never commit raw private logs, saves, identities, credentials or game assets.
 Summarize reviewed evidence publicly; retain private artifact references locally.
@@ -80,7 +97,22 @@ owner/device accepted, reporter confirmed, released. A local source fix is not a
 publicly available fix. A candidate needs a concrete test purpose and exact
 source/artifact identity, platform requirements, acceptance limits and test steps.
 Batch compatible reviewed work where useful; do not build a new package on every
-hourly check. Do not publish a formal IPA before Christopher tests and approves it.
+hourly check. The scheduled coordinator and its workers MUST NEVER upload or
+publish an IPA, including a prerelease, release asset or distribution-feed update.
+They may build and audit an IPA locally and ask Christopher to test it. Any later
+IPA publication requires a separate explicitly authorized manual release task;
+passing owner tests does not authorize the scheduled job to publish it.
+
+When a candidate is ready, record its exact commit, version, hash, platform/device
+requirements, included changes, completed tests and remaining risks in the board.
+Ask the owner to test a local build with exact steps and a clear pass/fail question.
+For community testing, use an available, verified artifact appropriate for the
+reporter's device; do not link an inaccessible local path or announce an unbuilt
+version. Record the issue/comment, requested comparison, request date, response
+and next action. Never claim a build is “good” merely because it compiled.
+Android/macOS test distribution may follow the existing authorized release
+workflow after appropriate validation. The IPA prohibition remains absolute for
+scheduled work. Do not create automated reminder spam for pending test requests.
 
 ## Progress accounting
 
