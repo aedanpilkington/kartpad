@@ -342,6 +342,24 @@ open class KartPadLaunchActivity : Activity() {
             }
         }, layout(0))
 
+        if (pausedProfile() == null && KartPadRatingStorage.hasPending(filesDir)) {
+            column.addView(Button(this).apply {
+                text = "Cancel Staged Rating Restore…"
+                setOnClickListener {
+                    AlertDialog.Builder(this@KartPadLaunchActivity)
+                        .setTitle("Cancel Staged Rating Restore?")
+                        .setMessage("Remove the pending request so you can start the game again. Current ratings and retained backups will stay as they are; this does not undo a restore that already completed.")
+                        .setNegativeButton("Keep Restore", null)
+                        .setPositiveButton("Cancel Restore") { _, _ ->
+                            if (pausedProfile() == null) runCatching {
+                                KartPadRatingStorage.cancelPending(filesDir)
+                            }.onSuccess { visibility = View.GONE }
+                                .onFailure { showStatus("The staged rating restore could not be cancelled.") }
+                        }.show()
+                }
+            }, layout(0))
+        }
+
         if (pausedProfile() == null) column.addView(Button(this).apply {
             fun refresh() {
                 text = "Renderer Validation: " + if (KartPadRendererDiagnostics.enabled(context)) "On" else "Off"

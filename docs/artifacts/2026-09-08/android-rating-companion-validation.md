@@ -3,7 +3,10 @@
 Source base: merged main `7878986af648f6d7a0bb96cfc459ac4031bead62`.
 Implementation branch: `codex/rating-companion-validation`.
 
-This is a pure byte-validation and merge helper, not a completed importer or a
+Follow-up: [local picker and stopped-game transfer](android-rating-companion-transfer.md)
+implements callers for this helper; it is still not a public release.
+
+This initial step was a pure byte-validation and merge helper, not a completed importer or a
 fix shipped in an APK. No app UI or storage path calls it yet. It deliberately
 has no filesystem, logging, identity mutation or network operations.
 

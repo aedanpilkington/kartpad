@@ -21,6 +21,8 @@ clang++ -std=c++20 -I"$repo/runtime/include" "$repo/runtime/tests/android_identi
   "$repo/tests/android_identity/AtomicFile.kt" "$repo/tests/android_identity/IdentityTests.kt" \
   "$repo/tests/android_identity/SaveTests.kt" \
   "$repo/tests/android_identity/RatingTests.kt" \
+  "$repo/tests/android_identity/RatingStorageTests.kt" \
+  "$repo/android/app/src/main/java/dev/kartpad/android/KartPadRatingStorage.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadRatingCompanion.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadIdentityStorage.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadSaveStorage.kt" \

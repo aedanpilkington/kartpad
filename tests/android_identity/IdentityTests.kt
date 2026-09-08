@@ -7,6 +7,7 @@ import android.util.AtomicFile
 
 fun main(args: Array<String>) {
     testRatingCompanion()
+    testRatingStorage()
     System.load(args[0])
     val fixtures = File(args[1])
     testSaveProfiles(fixtures)
