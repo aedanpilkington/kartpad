@@ -6,6 +6,12 @@ recompilation project for Mario Kart Wii. KartPad adds a first-class dual-game
 Original Mario Kart Wii / Retro Rewind runtime, native platform controls, data
 management, packaging, and release workflows.
 
+**AI disclosure:** KartPad uses substantial AI assistance for code, tests,
+documentation, debugging and maintenance. Some support replies and maintenance
+tasks are automated. There is no audited percentage of AI-generated code;
+build, test and device-acceptance records state what has actually been checked.
+This describes KartPad’s workflow, not the authorship of its upstream projects.
+
 <p align="center">
   <strong>Mario Kart Wii and Retro Rewind, native for Android, iOS, iPadOS, and macOS.</strong><br>
   Native static recompilation through Vulkan on Android and Metal on Apple platforms, with touch controls, motion steering, controllers, and optional Retro Rewind content. tvOS is currently an experimental preview.
