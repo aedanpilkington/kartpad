@@ -90,6 +90,9 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
 @property NSInteger keyboardCaptureKind;
 @property NSInteger keyboardCaptureIndex;
 @property id keyboardMonitor;
+@property NSMutableArray<NSView *> *controllerOnlyViews;
+@property NSView *mappingHint;
+@property NSMutableArray<NSView *> *keyboardOnlyViews;
 @end
 
 @implementation KPControllerSettings
@@ -185,6 +188,8 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     self.bindings = [NSMutableArray array];
     self.altBindings = [NSMutableArray array];
     self.keyboardAxes = [NSMutableArray array];
+    self.controllerOnlyViews = [NSMutableArray array];
+    self.keyboardOnlyViews = [NSMutableArray array];
     for (int i = 0; i < 12; ++i) {
       CGFloat x = 20+(i/6)*370, y = 418-(i%6)*34;
       [self label:KPActions()[i] frame:NSMakeRect(x,y,150,22)];
@@ -198,26 +203,30 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
       NSButton *clear = [self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+311,y-2,49,26)];
       clear.tag = i; clear.toolTip = @"Clear both bindings. Item / Drift then use the default analogue trigger.";
     }
-    [self label:@"Keyboard steering axes" frame:NSMakeRect(20,218,180,22)];
+    NSTextField *axisHeading=[self label:@"Keyboard axes" frame:NSMakeRect(20,218,180,22)];
+    [self.keyboardOnlyViews addObject:axisHeading];
     NSArray *axisNames=@[@"Left X +",@"Left X −",@"Left Y +",@"Left Y −",@"Right X +",@"Right X −",@"Right Y +",@"Right Y −",@"Left trigger",@"Right trigger"];
     for(int i=0;i<PAD_AXIS_COUNT;++i) {
       CGFloat x=200+(i%2)*280,y=218-(i/2)*30;
-      [self label:axisNames[i] frame:NSMakeRect(x,y,90,22)];
+      NSTextField *axisLabel=[self label:axisNames[i] frame:NSMakeRect(x,y,90,22)];
+      [self.keyboardOnlyViews addObject:axisLabel];
       NSButton *key=[self button:@"Unbound" action:@selector(remap:) frame:NSMakeRect(x+92,y-2,100,26)];
       key.tag=100+i; [self.keyboardAxes addObject:key];
-      NSButton *clear=[self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+196,y-2,50,26)]; clear.tag=100+i;
+      [self.keyboardOnlyViews addObject:key];
+      NSButton *clear=[self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+196,y-2,50,26)]; clear.tag=100+i; [self.keyboardOnlyViews addObject:clear];
     }
-    [self label:@"Two bindings per action: either works. Click + Add, release controls, then press a button or pull a trigger."
+    self.mappingHint=[self label:@"Two bindings per action: either works. Click + Add, release controls, then press a button or pull a trigger."
       frame:NSMakeRect(20,218,740,22)];
     self.zones = [NSMutableArray array];
     NSArray *zoneNames = @[@"Steering dead zone", @"Right stick dead zone", @"Trigger threshold"];
     for (int i = 0; i < 3; ++i) {
       CGFloat x = 20+i*248;
-      [self label:zoneNames[i] frame:NSMakeRect(x,187,240,20)];
+      NSTextField *zoneLabel=[self label:zoneNames[i] frame:NSMakeRect(x,187,240,20)];
+      [self.controllerOnlyViews addObject:zoneLabel];
       NSSlider *slider = [NSSlider sliderWithValue:0.24 minValue:0 maxValue:i==2?0.99:0.5 target:self action:@selector(changeZone:)];
       slider.accessibilityLabel = zoneNames[i];
       slider.frame = NSMakeRect(x,157,225,24); slider.tag = i; slider.continuous = NO;
-      [self.content addSubview:slider]; [self.zones addObject:slider];
+      [self.content addSubview:slider]; [self.zones addObject:slider]; [self.controllerOnlyViews addObject:slider];
     }
     NSString *initial = self.status.stringValue ?: @"Changes apply immediately. Save Profile keeps them between launches.";
     self.status = [self label:initial frame:NSMakeRect(20,72,740,70)];
@@ -474,8 +483,8 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     if(self.selectedID!=(SDL_JoystickID)-1 && ![ids containsObject:@(self.selectedID)]) { self.selectedID=(SDL_JoystickID)-1; self.capture=-1; }
     for(NSMenuItem *item in self.devices.itemArray) if(([item.representedObject isEqual:@"keyboard"] && self.keyboardSelected) || [item.representedObject unsignedIntValue]==self.selectedID) [self.devices selectItem:item];
   }
-  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; for(NSButton *button in self.bindings) button.enabled=YES; for(NSButton *button in self.keyboardAxes) button.enabled=YES; for(NSSlider *slider in self.zones) { slider.enabled=NO; slider.hidden=YES; } return; }
-  for(NSSlider *slider in self.zones) slider.hidden=NO;
+  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; self.mappingHint.hidden=YES; for(NSView *view in self.controllerOnlyViews) view.hidden=YES; for(NSView *view in self.keyboardOnlyViews) view.hidden=NO; for(NSButton *button in self.bindings) button.enabled=YES; return; }
+  self.mappingHint.hidden=NO; for(NSView *view in self.controllerOnlyViews) view.hidden=NO; for(NSView *view in self.keyboardOnlyViews) view.hidden=YES;
   for(NSButton *button in self.altBindings) button.hidden=NO;
   SDL_Gamepad *pad=[self selectedPad]; int port=[self port];
   [self.player selectItemAtIndex:port+1]; self.player.enabled=pad!=nullptr;
