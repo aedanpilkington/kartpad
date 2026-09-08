@@ -73,6 +73,20 @@ int main(){@autoreleasepool {
  SDL_SetJoystickVirtualAxis(joy,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER,32767);SDL_UpdateJoysticks();assert(active());
  SDL_SetJoystickVirtualAxis(joy,SDL_GAMEPAD_AXIS_RIGHT_TRIGGER,-32768);SDL_UpdateJoysticks();assert(!active());
  assert(!kartpad::binding::pressed(testPad,kartpad::binding::RightTrigger,0,0));
+ auto maskExplicitTriggerAxes=[](PADStatus &status,bool leftMapped,bool rightMapped){
+     if(leftMapped)status.triggerLeft=0;if(rightMapped)status.triggerRight=0;
+ };
+ PADStatus triggerStatus{}; triggerStatus.triggerLeft=120; triggerStatus.triggerRight=120;
+ maskExplicitTriggerAxes(triggerStatus,false,true);
+ assert(triggerStatus.triggerLeft==120 && triggerStatus.triggerRight==0);
+ triggerStatus.triggerLeft=120; triggerStatus.triggerRight=120;
+ maskExplicitTriggerAxes(triggerStatus,false,false);
+ assert(triggerStatus.triggerLeft==120 && triggerStatus.triggerRight==120);
+ // Accelerate=A + RT and Drift=RB: RT must not leak through GameCube R;
+ // RB remains the only Drift source, and LT stays unrelated.
+ triggerStatus.triggerLeft=120; triggerStatus.triggerRight=120;
+ maskExplicitTriggerAxes(triggerStatus,true,true);
+ assert(triggerStatus.triggerLeft==0 && triggerStatus.triggerRight==0);
  NSData *invalid=[@"invalid json" dataUsingEncoding:NSUTF8StringEncoding];
  assert([invalid writeToURL:[first profileURL] atomically:YES]);
  KPControllerSettings *third=[KPControllerSettings new];assert(third.profileReadFailed);
