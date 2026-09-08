@@ -101,7 +101,7 @@ def main() -> None:
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
         "physicalAcceptance": "Pending for this build; earlier Preview 15 physical gameplay is historical evidence only",
-        "emulatorAcceptance": "API 36 ARM64 host Vulkan: Original startup/rendering with validation off/on, universal/split APKs, durable data preservation; debug fixture verifies OS exit history/export",
+        "emulatorAcceptance": "API 36 ARM64 host Vulkan: Original startup/rendering with validation off/on, universal/split APKs, durable data preservation; immersive launch/menu/Home return and transient edge swipes; debug fixture verifies OS exit history/export",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()

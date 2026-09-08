@@ -62,5 +62,29 @@ Its unsigned runtime SHA-256 is
 `bacfc8cf7893340cae8a3c2c9f27f3b3b51391c18b403556b95979be4a4cf0c7`.
 The package audit passes with explicit version/build expectations; profile
 and 200-case trigger-output tests pass. These changes were sent to the author.
-PR #112 itself remains at the reviewed contributor head and is not approved.
+At that point PR #112 remained at the initial reviewed contributor head and
+was not approved.
 This Mac candidate does not change Android, iPadOS or tvOS. It is not published.
+
+## Revised contributor head
+
+Contributor head `271fdc135a03e4e067778f7683176c581ad2b75f` incorporates the
+maintainer trigger correction as `3b97827` and a different, narrower layout.
+The full Original/Retro dual runtime rebuilt successfully. The actual prepared
+trigger-output block passes all 200 cases; controller-profile tests pass.
+
+A fresh local 0.4.12/build 27 app passes strict signature and package checks.
+For its version assertions only, the audit uses the maintainer's explicit
+version/build override support from `b561626`; the author script still defaults
+to 0.4.11/build 26. Unsigned runtime SHA-256:
+`669f1520b07fbb4e0d265aac0a6dd39b81854cad2e430ad30d51e3b7fb25e4c2`.
+Bundle content hash:
+`fc9542e6bf2ffdab7d3dd4ecc19b71fbe4d419c5ccb1b591da6cf52311f41a52`.
+
+An isolated, separately identified app launched Original with networking off.
+Cmd-comma opened native settings and visual inspection confirms all right-hand
+Clear buttons fit the default window. Physical controllers were absent. The
+earlier fullscreen result belongs to the maintainer candidate; it is not
+relabelled as a final-head hardware test. Final-head controller/race/Retro and
+small-height/notch acceptance remain open, as does replacing author-local paths
+in the support notes. PR #112 remains unapproved and this candidate is local.

@@ -52,14 +52,19 @@ Never post the save or NAND publicly.
 
 **Retro Rewind ratings:** This picker transfers only `rksys.dat`. Retro Rewind
 also stores ratings in `RRRating.pul`, keyed by online profile, and synchronizes
-them during login. That companion file is not currently included in the transfer.
+them during login. With a shared Dolphin NAND, the source file is under
+`<Dolphin User>/Wii/shared2/Pulsar/RetroRewind6/RRRating.pul`, not necessarily
+the imported mod folder. That companion file is not currently included in the transfer.
 A restored license therefore does not establish a complete Retro migration.
 If the rating differs, preserve the source save and Retro folder, stop rated
 races on the migrated copy, and report source/game versions and whether the
 friend code matches locally (only “same” or “different”; do not post the code).
 Do not edit ratings, regenerate identity, or publicly upload rating/Mii files.
 The missing companion file is a known gap; it does not by itself prove the
-cause of any particular server rating. See [#105](https://github.com/chrissotraidis/kartpad/issues/105).
+cause of any particular server rating. The #105 reporter confirmed WiiCompiled
+0.2.31, Retro 6.12.7, an existing rating file in the shared NAND and matching
+friend codes; the rating still differed after a completed race. The diagnostic
+beta does not fix this migration gap. See [#105](https://github.com/chrissotraidis/kartpad/issues/105).
 
 On Mac, **Data → Show KartPad Data** opens KartPad's support directory. Quit
 the game before backing it up. On Apple TV, use

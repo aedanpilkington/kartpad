@@ -16,5 +16,7 @@ mkdir -p "$out"
 "$jdk/bin/java" -cp "$compiler:$stdlib:$annotations:$coroutines:$reflect" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
   -no-stdlib -no-reflect -jvm-target 17 -classpath "$stdlib:$json" -d "$out/tests.jar" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadExitDiagnostics.kt" \
+  "$repo/android/app/src/main/java/dev/kartpad/android/KartPadRendererDiagnostics.kt" \
+  "$repo/tests/android_identity/AtomicFile.kt" \
   "$repo"/tests/android_exit/*.kt
 "$jdk/bin/java" -cp "$out/tests.jar:$stdlib:$json" dev.kartpad.android.ExitDiagnosticsTestsKt

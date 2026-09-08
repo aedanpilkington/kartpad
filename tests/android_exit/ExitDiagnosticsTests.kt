@@ -48,5 +48,26 @@ fun main() {
     check(denied.getString("availability") == "unavailable" && !denied.has("exits"))
     check(!denied.toString().contains("private"))
     check(JSONObject(KartPadExitDiagnostics.snapshot(Context(null))).getString("availability") == "unavailable")
-    println("PASS: API compatibility, bounded own-app history, exit attribution, privacy allowlist, failure recovery")
+    val root = kotlin.io.path.createTempDirectory("kartpad-renderer-setting").toFile()
+    try {
+        val chooser = Context(manager, root)
+        val game = Context(manager, root)
+        check(!KartPadRendererDiagnostics.enabled(game))
+        check(KartPadRendererDiagnostics.setEnabled(chooser, true))
+        KartPadRendererDiagnostics.configure(game)
+        check(KartPadRendererDiagnostics.active && android.system.Os.getenv("KARTPAD_RENDERER_VALIDATION") == "1")
+        android.util.AtomicFile.failSuffix = "RendererValidation"
+        check(!KartPadRendererDiagnostics.setEnabled(chooser, false))
+        check(KartPadRendererDiagnostics.enabled(game))
+        android.util.AtomicFile.failSuffix = null
+        check(KartPadRendererDiagnostics.setEnabled(chooser, false))
+        KartPadRendererDiagnostics.configure(game)
+        check(!KartPadRendererDiagnostics.active && android.system.Os.getenv("KARTPAD_RENDERER_VALIDATION") == "0")
+        java.io.File(root, "KartPad/RendererValidation").writeText("1\nprivate-data")
+        check(!KartPadRendererDiagnostics.enabled(game))
+    } finally {
+        android.util.AtomicFile.failSuffix = null
+        root.deleteRecursively()
+    }
+    println("PASS: API compatibility, bounded exit attribution, privacy, failure recovery, durable renderer setting")
 }

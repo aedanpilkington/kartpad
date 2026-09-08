@@ -7,6 +7,8 @@ import java.nio.file.StandardCopyOption
 
 /** Host test stand-in for Android's AtomicFile; permits a bounded publication fault. */
 class AtomicFile(private val file: File) {
+    val baseFile: File get() = file
+    fun openRead() = file.inputStream()
     private val temporary = File(file.path + ".new")
     fun startWrite(): FileOutputStream = FileOutputStream(temporary)
     fun finishWrite(stream: FileOutputStream) {
