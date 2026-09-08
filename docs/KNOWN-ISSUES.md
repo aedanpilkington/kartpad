@@ -7,6 +7,8 @@ steps. Open reports are not treated as verified root causes.
 
 | Issue | Current boundary / next evidence |
 | --- | --- |
+| [#128](https://github.com/chrissotraidis/kartpad/issues/128) end-of-cup crash | AYN Thor, Android build 23, Retro Rewind. Reporter says every completed cup; exact results/ceremony/menu transition and Android/Retro versions are requested, plus matching reviewed exit/error excerpts if available. Original and other-device impact are not established. No repeat cup runs, reinstall or data clearing requested. |
+| [#127](https://github.com/chrissotraidis/kartpad/issues/127) macOS two-player character offsets | Contributor reports M5 MacBook Air / macOS 27 beta / Original at PR #112 head 271fdc1, 4x, 120 FPS, borderless/notch extension. Controller input works; characters appear outside karts. Same-scene main comparison is pending; neither PR regression nor shared Android cause is established. |
 | [#105](https://github.com/chrissotraidis/kartpad/issues/105) save location/transfer | The [Android 0.4.12-android.1 testing APK](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.1) adds profile-aware raw-save transfer. Reporter restored the license but saw a missing Mii and online rating 5000. The picker omits Retro's separate `RRRating.pul` and the Mii database; login also synchronizes ratings. Reporter confirmed WiiCompiled 0.2.31, Retro 6.12.7, an existing companion file in the shared Dolphin NAND, matching friend codes and a completed race without rating synchronization. Complete migration is not accepted; companion transfer needs backups and profile matching. |
 | [#102](https://github.com/chrissotraidis/kartpad/issues/102), [#104](https://github.com/chrissotraidis/kartpad/issues/104) Android geometry/textures | Fold #102 supplied Vulkan/Adreno 840 driver 512.842.19 logs confirming 1x/4:3, both screen states, Retro Rewind 6.12.7. A [synthetic renderer probe](../tools/renderer-probe/README.md) tests packed decoding and uniform layouts; Mac Metal and physical Pixel Vulkan baselines pass. Adreno 840 (512.842.19) and Adreno 750 (512.762.39 / 512.762.41) all pass the compute checks; the reporter confirms matching Original corruption and no logged GPU errors. The expanded [0.2.0 diagnostic](https://github.com/chrissotraidis/kartpad/releases/tag/renderer-probe-v0.2.0) now tests synthetic indexed draws, textures and queued updates; the #104 reporter also passes all eight compute/draw checks on Adreno 750 / 512.762.41. Adreno 840 draw results remain open. #104 confirmed corruption at 1x/4:3 affecting drivers only, with vehicles/tracks correct; no more repeat logs are requested from that reporter. Character transforms and generated shaders need a failing-draw reproduction; #102’s road-texture symptom remains separate. Build-23 actual-game validation on/off is now complete on the Fold: unchanged corruption, no crash, and the supplied interval presents near 60 FPS with no queued pipelines. No repeat comparison is requested. No verified renderer correction. |
 | [#123](https://github.com/chrissotraidis/kartpad/issues/123) Pixel online-menu freezes | Pixel 8 Pro / Android 17 API 37 / Mali-G715. The reporter now confirms online-menu freezes at 1x Native / Original 4:3 with Renderer Validation off. Audio stalls and catches up while the native three-dot menu stays responsive; offline play/races work. This supersedes the earlier archive setting mismatch. No further settings comparison or full archive is needed now. Investigation targets synchronous guest/network waits; neither a network nor renderer root cause is established. |
@@ -40,7 +42,7 @@ adds opt-in validation/bounds protection for the actual game renderer and
 bounded OS exit history. It also fixes the Android system bars remaining visible
 during play ([#119](https://github.com/chrissotraidis/kartpad/issues/119)); local
 release-emulator checks cover launch, menu return, Home/resume and transient
-edge swipes. Reporter hardware acceptance is pending. Normal mode keeps the
+edge swipes. The AYN Thor reporter in #128 says system bars still remain visible on build 23; display, affected bars and launch/resume behavior are requested. Device-wide resolution is not established. Normal mode keeps the
 previous renderer toggles.
 Local host/emulator checks pass; affected Adreno testing and a failing game
 draw remain open. This is an Android diagnostic, not a macOS/iPadOS fix.
@@ -77,3 +79,11 @@ An Android picker or a tvOS prototype does not establish parity across hosts.
 - Observed: approximately 21 GiB free on 2026-08-28 before upstream dependency checkout and translation.
 - Impact: full dependency graphs, generated translated shards, and parallel platform builds may exhaust disk space.
 - Mitigation: measure each fetch/build stage, keep generated data ignored, use bounded builds, and do not delete user data without explicit authorization.
+
+## Latest macOS PR source boundary
+
+The contributor confirms the physical controller results were obtained on
+`271fdc1`, on Original only. Later cleanup and keyboard-panel commits advance
+PR #112 to `d18d3e6`; the old local candidate does not include them. Review and
+focused tests must use the new source before claiming that acceptance transfers.
+Owner and Retro acceptance remain open.
