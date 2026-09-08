@@ -47,3 +47,18 @@ races are needed while checked save/rating companion transfer is developed.
 External output across Apple and Android is now an accepted priority with a
 [concrete test plan](../../EXTERNAL-DISPLAYS.md), retaining separate mirroring
 and dedicated-view acceptance. No formal new IPA before owner testing.
+
+## Pixel follow-up at 06:19 UTC
+
+The reporter [confirmed validation was off](https://github.com/chrissotraidis/kartpad/issues/123#issuecomment-5580249044)
+during the fresh 1x Native / Original 4:3 reproduction. Their preceding reply
+reports audio stalling and catching up while the native three-dot menu remains
+responsive. The earlier archive settings no longer leave that comparison open.
+Do not ask for it again or request another full private archive.
+
+These symptoms justify measuring synchronous host calls made by the guest,
+without establishing which call caused the reported stall. Existing deferred
+DNS and poll work does not make every receive or TLS operation asynchronous.
+A timing diagnostic must retain current socket semantics and avoid recording
+addresses, payloads or account identifiers. A candidate needs affected-Pixel
+reproduction before any claim that these freezes are fixed.
