@@ -32,6 +32,12 @@ if [[ ! -f "${runtime_source}/CMakeLists.txt" ]] ||
   echo "ERROR: prepare the integrated source first with scripts/prepare-ios-game-runtime.sh" >&2
   exit 66
 fi
+# Reject older prepared trees that still target the runtime at Apple M2.
+if ! rg -F -q 'CMAKE_OSX_SYSROOT MATCHES "iphoneos|iPhoneOS"' \
+    "${runtime_source}/cmake/PublicProducts.cmake"; then
+  echo "ERROR: stale iOS CPU baseline; prepare a fresh runtime source before building" >&2
+  exit 66
+fi
 if [[ ! -f "${translation_root}/build_shards/shards.cmake" ]]; then
   echo "ERROR: missing real-title translation: ${translation_root}" >&2
   exit 66

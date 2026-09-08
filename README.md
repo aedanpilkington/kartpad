@@ -31,7 +31,7 @@ This describes KartPad’s workflow, not the authorship of its upstream projects
 ![KartPad running a race on DK Summit on iPad](docs/images/kartpad-dk-summit-ipad.png)
 
 > [!IMPORTANT]
-> **KartPad 0.4.11 build 26 is the current iPhone/iPad and Mac release.** It fixes the
+> **iPhone/iPad 0.4.13 build 29 is available as an Apple preview; Mac remains 0.4.11 build 26.** Both include the fix for the
 > serious online console-serial bug reported in [#94](https://github.com/chrissotraidis/kartpad/issues/94).
 > Update before online play; older iOS, Mac and tvOS packages should stay offline.
 > The Mac package is in `v0.4.11-macos.1`. The IPA requires local
@@ -50,7 +50,19 @@ This describes KartPad’s workflow, not the authorship of its upstream projects
 > extracted game assets, Retro Rewind pack, saves, signing identity, or
 > provisioning profile.
 
-## iPhone and iPad 0.4.11 identity hotfix
+## iPhone and iPad 0.4.13 preview
+
+The [new iPhone/iPad IPA](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1)
+uses the KartPad app artwork above the Mario Kart Wii / Retro Rewind chooser
+and includes richer problem reports with build/source and runtime context.
+Physical iOS code now uses a generic ARM64 CPU baseline, correcting an M2-only
+instruction dependency on older devices; affected-device confirmation is pending.
+See the [Apple release notes](docs/releases/v0.4.13-ios.1.md) for exact scope and
+validation. Physical iPhone/iPad acceptance of this build remains open; it does
+not claim fixes for external displays, Mac two-player rendering, or Android
+performance. Mac and Apple TV packages are unchanged.
+
+### Retained 0.4.11 identity correction
 
 This native rebuild includes the narrow upstream CSNum correction, credited to
 patchzyy, while preserving stored identities, friend codes and saves. The old
@@ -70,7 +82,7 @@ menu allowed navigation to **Friends**. Earlier checks covered license deletion
 and creation, returning to the chooser, and reopening to switch games. This
 review does not establish a completed online race.
 
-[Download the corrected iPhone/iPad IPA and checksum](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11).
+[Download the iPhone/iPad preview IPA and checksum](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1).
 The menu names below follow 0.4.10; 0.4.9 calls them **Manage Existing Licenses…**
 and **Set Player Name…**. The corrected
 [macOS download](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1)
@@ -81,7 +93,7 @@ retains the native Mac controls and data-management flows.
 | Platform | Current corrected download | Installation |
 |---|---|---|
 | Android ARM64 | [0.4.10-android.1, code 21](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1) | [APK guide](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad | [0.4.11, build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11) | [Unsigned IPA guide](docs/INSTALL_IPA.md) |
+| iPhone / iPad preview | [0.4.13, build 29](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1) | [Unsigned IPA guide](docs/INSTALL_IPA.md) |
 | Apple Silicon Mac | [0.4.11, build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1) | [Mac ZIP guide](docs/INSTALL_MACOS.md) |
 | Apple TV (experimental) | [0.4.11, build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS IPA guide](docs/INSTALL_TVOS.md) |
 
@@ -118,7 +130,7 @@ remain known limitations—not a sustained-60-FPS guarantee. Android uses an
 | Question | Answer |
 |---|---|
 | Is this Dolphin or streaming? | No. WiiCompiled translates the game's PowerPC code ahead of time, then KartPad compiles it for ARM64 and presents it through Metal on Apple platforms or Vulkan on Android. |
-| Are release downloads included? | **Yes.** Corrected downloads: iPhone/iPad `v0.4.11`, Mac `v0.4.11-macos.1`, Android `v0.4.10-android.1`. Experimental tvOS has the same correction in `v0.4.11-tvos.1`. Supply your own supported game data; the IPA also requires local re-signing. |
+| Are release downloads included? | **Yes.** Corrected downloads: iPhone/iPad preview `v0.4.13-ios.1`, Mac `v0.4.11-macos.1`, Android `v0.4.10-android.1`. Experimental tvOS has the same correction in `v0.4.11-tvos.1`. Supply your own supported game data; the IPA also requires local re-signing. |
 | Can the source create an IPA? | Yes. The Personal IPA Builder can also translate a supported user-owned game executable and create a separate private unsigned IPA on an Apple Silicon Mac. |
 | Does it include Mario Kart Wii? | No. You must provide your own legally obtained supported PAL `RMCP01` revision 0 WBFS/ISO. |
 | Does it support Retro Rewind? | **Yes.** Choose Original Mario Kart Wii or Retro Rewind when KartPad opens. KartPad can download, verify, and install the official Retro Rewind 6.12.7 pack. The maintainer accepted Retro Rewind launch and menu navigation on iPad build 25; production online races remain a separate check. |
@@ -215,7 +227,7 @@ retail game data.
 | iPhone/iPad | The full 29,065-function ARM64 retail app has been packaged as an unsigned IPA; locally signed builds have been installed and physically accepted on both iPhone and iPad, reaching live races, importing a supported private WBFS, and preserving saves |
 | Game content | Version-locked dual-mode Original Mario Kart Wii / Retro Rewind 6.12.7 flow without bundling either game's private data; 6.12.7 launch and menu navigation were accepted on physical iPad build 25; complete production-online races remain unverified |
 | Online multiplayer | Local Mac-to-iPad-Simulator race/results evidence passes; Android Retro WFC login, worldwide matchmaking and live racing are owner-reported. Complete production results/reconnect and server CSNum-history remediation remain open |
-| Distribution | Corrected iPhone/iPad IPA in `v0.4.11`, Mac ZIP in `v0.4.11-macos.1`, Android APK in `v0.4.10-android.1`; experimental tvOS IPA in `v0.4.11-tvos.1`. Downloads contain compiled translated logic, but no disc images, extracted retail assets, Retro pack, saves or private signing material |
+| Distribution | iPhone/iPad preview IPA in `v0.4.13-ios.1`, Mac ZIP in `v0.4.11-macos.1`, Android APK in `v0.4.10-android.1`; experimental tvOS IPA in `v0.4.11-tvos.1`. Downloads contain compiled translated logic, but no disc images, extracted retail assets, Retro pack, saves or private signing material |
 
 The evidence ledger, exact open rows, and known risks live in
 [`docs/STATUS.md`](docs/STATUS.md). The 67-row release matrix is in
@@ -351,8 +363,8 @@ data, game switching, keyboard, controller, and mouse guidance.
 
 ### Download the unsigned iPhone/iPad IPA
 
-Download `KartPad-v0.4.11-ios-unsigned.ipa` and `SHA256SUMS` from the
-[0.4.11 release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11).
+Download `KartPad-v0.4.13-ios.1-unsigned.ipa` and `SHA256SUMS` from the
+[iPhone/iPad preview release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1).
 Verify the checksum, re-sign the IPA with AltStore Classic plus AltServer or
 another compatible personal-signing workflow, and select your own supported
 PAL `RMCP01` revision 0 image on first launch. See

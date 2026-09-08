@@ -127,6 +127,10 @@ for dual_patch in \
   patch --batch -p1 -d "${runtime_source}" < "${repo_root}/patches/${dual_patch}"
 done
 
+# Apply after the Apple/dual target patches; device and Simulator share this source.
+patch --batch -p1 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-ios-device-cpu-baseline.patch"
+
 # Backport upstream e0e362b: SCGetProductSN returns a guest u32 for DWC csnum.
 patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-sc-serial.patch"
