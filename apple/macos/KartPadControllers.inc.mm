@@ -199,9 +199,9 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
       clear.tag = i; clear.toolTip = @"Clear both bindings. Item / Drift then use the default analogue trigger.";
     }
     [self label:@"Keyboard steering axes" frame:NSMakeRect(20,218,180,22)];
-    NSArray *axisNames=@[@"Left X +",@"Left X −",@"Left Y +",@"Left Y −"];
-    for(int i=0;i<4;++i) {
-      CGFloat x=200+(i%2)*280,y=218-(i/2)*34;
+    NSArray *axisNames=@[@"Left X +",@"Left X −",@"Left Y +",@"Left Y −",@"Right X +",@"Right X −",@"Right Y +",@"Right Y −",@"Left trigger",@"Right trigger"];
+    for(int i=0;i<PAD_AXIS_COUNT;++i) {
+      CGFloat x=200+(i%2)*280,y=218-(i/2)*30;
       [self label:axisNames[i] frame:NSMakeRect(x,y,90,22)];
       NSButton *key=[self button:@"Unbound" action:@selector(remap:) frame:NSMakeRect(x+92,y-2,100,26)];
       key.tag=100+i; [self.keyboardAxes addObject:key];
@@ -329,7 +329,7 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     self.altBindings[i].hidden=YES; self.bindings[i].enabled=YES;
   }
   unsigned axes=0; auto *mapping=PADGetKeyAxisBindings(0,&axes);
-  for (int i=0;i<4;++i) {
+  for (int i=0;i<PAD_AXIS_COUNT;++i) {
     int sc=-1; if(mapping && axes==PAD_AXIS_COUNT) for(unsigned j=0;j<axes;++j) if(mapping[j].padAxis==(PADAxis)(PAD_AXIS_LEFT_X_POS+i)) sc=mapping[j].scancode;
     self.keyboardAxes[i].title=(self.keyboardCaptureKind==1 && self.keyboardCaptureIndex==i) ? @"Press…" : [self keyName:sc];
     self.keyboardAxes[i].enabled=YES;
@@ -474,7 +474,8 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     if(self.selectedID!=(SDL_JoystickID)-1 && ![ids containsObject:@(self.selectedID)]) { self.selectedID=(SDL_JoystickID)-1; self.capture=-1; }
     for(NSMenuItem *item in self.devices.itemArray) if(([item.representedObject isEqual:@"keyboard"] && self.keyboardSelected) || [item.representedObject unsignedIntValue]==self.selectedID) [self.devices selectItem:item];
   }
-  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; for(NSButton *button in self.bindings) button.enabled=YES; for(NSButton *button in self.keyboardAxes) button.enabled=YES; for(NSSlider *slider in self.zones) slider.enabled=NO; return; }
+  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; for(NSButton *button in self.bindings) button.enabled=YES; for(NSButton *button in self.keyboardAxes) button.enabled=YES; for(NSSlider *slider in self.zones) { slider.enabled=NO; slider.hidden=YES; } return; }
+  for(NSSlider *slider in self.zones) slider.hidden=NO;
   for(NSButton *button in self.altBindings) button.hidden=NO;
   SDL_Gamepad *pad=[self selectedPad]; int port=[self port];
   [self.player selectItemAtIndex:port+1]; self.player.enabled=pad!=nullptr;
