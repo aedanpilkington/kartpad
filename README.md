@@ -112,6 +112,17 @@ retains the native Mac controls and data-management flows.
 
 ## What is available now?
 
+| Platform | Current corrected download | Installation |
+|---|---|---|
+| Android ARM64 | [0.4.10-android.1, code 21](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1) | [APK guide](docs/INSTALL_ANDROID.md) |
+| iPhone / iPad | [0.4.11, build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11) | [Unsigned IPA guide](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.4.11, build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1) | [Mac ZIP guide](docs/INSTALL_MACOS.md) |
+| Apple TV (experimental) | [0.4.11, build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS IPA guide](docs/INSTALL_TVOS.md) |
+
+All four contain the corrected online console-serial implementation. Platform
+release tags are independent; identical version strings are not required for
+the shared fix. Apple TV hardware/online acceptance remains experimental.
+
 ### Android: first community release
 
 [Download Android APK, notices and SHA-256 checksums](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1)
@@ -136,7 +147,7 @@ remain known limitations—not a sustained-60-FPS guarantee. Android uses an
 | Question | Answer |
 |---|---|
 | Is this Dolphin or streaming? | No. WiiCompiled translates the game's PowerPC code ahead of time, then KartPad compiles it for ARM64 and presents it through Metal on Apple platforms or Vulkan on Android. |
-| Are release downloads included? | **Yes.** Corrected downloads: iPhone/iPad `v0.4.11`, Mac `v0.4.11-macos.1`, Android `v0.4.10-android.1`. Experimental tvOS remains in `v0.4.9` and should stay offline pending its CSNum rebuild. Supply your own supported game data; the IPA also requires local re-signing. |
+| Are release downloads included? | **Yes.** Corrected downloads: iPhone/iPad `v0.4.11`, Mac `v0.4.11-macos.1`, Android `v0.4.10-android.1`. Experimental tvOS has the same correction in `v0.4.11-tvos.1`. Supply your own supported game data; the IPA also requires local re-signing. |
 | Can the source create an IPA? | Yes. The Personal IPA Builder can also translate a supported user-owned game executable and create a separate private unsigned IPA on an Apple Silicon Mac. |
 | Does it include Mario Kart Wii? | No. You must provide your own legally obtained supported PAL `RMCP01` revision 0 WBFS/ISO. |
 | Does it support Retro Rewind? | **Yes.** Choose Original Mario Kart Wii or Retro Rewind when KartPad opens. KartPad can download, verify, and install the official Retro Rewind 6.12.7 pack. The maintainer accepted Retro Rewind launch and menu navigation on iPad build 25; production online races remain a separate check. |
@@ -144,7 +155,10 @@ remain known limitations—not a sustained-60-FPS guarantee. Android uses an
 | Do touch, tilt, and controllers work? | Touch, motion steering, and ordinary GameController-compatible pads are implemented, with general physical acceptance on iPhone and iPad. Direct Wii Remote/Nunchuk pairing is a separate experimental, macOS-only path that still needs external hardware testing. |
 | Can I rename or delete a license? | **Yes on iPhone and iPad.** Open **Game Data & Saves → Player Identity… → Rename or Delete Licenses…**, choose the exact game profile and slot, then rename it without losing its friend code/progress or delete only that slot after a second warning. Fully close KartPad from the app switcher and reopen it to apply the backed-up change; returning to its menu and resuming does not apply pending edits. |
 | Can I choose a Mii appearance? | **Appearance import remains experimental.** Open **Game Data & Saves → Player Identity… → Import Mii Appearance…** and choose a standard 74-byte `.mii` file. **Remove Mii Appearance…** never means delete a game license and refuses to remove a Mii that is still linked to one. |
-| Are Android and Apple TV supported? | **Android is supported**, with the first APK in `v0.4.10-android.1` and physical Pixel/Kishi gameplay acceptance. Hardware coverage and performance limits are described above. Apple TV remains an experimental hardware-bring-up IPA in `v0.4.9`. |
+| Are Android and Apple TV supported? | **Android is supported**, with the first APK in `v0.4.10-android.1` and physical Pixel/Kishi gameplay acceptance. Hardware coverage and performance limits are described above. Apple TV remains an experimental hardware-bring-up IPA in `v0.4.11-tvos.1`. |
+| Where are Android saves, and can I transfer a PC save? | Original save export/restore is available through **••• → Game Data & Saves → Manage Saves…**. Saves are internal app-private files. Retro Rewind save transfer is not covered by that UI yet; see the [transfer guide](docs/SUPPORT.md#android-save-transfer). |
+| Is Wiimmfi supported for Original? | No; it is an open compatibility request [#90](https://github.com/chrissotraidis/kartpad/issues/90). Changing a server address/MAC or importing a patched ISO does not add the matching native executable support. |
+| Can I use AirPlay or an external display? | This is under investigation in [#100](https://github.com/chrissotraidis/kartpad/issues/100); phone/tablet display acceptance does not establish external-output support. |
 | How much storage does it need? | The app is about 80 MiB and extracted Mario Kart Wii data uses about 2.5 GiB. Retro Rewind downloads an additional 1.72 GiB archive and needs temporary installation space. Keeping the WBFS/ISO on the device requires more space. |
 
 ## Multiplayer and controller setup
@@ -230,7 +244,7 @@ retail game data.
 | iPhone/iPad | The full 29,065-function ARM64 retail app has been packaged as an unsigned IPA; locally signed builds have been installed and physically accepted on both iPhone and iPad, reaching live races, importing a supported private WBFS, and preserving saves |
 | Game content | Version-locked dual-mode Original Mario Kart Wii / Retro Rewind 6.12.7 flow without bundling either game's private data; 6.12.7 launch and menu navigation were accepted on physical iPad build 25; complete production-online races remain unverified |
 | Online multiplayer | Local Mac-to-iPad-Simulator race/results evidence passes; Android Retro WFC login, worldwide matchmaking and live racing are owner-reported. Complete production results/reconnect and server CSNum-history remediation remain open |
-| Distribution | Corrected iPhone/iPad IPA in `v0.4.11`, Mac ZIP in `v0.4.11-macos.1`, Android APK in `v0.4.10-android.1`; tvOS `v0.4.9` still needs rebuilding. Downloads contain compiled translated logic, but no disc images, extracted retail assets, Retro pack, saves or private signing material |
+| Distribution | Corrected iPhone/iPad IPA in `v0.4.11`, Mac ZIP in `v0.4.11-macos.1`, Android APK in `v0.4.10-android.1`; experimental tvOS IPA in `v0.4.11-tvos.1`. Downloads contain compiled translated logic, but no disc images, extracted retail assets, Retro pack, saves or private signing material |
 
 The evidence ledger, exact open rows, and known risks live in
 [`docs/STATUS.md`](docs/STATUS.md). The 67-row release matrix is in
@@ -656,6 +670,11 @@ binary is part of this repository.
 
 ## Diagnostics and privacy
 
+Start with the [support guide](docs/SUPPORT.md) for save transfers, aspect modes,
+Android graphics/performance comparisons, external displays, and exact log
+collection steps. The [bug report form](https://github.com/chrissotraidis/kartpad/issues/new?template=bug_report.yml)
+accepts the fields prefilled by the iPhone/iPad and Android report buttons.
+
 On Mac, choose **Help → Save Diagnostics Report…** after a failure or slow
 session. The schema-3 report contains bounded build/runtime identifiers,
 selected safe settings, storage health, clean-versus-unclean shutdown state,
@@ -691,7 +710,9 @@ Useful starting points:
 Yes. `v0.4.11` provides the corrected unsigned iPhone/iPad IPA, which must be re-signed
 before installation. The corrected Apple Silicon Mac ZIP is in
 [`v0.4.11-macos.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1).
-The old experimental Apple TV IPA in `v0.4.9` should stay offline. Android's APK is in
+The corrected experimental Apple TV IPA is in
+[`v0.4.11-tvos.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1);
+older tvOS IPAs should stay offline. Android's APK is in
 [`v0.4.10-android.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1);
 follow [the Android guide](docs/INSTALL_ANDROID.md).
 They contain
@@ -750,7 +771,7 @@ iPhone or iPad.
 ### Are Android or Apple TV supported?
 
 Apple Silicon Mac, iPhone, and iPad are supported. An experimental native Apple
-TV tester IPA is included in `v0.4.9`; it has passed build and package
+TV tester IPA is included in `v0.4.11-tvos.1`; it has passed build and package
 audits but still needs physical Apple TV acceptance before tvOS can be called
 supported. See [the tvOS implementation and acceptance plan](docs/TVOS.md).
 Android is supported with a full playable ARM64/Vulkan APK in

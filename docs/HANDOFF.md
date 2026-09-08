@@ -18,6 +18,11 @@ maintainer response crediting patchzyy and linking verified fixed downloads.
 Source correction, new binary verification and historical server-CSNum cleanup
 remain distinct. Old experimental tvOS is still offline-only pending rebuild.
 
+Mac publication is complete from `0c70061`; the hosted ZIP matches the local
+audited bytes and its extracted ad-hoc signature passes. The isolated Original
+startup/title-screen run was around 60 FPS and quit normally without changing
+installed save/Mii/config hashes. See `docs/artifacts/2026-09-07/macos-v0411-release.md`.
+
 2026-09-07: the owner accepted Android Preview 15/code 20 with Razer Kishi in
 Original Grand Prix; touch controls hide on connection and gameplay works.
 Earlier that session they reported Retro Rewind 6.12.7 Retro WFC login,

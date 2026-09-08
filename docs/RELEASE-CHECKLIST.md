@@ -11,17 +11,17 @@
 - [x] Publish the new IPA/checksum, anonymously download and re-audit.
 - [x] Update issue #94 with the verified download and remaining boundaries.
 
-Old Mac/tvOS packages remain offline-only pending rebuild. No new physical
+Old packages remain offline-only; the Mac and tvOS rebuilds are tracked below. No new physical
 online race or server-history cleanup is inferred from these checks.
 
 ## macOS 0.4.11 console-serial hotfix
 
-- [ ] Rebuild both executable profiles from freshly patched source.
-- [ ] Audit the signed app and inspect the linked corrected serial write.
-- [ ] Run bounded local launch/close checks without touching installed saves.
-- [ ] Merge metadata, package exact main twice and audit extracted signatures.
-- [ ] Publish only Mac ZIP/checksum, anonymously download and re-audit.
-- [ ] Update issue #94 and the current download documentation.
+- [x] Rebuild both executable profiles from freshly patched source.
+- [x] Audit the signed app and inspect the linked corrected serial write.
+- [x] Run bounded local launch/close checks without touching installed saves.
+- [x] Merge metadata, package exact main twice and audit extracted signatures.
+- [x] Publish only Mac ZIP/checksum, anonymously download and re-audit.
+- [x] Update issue #94 and the current download documentation.
 
 ## First Android community release (v0.4.10-android.1)
 
@@ -40,6 +40,21 @@ See [candidate verification](artifacts/2026-09-07/android/first-release-verifica
 and [release maintenance](RELEASING_ANDROID.md). Original public-signature
 physical installation, complete production-online results/reconnect, historical
 server CSNum cleanup and sustained 60 FPS are not claimed.
+
+## tvOS 0.4.11 console-serial hotfix
+
+- [x] Prepare fresh dual runtime sources with the credited issue #94 correction.
+- [x] Build ARM64 tvOS 0.4.11/build 9 and pass the app/RCpc/private-data audit.
+- [x] Verify linked serial write and repository/source checks.
+- [x] Merge metadata, rebuild exact main, package twice and audit exact IPA.
+- [x] Publish only the tvOS IPA/checksum; anonymously download and re-audit.
+- [x] Update issue #94 with the verified download and remaining server-history boundary.
+
+No physical Apple TV test, production-online acceptance, DSU support or
+external-display fix is inferred from this targeted rebuild.
+
+Published and anonymously re-audited: [v0.4.11-tvos.1](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1).
+See the [exact artifact and triage evidence](artifacts/2026-09-08/tvos-v0411-release.md).
 
 ## tvOS experimental candidate
 
