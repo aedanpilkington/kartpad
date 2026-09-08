@@ -34,8 +34,8 @@ class AndroidGameDataSaveContractTests(unittest.TestCase):
         self.assertIn("cornerRadius = dp(18).toFloat()", launcher)
         self.assertIn("setModeText(this, \"Mario Kart Wii\", \"Original game\")", launcher)
         self.assertIn("minOf(760, maxOf(320, availableWidthDp))", launcher)
+        self.assertIn("setImageResource(R.drawable.kartpad_app_icon)", launcher)
         for icon in (
-            "ic_kartpad_steering_wheel",
             "ic_kartpad_checkered_flag",
             "ic_kartpad_gobackward",
         ):
