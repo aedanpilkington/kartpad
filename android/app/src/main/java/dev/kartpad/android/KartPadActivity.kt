@@ -1537,6 +1537,17 @@ class KartPadActivity : SDLActivity() {
         fields.addView(frequency)
 
         fun reportId() = "KP-${UUID.randomUUID().toString().take(8).uppercase()}"
+        fun performanceReport() = buildString {
+            val aspect = when (KartPadTouchSettings.aspectMode(this@KartPadActivity)) {
+                0 -> "Original 4:3"
+                1 -> "16:9 (Experimental)"
+                2 -> "Fill Screen (Experimental)"
+                else -> "Unknown"
+            }
+            appendLine("Configured render resolution: ${KartPadTouchSettings.resolutionScale(this@KartPadActivity)}x")
+            appendLine("Configured aspect: $aspect")
+            append("Active renderer validation: ${if (KartPadRendererDiagnostics.active) "On" else "Off"}")
+        }
         fun diagnosticReport(id: String) = buildString {
             appendLine("KartPad Android diagnostic report")
             appendLine("Report ID: $id")
@@ -1545,6 +1556,7 @@ class KartPadActivity : SDLActivity() {
             appendLine("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
             appendLine("Runtime profile: $runtimeProfile")
             appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
+            appendLine(performanceReport())
             appendLine()
             appendLine("What went wrong:")
             appendLine(problem.text.toString().trim().ifBlank { "Not provided" })
@@ -1578,10 +1590,14 @@ class KartPadActivity : SDLActivity() {
                     .appendQueryParameter(
                         "revision", "${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
                     )
-                    .appendQueryParameter("platform", "Android ${android.os.Build.VERSION.RELEASE}")
-                    .appendQueryParameter("performance-profile", runtimeProfile)
+                    .appendQueryParameter("platform", "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}; Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
+                    .appendQueryParameter("performance-profile", performanceReport())
                     .appendQueryParameter("summary", problem.text.toString().trim())
-                    .appendQueryParameter("context", area.text.toString().trim())
+                    .appendQueryParameter("context", buildString {
+                        appendLine("Runtime profile: $runtimeProfile")
+                        if (runtimeProfile == "retro_rewind") appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
+                        append(area.text.toString().trim())
+                    })
                     .appendQueryParameter("frequency", frequency.text.toString().trim())
                     .build()
                 startActivity(Intent(Intent.ACTION_VIEW, url))
