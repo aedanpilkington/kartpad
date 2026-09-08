@@ -31,7 +31,8 @@ Root access is not needed:
 even when opened while playing Retro Rewind. It does not export or restore Retro
 Rewind saves. Update to the testing build for that transfer; keep the PC copy and
 verify the resulting progress offline. The reporter's PC WiiCompiled → Android
-Retro Rewind/PAL acceptance remains open in
+Retro Rewind/PAL test restored the license, but its online rating showed 5000;
+complete migration acceptance remains open in
 [#105](https://github.com/chrissotraidis/kartpad/issues/105).
 
 **Profile selection:** Choose **Original Mario Kart Wii**, **Retro Rewind**, or
@@ -48,6 +49,17 @@ identity compatibility. A save transfer does not transfer the Mii database or
 console identity. If the source is Dolphin, another WiiCompiled build, or
 Retro Rewind, name it and the game region when asking for migration help.
 Never post the save or NAND publicly.
+
+**Retro Rewind ratings:** This picker transfers only `rksys.dat`. Retro Rewind
+also stores ratings in `RRRating.pul`, keyed by online profile, and synchronizes
+them during login. That companion file is not currently included in the transfer.
+A restored license therefore does not establish a complete Retro migration.
+If the rating differs, preserve the source save and Retro folder, stop rated
+races on the migrated copy, and report source/game versions and whether the
+friend code matches locally (only “same” or “different”; do not post the code).
+Do not edit ratings, regenerate identity, or publicly upload rating/Mii files.
+The missing companion file is a known gap; it does not by itself prove the
+cause of any particular server rating. See [#105](https://github.com/chrissotraidis/kartpad/issues/105).
 
 On Mac, **Data → Show KartPad Data** opens KartPad's support directory. Quit
 the game before backing it up. On Apple TV, use

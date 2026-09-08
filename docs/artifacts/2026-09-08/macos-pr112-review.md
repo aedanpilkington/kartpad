@@ -1,0 +1,49 @@
+# macOS PR #112 local review — 8 September 2026
+
+Reviewed contributor head `ab9561197ed44692884a80ade8d1b4ccc067ee46`
+from [aedanpilkington's PR #112](https://github.com/chrissotraidis/kartpad/pull/112).
+This is local acceptance work, not a release or merge approval.
+
+## Verified
+
+- Full ARM64 Original + Retro Rewind dual runtime built with the pinned
+  translation inputs. Package audit and strict local signature verification passed.
+- Assignment/cached-index, native settings bridge, controller-profile and
+  virtual-input tests passed, including unreadable-profile preservation.
+- Settings shortcut host test passed.
+- An isolated app copy with separate bundle identifier, portable data and
+  networking disabled reached the Original title screen with locally owned data.
+  Cmd-comma and F10 opened native settings. All five tabs opened; graphics/audio
+  changes persisted to the isolated configuration and were reflected on reopening
+  the panel. Compatibility Tools opened the intended legacy overlay.
+
+The original audited app's unsigned runtime SHA-256 is
+`ca5a83528da0d96f7c9bfeb73194f4906a1a2b56bd396651c26151b940042796`.
+The later trigger-corrected runtime is a different local artifact.
+
+## Required corrections
+
+1. Trigger-axis isolation clears `PADStatus.triggerLeft/Right` before subsequent
+   assignments overwrite them. A fully pressed RT still outputs 255 with an
+   explicit Drift button binding. The [review](https://github.com/chrissotraidis/kartpad/pull/112#pullrequestreview-5137141071)
+   requests changes. Local correction zeros `tl/tr` before final assignment.
+   `scripts/test-macos-trigger-output.py` compiles the prepared runtime's actual
+   trigger block and verifies 200 combinations of both bindings, both axes and
+   trigger emulation. It fails against the contributor head and passes with the
+   correction. Corrected Original and dual executables rebuild successfully.
+   Correction commit: `9b3ea0b` on `codex/pr112-local-validation`.
+2. At the default native settings size, the Controllers tab clips the rightmost
+   Clear buttons. The document's fixed width and mapping columns need to fit
+   the visible scroll viewport or provide suitable scrolling/resizing behavior.
+
+## Remaining acceptance
+
+No physical controller was connected for these checks. Cold launch with a pad
+already connected, hotplug/reconnect, both trigger bindings in a race, profile
+restore across app launches, multiple controllers, full-screen transitions and
+Retro Rewind gameplay still require acceptance. A dual compile does not prove
+those paths. No contributor build has been approved, merged or released here.
+
+Recheck the final contributor head against current main before integration;
+retain contributor attribution. Source-local build notes are not a substitute
+for a portable upstream support guide.
