@@ -5,6 +5,30 @@ Mac, or **Multiplayer…** on the Apple TV game chooser. The menu covers
 Original Mario Kart Wii and Retro Rewind; available online guidance depends on
 the game profile. Apple mobile menu names below follow 0.4.10 and later.
 
+## iPhone and iPad touch and motion controls
+
+These instructions describe the Apple touch interface. Android has its own
+[controls and display settings](INSTALL_ANDROID.md); do not assume menu parity.
+
+- **Acceleration lock:** hold A continuously for one second until it turns cyan.
+  Release your finger to keep accelerating; tap A to unlock. Opening a modal,
+  hiding touch or handing Player 1 to a controller clears the lock.
+- **Layout:** open **••• → Touch Control Settings** to move, resize, hide or
+  restore controls. The D-pad is hidden by default and can be enabled for tricks
+  and wheelies. Existing custom visibility choices are preserved. Phone and
+  tablet layouts are stored separately; **Back** returns to touch settings.
+- **Floating stick:** touch within its pickup area to place it under your thumb;
+  it disappears on release. R is a digital drift control, not an analog trigger.
+- **Controller handoff:** the first extended gamepad takes Player 1, clears held
+  touch input and hides touch controls by default. Disconnecting restores touch;
+  additional controllers retain their Player 2–4 slots.
+- **Motion steering:** **••• → Motion Steering…** is off by default. It provides
+  recenter, inversion and 0.5×/1×/2× sensitivity. Touch can override motion;
+  physical controllers take priority, and backgrounding clears live motion state.
+
+Motion tuning, full race coverage and reconnect behavior still need physical
+acceptance on the exact build; the existence of a setting does not prove them.
+
 ## Local split-screen
 
 Pair each controller in the operating system, select Multiplayer in the game,
