@@ -92,3 +92,28 @@ KartPad itself is untouched. The latest game release remains `v0.4.11`.
 Reporters in #102 and #104 received the link and a Run/Share request. #102
 returned the passing Adreno results above; #104 is still pending. No issue was closed and no playable APK/IPA
 was released by this investigation.
+
+## Graphics-stage follow-up in source 0.2.0
+
+After #102's passing compute result, the separate diagnostic now adds four
+indexed-draw variants alongside the original four compute variants. Each draw
+variant compares 4,096 channel values over four queued frames, exercising packed
+vertex indices, signed positions, the current 80-byte uniform prefix, 20 indexed
+position matrices, dynamic uniform offsets, RGBA8 texture loads and shared
+buffer/texture updates. The detailed scope is in the probe README.
+
+- Mac M3 Max / Metal: all eight variants pass, 32,768 comparisons total.
+- API 36 ARM64 emulator / host Vulkan: the release-signed 0.2.0 candidate passes
+  all eight variants. Run and Share Results work; the sharesheet includes all
+  results and no destination was selected.
+- Negative control: a private copy deliberately flips one red-channel bit in
+  the fragment shader. All four draw variants fail with 1,024 mismatches each;
+  compute variants still pass, and the CLI exits 1.
+- Android CLI and release APK compile. Standalone APK audit passes. The physical
+  Pixel disconnected before this expanded probe could be run; the earlier
+  Pixel result applies only to version 0.1.0's compute tests.
+
+These are synthetic graphics stages, not a replay of GX-generated game shaders,
+compressed textures, actual staging-buffer use, multithreaded encoding or
+presentation. No renderer correction is claimed. Version 0.2.0 publication and
+affected-device results remain pending at this source checkpoint.
