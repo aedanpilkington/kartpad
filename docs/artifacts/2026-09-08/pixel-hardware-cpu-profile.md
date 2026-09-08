@@ -37,3 +37,29 @@ Evidence stays private under `/private/tmp/kartpad-runtime-investigation/build/i
 slowdown-console.log, slowdown-health.log, perf.data, cpu-report.txt,
 cpu-threads.txt and build/source comparison output. Owner retains phone controls;
 the fixed-duration host profiler has finished. No release or GitHub reply.
+
+## Conditional exception clear experiment
+
+Android ARM64 now uses a separate, opaque helper for pre-operation exception
+clearing. It reads FPSR, masks only FE_ALL_EXCEPT and skips the write when
+already clear, preserving QC and FPCR. Other platforms retain libc clearing.
+The helper remains outside the arithmetic translation unit with no inlining.
+
+On the physical Pixel, while the game was stopped at Christopher's request:
+520,000 differential cases passed across four rounding modes (values, guest
+FPSCR, destination writes and host flags); 512 FPSR states passed clearing and
+capture with QC preservation. Apple Silicon host semantics passed 250,227
+checks, state hash 0xccd5757c4c0643d4.
+
+Six alternating-order microbenchmarks found clean-state clearing faster
+(baseline 9.03–15.91 ns, candidate 6.60–8.36 ns) but dirty-state clearing
+slower (baseline 11.54–13.91 ns, candidate 12.29–14.10 ns). A separate matched
+Android baseline/candidate operation benchmark, four alternating-order rounds
+of 100,000 operations each, measured median reductions of 6.1–8.7% for ten
+common operations excluding the conversion, which improved 15.9%; double sqrt
+was flat and single sqrt was 3.7% slower. These synthetic finite-input cases
+are not a game instruction distribution or evidence of an FPS improvement.
+Phone locked during the operation benchmark; thermal/frequency drift remains
+a limitation despite alternating order. Raw data is retained privately in
+`build/fenv-experiment/`. A matched game build and owner-controlled scene test
+remain necessary; existing installed candidate remains unchanged at this point.
