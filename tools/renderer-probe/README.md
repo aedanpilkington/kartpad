@@ -15,6 +15,9 @@ Its package is `dev.kartpad.rendererprobe`; installing it does not replace
 
 [Download the audited Android diagnostic APK](https://github.com/chrissotraidis/kartpad/releases/tag/renderer-probe-v0.2.0).
 
+You do not need to run KartPad first. This separate app supplies all of its
+own synthetic inputs.
+
 Open **KartPad Renderer Check**, tap **Run GPU Check**, then **Share Results**.
 Keep the app open during the test. Post the text to the relevant issue after
 reviewing it. Include whether Original, Retro Rewind, or both show corruption.
