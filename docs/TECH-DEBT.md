@@ -6,7 +6,70 @@ feature works on untested hardware. External pull requests listed here are sourc
 material only; any follow-up is maintainer-owned and its completed and remaining
 gates are stated explicitly below.
 
-## tvOS A12 compiler baseline
+## Current priorities across platforms
+
+Reviewed 9 September 2026 against [known issues](KNOWN-ISSUES.md), the
+[maintenance board](MAINTENANCE-BOARD.md) and their dated evidence. This document
+records engineering gaps and what would demonstrate progress; the board owns
+assignments and candidate status. Open reports are not automatically one shared
+bug. The tvOS experiments below remain useful, but are not the whole debt queue.
+
+### Android stability and performance
+
+Android is the main current stability priority. Public preview 1/code 28 adds
+rating restore and diagnostics; it is **not** a verified fix for the reports
+below. Preview 2/code 29 is a local candidate, not a published download.
+
+| Work / reports | Established evidence and remaining gap | Next discriminating check / acceptance |
+| --- | --- | --- |
+| Character/geometry corruption: [#102](https://github.com/chrissotraidis/kartpad/issues/102), [#104](https://github.com/chrissotraidis/kartpad/issues/104), [#120](https://github.com/chrissotraidis/kartpad/issues/120), [#137](https://github.com/chrissotraidis/kartpad/issues/137) | Multiple Adreno devices pass synthetic renderer probes while actual characters remain corrupted. Validation on/off has not resolved reported corruption; road textures may be a separate symptom. No verified rendering correction. | Reproduce a failing game draw and trace its transform/upload/shader inputs; verify a correction on affected hardware and a non-affected GPU. Avoid repeating already-completed synthetic or settings tests. [Draw evidence](artifacts/2026-09-09/graphics-preview28-evidence.md). |
+| Online-menu stalls: [#123](https://github.com/chrissotraidis/kartpad/issues/123) | A matched build-28 log shows a 2.222-second presentation gap with thermal status 0. Recorded receive waits lie outside that gap. A separate actual-HLE probe reproduced alarm rescheduling under a recursive pump guard; its Android correction is merged, but reporter causality is unproven. | Compare the exact corrected candidate on the affected gameplay path; correlate guest progress, callbacks and presentation. Require real freeze/audio behavior to improve before calling it a fix. [Timing review](artifacts/2026-09-09/pixel-online-log-review.md), [local candidate](artifacts/2026-09-09/android-preview2-local-candidate.md). |
+| Slowdown, frame pacing and heat: [#103](https://github.com/chrissotraidis/kartpad/issues/103) | Performance varies with device power mode, scene, compilation and heat. An independently reviewed scalar-context optimization remains separate from released builds; a synthetic multiply improvement is not a game FPS gain. | Matched cold/warm runs at the same resolution, track and power mode, measuring frame-time tails, audio and thermal state. Benchmark the optimization in-game before integration or performance claims. [Review boundary](artifacts/2026-09-09/maintenance-source-reviews.md), [performance guide](PERF.md). |
+| End-of-cup crashes: [#128](https://github.com/chrissotraidis/kartpad/issues/128), [#131](https://github.com/chrissotraidis/kartpad/issues/131) | Reported after Next at the final race, before awards, with Original and Retro both reported affected. Shared awards/resource paths are identified; the matching termination cause is not. | Use the requested exit/console evidence to classify the failure, then exercise the affected awards transition. Do not infer a Retro-only bug or require destructive reimports. [Investigation](artifacts/2026-09-09/cup-transition-investigation.md). |
+| Game-launch crash: [#143](https://github.com/chrissotraidis/kartpad/issues/143) | Honor X7D / Snapdragon 685 report after import and Launch. Exact build/profile and matching termination evidence are still needed. | Separate importer completion from native launch and identify the failing boundary before choosing a CPU/GPU correction. Do not infer incompatibility from the chipset name alone. |
+| System bars and aspect: [#119](https://github.com/chrissotraidis/kartpad/issues/119), [#101](https://github.com/chrissotraidis/kartpad/issues/101) | System-bar handling has shipped changes but reporter/device confirmation remains separate. Fill Screen distortion needs its own projection/presentation reproduction. | Verify focus, chooser/game transitions and system UI on the affected device; compare the same scene in 4:3, 16:9 and Fill. Keep UI lifecycle separate from character corruption. |
+| Save/rating/Mii migration: [#105](https://github.com/chrissotraidis/kartpad/issues/105) | Preview 1 implements reviewed, backed-up, matched offline rating restore. Real-save acceptance is pending; raw save export does not carry the Mii database, and file copying is not online rating synchronization. | Complete the existing offline restore test with matching profiles before separate online checks. Design Mii transfer and Apple UI parity independently, preserving unrelated identities and licenses. [Support workflow](SUPPORT.md). |
+
+### Apple and shared runtime gaps
+
+- **Older-device launch (#135):** iPhone/iPad 0.4.13 build 29 ships the reviewed
+  generic ARM64/RCpc-disabled correction. The final binary and initializer were
+  audited; A10X physical launch and a matching original crash PC/UUID remain
+  necessary before attributing the reporter's crash to that defect. This is
+  distinct from the tvOS A12 gate below. [Build evidence](artifacts/2026-09-09/ios-preview-build29.md).
+- **External displays (#100):** source review found that surface recovery can
+  replace the SDL Metal view and detach its controls. A real mirroring trigger
+  is not established. Correct ownership with a forced-recovery regression,
+  then test wired/wireless connect, disconnect and resume on each platform.
+  [Source evidence](artifacts/2026-09-09/external-display-surface-ownership.md),
+  [display plan](EXTERNAL-DISPLAYS.md).
+- **Mac input and two-player rendering:** PR #112 still needs capture-cancel
+  and physical-scancode corrections plus hardware acceptance. #127's character
+  offsets need a same-scene main/PR comparison; controller success does not
+  establish rendering correctness. [Current boundaries](KNOWN-ISSUES.md).
+- **Diagnostics:** richer context/provenance is published on Android preview 1
+  and iPhone/iPad build 29. Physical report export/share still needs acceptance
+  on the exact Apple package. Use existing targeted logs first; bounded samples
+  can miss a failing draw or an indefinitely blocked call. More logging without
+  a discriminating experiment is not itself a stability fix.
+- **Retro version compatibility and online behavior:** keep compiled profiles,
+  installed content and service compatibility distinct. Apple pre-launch and
+  Android install-time update checks are not identical. Future version rollout
+  needs mismatch/recovery tests, plus exact-build race/results/reconnect checks;
+  changing a pack or server field cannot add new executable compatibility.
+  [Upstream updates](UPSTREAM_UPDATES.md), [online limits](ONLINE.md).
+- **Long-session and peripheral acceptance:** sustained frame pacing/audio,
+  motion steering, reconnect and complete three/four-player results remain
+  per-platform gates. DSU (#91) and Wiimmfi (#90) are separate feature work,
+  not already-supported paths. [Acceptance](PHYSICAL-ACCEPTANCE.md),
+  [future features](FUTURE-FEATURES.md).
+
+## Deferred tvOS work
+
+The following compiler, presentation, haptics and audio work retains its own
+source and physical-device acceptance boundaries.
+
+### tvOS A12 compiler baseline
 
 Status: defensive compiler hardening implemented; physical A12 compatibility
 unverified.
@@ -36,7 +99,7 @@ Source: pull request [#31](https://github.com/chrissotraidis/kartpad/pull/31)
 and its physical-device follow-up. The submitted pull-request head did not
 include the RCpc fix.
 
-## tvOS settings and aspect presentation
+### tvOS settings and aspect presentation
 
 Status: aspect-state consistency implemented; presentation choices remain deferred.
 
@@ -68,7 +131,7 @@ Acceptance requires all of the following:
 
 Source: pull request [#32](https://github.com/chrissotraidis/kartpad/pull/32).
 
-## tvOS controller rumble
+### tvOS controller rumble
 
 Status: hardware experiment required.
 
@@ -88,7 +151,7 @@ Acceptance requires all of the following:
 
 Source: pull request [#33](https://github.com/chrissotraidis/kartpad/pull/33).
 
-## Dolby Pro Logic II to multichannel LPCM
+### Dolby Pro Logic II to multichannel LPCM
 
 Status: audio experiment required.
 
@@ -108,7 +171,7 @@ Acceptance requires all of the following:
 
 Source: pull request [#35](https://github.com/chrissotraidis/kartpad/pull/35).
 
-## Integration order
+### tvOS experiment integration order
 
 1. Retain the statically verified A12 compiler hardening and keep physical
    compatibility explicitly unclaimed unless exact-artifact evidence arrives.

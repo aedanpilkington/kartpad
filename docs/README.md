@@ -1,6 +1,8 @@
 # KartPad documentation
 
 For downloads, start with the [project README](../README.md#downloads).
+The [expandable FAQ](../README.md#frequently-asked-questions) answers common
+setup, controls, compatibility and troubleshooting questions.
 Guides below describe current workflows; dated records describe only the build
 and observations named in them.
 
@@ -45,7 +47,9 @@ and observations named in them.
   are historical. Their old candidates, local paths and pending actions are not
   instructions for the next session.
 
-Keep the README focused on introduction, downloads and usage. Update current
+Keep the README focused on introduction, downloads, usage and its expandable FAQ.
+Preserve useful user answers and controls guidance when shortening a page; move
+detailed instructions to a linked guide rather than silently deleting them. Update current
 summaries in place and link one dated record for detailed evidence. Preserve
 release notes, license/provenance records and referenced artifacts; remove
 superseded duplicate summaries rather than copying them into more running logs.
