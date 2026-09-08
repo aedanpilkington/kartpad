@@ -71,6 +71,8 @@ retrace guards retain a pending reschedule without switching.
 Normal and recount patch checks pass. Fresh Android source preparation applies
 the ordered stack and final patch successfully; the probe passes against that
 fresh result. Shell syntax and whitespace checks pass. There is no full-game
-build, APK, device acceptance or measured gameplay improvement. Independent
-review is required before integration and a matched game test before describing
-this as an issue-123 correction.
+build, APK, device acceptance or measured gameplay improvement. Independent Astra Medium review reran both probes and verified the exact
+prepared-source delta, guard/drain semantics and source hashes; no integration
+blocker found. Real fiber switching, periodic reinsertion, multi-alarm fairness
+and device gameplay remain outside this probe. A matched game test is required
+before describing this as an issue-123 correction.
