@@ -97,6 +97,8 @@ patch --batch -p1 -d "$runtime_source" < \
 
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-network-stall.patch"
+patch --batch -p1 -d "$runtime_source" < \
+  "$repo_root/patches/wiicompiled-android-alarm-reschedule-guard.patch"
 
 generated_link="$(dirname "$runtime_source")/generated"
 if [[ -e "$generated_link" && ! -L "$generated_link" ]]; then
