@@ -86,7 +86,9 @@ class AndroidGameDataSaveContractTests(unittest.TestCase):
         self.assertIn('KartPadOpenDiscDescriptor(fd)', native)
         self.assertIn('volume->GetGameID(partition) != "RMCP01"', native)
         self.assertIn("DiscIO::ExportSystemData", native)
-        self.assertIn("DiscIO::ExportDirectory", native)
+        self.assertIn("ExportCheckedDirectory", native)
+        self.assertIn("!DiscIO::ExportFile", native)
+        self.assertIn("space.available < required", native)
         self.assertIn("kartpadDiscIoJniRoot", gradle)
         self.assertIn("4f8af23db516d8b6e9cd00e7b261a65b026514a8", build)
 

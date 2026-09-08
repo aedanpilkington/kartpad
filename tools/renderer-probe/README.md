@@ -13,13 +13,13 @@ Its package is `dev.kartpad.rendererprobe`; installing it does not replace
 
 ## Run
 
-[Download the audited Android diagnostic APK](https://github.com/chrissotraidis/kartpad/releases/tag/renderer-probe-v0.1.0).
+[Download the audited Android diagnostic APK](https://github.com/chrissotraidis/kartpad/releases/tag/renderer-probe-v0.2.0).
 
 Open **KartPad Renderer Check**, tap **Run GPU Check**, then **Share Results**.
 Keep the app open during the test. Post the text to the relevant issue after
 reviewing it. Include whether Original, Retro Rewind, or both show corruption.
 
-In source version 0.2.0, four compute variants and four indexed-draw variants
+In version 0.2.0, four compute variants and four indexed-draw variants
 compare 4,096 values each against independent CPU expectations (32,768 total):
 
 - Scalar uniform array, bounds protection disabled.
