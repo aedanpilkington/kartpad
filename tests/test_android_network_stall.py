@@ -21,14 +21,20 @@ class NetworkStallTest(unittest.TestCase):
 #include <cstring>
 #include <thread>
 static int reports = 0;
+static int activeReports = 0;
 extern "C" long long KartPadAndroidThreadCpuNanos() { return -1; }
 extern "C" void KartPadAndroidLogMetric(const char* tag, const char* format, ...) {
-  assert(std::strcmp(tag, "KartPadNetStall") == 0);
   char text[512];
   va_list args;
   va_start(args, format);
   std::vsnprintf(text, sizeof(text), format, args);
   va_end(args);
+  if (std::strcmp(tag, "KartPadNetWait") == 0) {
+    assert(std::strstr(text, "state=in_progress operation=2 command=12 "));
+    ++activeReports;
+    return;
+  }
+  assert(std::strcmp(tag, "KartPadNetStall") == 0);
   assert(std::strstr(text, "operation=ssl_ioctlv command=12 "));
   assert(std::strstr(text, "cpu_ms=-1.000"));
   ++reports;
@@ -41,6 +47,15 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(105));
   }
   assert(reports == 32);
+  auto token = kartpad::android::activeNetworkCalls.begin(
+      kartpad::diagnostics::NetworkOperation::SslVector, 12,
+      kartpad::android::NetworkClockNanos() - 2'000'000'000);
+  kartpad::android::SampleNetworkWaits();
+  kartpad::android::SampleNetworkWaits();
+  assert(activeReports == 1); // Independent of the exhausted completed-call budget.
+  kartpad::android::activeNetworkCalls.end(token);
+  kartpad::android::SampleNetworkWaits();
+  assert(activeReports == 1);
 }
 '''
         with tempfile.TemporaryDirectory() as temp:
