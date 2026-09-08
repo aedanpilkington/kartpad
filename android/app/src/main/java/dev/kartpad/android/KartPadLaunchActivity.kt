@@ -243,8 +243,7 @@ open class KartPadLaunchActivity : Activity() {
             translationY = -dp(18).toFloat()
         }
         column.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_kartpad_steering_wheel)
-            imageTintList = ColorStateList.valueOf(Color.rgb(255, 107, 46))
+            setImageResource(R.drawable.kartpad_app_icon)
             contentDescription = "KartPad"
             scaleType = ImageView.ScaleType.CENTER_INSIDE
         }, LinearLayout.LayoutParams(dp(48), dp(48)).apply {

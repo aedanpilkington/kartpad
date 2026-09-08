@@ -688,12 +688,11 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   [self.view.layer insertSublayer:gradient atIndex:0];
   self.backgroundGradient = gradient;
 
-  UIImage *markImage = [UIImage systemImageNamed:@"steeringwheel"] ?:
-      [UIImage systemImageNamed:@"flag.checkered"];
+  UIImage *markImage = [[UIImage imageNamed:@"KartPadLogo"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
   UIImageView *mark = [[UIImageView alloc] initWithImage:markImage];
   mark.translatesAutoresizingMaskIntoConstraints = NO;
   mark.contentMode = UIViewContentModeScaleAspectFit;
-  mark.tintColor = [UIColor colorWithRed:1.0 green:0.42 blue:0.18 alpha:1.0];
   mark.accessibilityLabel = @"KartPad";
   [NSLayoutConstraint activateConstraints:@[
     [mark.widthAnchor constraintEqualToConstant:48.0],
