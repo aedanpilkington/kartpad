@@ -48,3 +48,19 @@ All save inputs above are generated test data. The attached physical phone's
 KartPad installation and data were untouched. No APK from the game-free debug
 fixture is a playable test build. Apple save UI, automatic synchronization,
 preferred-game startup and a renderer correction are separate work.
+
+## Signed playable candidate follow-up
+
+The code 22 public-signed candidate completed a full owned WBFS import and
+Original startup on a new disposable API 36 ARM64 Vulkan emulator. Using the
+actual save initialized by that fresh emulator game, DocumentsUI restored a
+copy to **Retro Rewind**. After Restart Now returned to the chooser, launching
+Original applied the pending Retro restore before gameplay. The resulting
+Retro save exactly matched the chosen bytes; the Original save remained
+byte-identical, and the pending file was removed. This proves the public
+candidate's targeting and cold-start application, not the reporter's PC save
+compatibility or Retro gameplay. No user phone data was accessed.
+
+The corresponding Android testing release is
+[`v0.4.12-android.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.1).
+Its physical and reporter acceptance remain pending.

@@ -86,6 +86,11 @@ the shared fix. Apple TV hardware/online acceptance remains experimental.
 ### Android: first community release
 
 [Download Android APK, notices and SHA-256 checksums](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1)
+
+[Android **0.4.12-android.1 testing update**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.12-android.1)
+adds profile-specific save transfer and checked disc imports. Same public signer;
+physical acceptance pending. It does not fix the reported Android graphics or
+frame drops.
 · [Install and update](docs/INSTALL_ANDROID.md) · [Build from source](android/README.md).
 
 The first Android release promotes the runtime tested on a **Pixel 9 Pro XL**.

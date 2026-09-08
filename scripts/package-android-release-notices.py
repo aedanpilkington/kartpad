@@ -11,11 +11,12 @@ import re
 import subprocess
 import zipfile
 
-TAG = "v0.4.10-android.1"
-VERSION = "0.4.10-android.1"
-CODE = 21
-# Exact corrected native library inspected after the issue #94 rebuild.
-APPROVED_MAIN_SHA256 = "e82fae367661d2b08e5356d1b4afb5d5b447925422b0a3092c06210a33adcede"
+TAG = "v0.4.12-android.1"
+VERSION = "0.4.12-android.1"
+CODE = 22
+# Exact rebuilt native libraries validated for this testing release.
+APPROVED_MAIN_SHA256 = "68af841be72ea90c1c9d43ae276afd0d3a2a150cee46906e6201c1ab1daf4b37"
+APPROVED_DISCIO_SHA256 = "694b9e41e7df429c060f0fbd740ecfe6bad987a3b77bc4f207bc180c9952370c"
 REPO = Path(__file__).resolve().parents[1]
 
 
@@ -87,6 +88,8 @@ def main() -> None:
         native = {n: sha(apk.read(n)) for n in apk.namelist() if n.startswith("lib/") and n.endswith(".so")}
     if native.get("lib/arm64-v8a/libmain.so") != APPROVED_MAIN_SHA256:
         parser.error("runtime is not the approved issue #94-corrected release library")
+    if native.get("lib/arm64-v8a/libkartpad_discio.so") != APPROVED_DISCIO_SHA256:
+        parser.error("disc importer is not the validated checked-extraction library")
     provenance = {
         "schemaVersion": 1, "releaseTag": TAG, "sourceCommit": commit,
         "appVersion": VERSION, "versionCode": CODE, "package": "dev.kartpad.android",
@@ -95,8 +98,9 @@ def main() -> None:
         "signingCertificateSHA256": args.certificate_sha256, "nativeLibraries": native,
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
-        "upstreamRightsConfirmed": False, "profileableByShell": True, "debuggable": False,
-        "physicalAcceptance": "Preview 15 native runtime; owner Pixel 9 Pro XL Original/Kishi and Retro WFC live race reports",
+        "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
+        "physicalAcceptance": "Pending for this build; earlier Preview 15 physical gameplay is historical evidence only",
+        "emulatorAcceptance": "API 36 ARM64 host Vulkan: full disc import, Original startup, profile save picker and storage-failure preservation",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
@@ -105,7 +109,7 @@ def main() -> None:
         for name, content in sorted(data.items()):
             if b"/Users/" in content or len(content) > 2_000_000:
                 parser.error(f"unexpected private path or oversized notice: {name}")
-            info = zipfile.ZipInfo(name, date_time=(2026, 9, 7, 0, 0, 0))
+            info = zipfile.ZipInfo(name, date_time=(2026, 9, 8, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o100644 << 16
             package.writestr(info, content)

@@ -16,7 +16,7 @@ for tool in "$aapt2" "$zipalign" "$readelf"; do
 done
 
 badging="$("$aapt2" dump badging "$apk")"
-expected_version_name="${KARTPAD_ANDROID_EXPECTED_VERSION_NAME:-0.4.10-android.1}"
+expected_version_name="${KARTPAD_ANDROID_EXPECTED_VERSION_NAME:-0.4.12-android.1}"
 if [[ -n "${KARTPAD_ANDROID_EXPECTED_VERSION_CODE:-}" ]]; then
   [[ "$badging" == *"versionCode='$KARTPAD_ANDROID_EXPECTED_VERSION_CODE'"* ]] || {
     echo "ERROR: APK version code does not match the requested code" >&2; exit 1;
