@@ -92,7 +92,10 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     _capture = -1;
     _applied = [NSMutableDictionary dictionary];
     _profiles = [NSMutableDictionary dictionary];
-    NSData *data = [NSData dataWithContentsOfURL:[self profileURL]];
+    NSError *readError = nil;
+    NSData *data = [NSData dataWithContentsOfURL:[self profileURL]
+                                         options:0
+                                           error:&readError];
     if (data) {
       NSError *error = nil;
       id object = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
@@ -105,6 +108,10 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
         _profileReadFailed = YES;
         _status = [NSTextField labelWithString:@"Controller profiles could not be read. Restore the file before saving changes."];
       }
+    } else if (readError && readError.code != NSFileReadNoSuchFileError) {
+      AppendSessionLine(@"controllerProfiles=read-failed; existing file preserved");
+      _profileReadFailed = YES;
+      _status = [NSTextField labelWithString:@"Controller profiles could not be read. Restore the file before saving changes."];
     }
   }
   return self;

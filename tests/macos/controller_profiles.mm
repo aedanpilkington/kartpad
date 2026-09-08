@@ -91,6 +91,15 @@ int main(){@autoreleasepool {
  assert([invalid writeToURL:[first profileURL] atomically:YES]);
  KPControllerSettings *third=[KPControllerSettings new];assert(third.profileReadFailed);
  [third save:nil];assert([[NSData dataWithContentsOfURL:[third profileURL]] isEqual:invalid]);
+ [[NSFileManager defaultManager] removeItemAtURL:[third profileURL] error:nil];
+ assert([[NSFileManager defaultManager] createDirectoryAtURL:[third profileURL]
+                              withIntermediateDirectories:NO
+                                            attributes:nil
+                                                error:nil]);
+ KPControllerSettings *unreadable=[KPControllerSettings new];assert(unreadable.profileReadFailed);
+ [unreadable save:nil];
+ BOOL isDirectory=NO;
+ assert([[NSFileManager defaultManager] fileExistsAtPath:third.profileURL.path isDirectory:&isDirectory] && isDirectory);
  assert([KPControllerDiagnostics() containsString:@"Detected controllers: 1"]);
  assert([KPButtonLabel(nullptr,SDL_GAMEPAD_BUTTON_START) isEqual:@"Menu"]);
  assert([KPButtonLabel(nullptr,SDL_GAMEPAD_BUTTON_LEFT_SHOULDER) isEqual:@"LB"]);

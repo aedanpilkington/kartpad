@@ -6,17 +6,14 @@ recompilation project for Mario Kart Wii. KartPad adds a first-class dual-game
 Original Mario Kart Wii / Retro Rewind runtime, native platform controls, data
 management, packaging, and release workflows.
 
-## About this fork
+## About KartPad
 
-This repository is a community-maintained fork of
-[KartPad](https://github.com/chrissotraidis/kartpad) by Chris Sotraidis,
-itself based on [WiiCompiled](https://github.com/patchzyy/Wiicompiled).
+KartPad is maintained by Chris Sotraidis and the KartPad community, building
+on [WiiCompiled](https://github.com/patchzyy/Wiicompiled). Aedan Pilkington
+contributed the macOS controller, settings, shortcut, display, and integration
+enhancements described below.
 
-This fork focuses primarily on improving the native macOS experience,
-with particular attention to controller support, settings, shortcuts,
-display behaviour and macOS-specific integration.
-
-### macOS enhancements in this fork
+### macOS enhancements
 
 Current additions include:
 
@@ -32,13 +29,11 @@ Current additions include:
 - Additional macOS controller and settings tests
 - Supporting runtime and packaging improvements
 
-Development of these modifications began in September 2026.
-
 ### Credits
 
 - **KartPad** — Chris Sotraidis and KartPad contributors
 - **WiiCompiled** — patchzyy and contributors
-- **macOS enhancements in this fork** — Aedan Pilkington
+- **macOS controller and settings enhancements** — Aedan Pilkington
 
 KartPad is an unofficial community project and is not affiliated with, endorsed by, or associated with Nintendo.
 
