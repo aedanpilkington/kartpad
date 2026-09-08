@@ -141,6 +141,16 @@ lines, warnings/errors and a short interval around the failure. For performance,
 include matching `KartPadPerf`/CPU/GPU and `android-health.log` intervals where
 available; these use elapsed time since boot. Unavailable metrics are not zero.
 
+For **renderer validation** reports, start with `console.log` inside the
+`Logs/` subfolder for the session you tested. Look for validation warnings or
+errors (`validation`, `error`, `warning`, `Dawn`, `WebGPU`) and share only the
+relevant message with nearby context. If there are no errors, report that and
+whether the image changed with validation off/on; an error is not required to
+report visible corruption. `android-health.log` is for settings/performance
+samples. `process-exits.json` intentionally sits at the ZIP root, outside
+`Logs/`; only include a matching entry if the app unexpectedly exited. A manual
+close can create an exit record and does not establish a crash.
+
 The private ZIP can contain local paths and personal details. Do not upload it
 raw. Remove usernames, private paths, IP/MAC addresses, console/account IDs,
 friend codes, tokens, and other personal data from excerpts. Do not clear logs
