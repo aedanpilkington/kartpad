@@ -1,6 +1,8 @@
 package dev.kartpad.android
 
 import android.util.AtomicFile
+import android.system.Os
+import android.system.OsConstants
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -47,9 +49,23 @@ internal object KartPadRatingStorage {
 
     private fun target(files: File): File {
         val config = File(files, "KartPad/Config.toml")
-        // Do not guess when a manually configured NAND may redirect runtime writes.
-        require(!config.isFile || !Regex("(?m)^\\s*nand_root\\s*=").containsMatchIn(config.readText())) {
-            "Rating restore is unavailable with a custom NAND configuration."
+        // This is deliberately a restricted syntax check, not a second TOML parser.
+        // Accept the shell's simple scalar configuration only. Quoted/dotted keys,
+        // inline tables and multiline values require the runtime parser to resolve
+        // safely; refuse them instead of guessing at the default NAND.
+        if (config.isFile) {
+            require(config.length() <= 256 * 1024) { "Unsupported rating restore configuration." }
+            val scalar = Regex("""(?:"(?:[^"\\\r\n]|\\[^\r\n])*"|'[^'\r\n]*'|true|false|[+-]?[0-9][0-9_.eE+-]*)\s*(?:#.*)?""")
+            for (line in config.readLines()) {
+                val text = line.trim()
+                if (text.isEmpty() || text.startsWith("#")) continue
+                if (Regex("""\[[A-Za-z0-9_-]+]\s*(?:#.*)?""").matches(text)) continue
+                val assignment = Regex("""([A-Za-z0-9_-]+)\s*=\s*(.*)""").matchEntire(text)
+                require(assignment != null && assignment.groupValues[1] != "nand_root" &&
+                    scalar.matches(assignment.groupValues[2])) {
+                    "Rating restore requires the default NAND and a simple configuration. Custom NAND or advanced TOML syntax is not supported; your configuration is unchanged."
+                }
+            }
         }
         return File(files, "KartPad/NAND/shared2/Pulsar/RetroRewind6/RRRating.pul").also {
             require(it.isFile) { "Start Retro Rewind with this save and close it before importing ratings; no local rating file exists yet." }
@@ -99,10 +115,30 @@ internal object KartPadRatingStorage {
     }
 
     private fun write(file: File, bytes: ByteArray) {
-        check(file.parentFile?.let { it.isDirectory || it.mkdirs() } == true)
+        val parent = checkNotNull(file.parentFile)
+        check(parent.isDirectory || parent.mkdir())
+        // Persist a newly created SaveBackups directory as well as its contents.
+        // Repeat this barrier on retry even if a preceding mkdir already succeeded.
+        syncDirectory(checkNotNull(parent.parentFile))
         val atomic = AtomicFile(file)
         val stream = atomic.startWrite()
-        try { stream.write(bytes); atomic.finishWrite(stream) }
-        catch (error: Throwable) { atomic.failWrite(stream); throw error }
+        try {
+            stream.write(bytes)
+            // AtomicFile.finishWrite can only log sync/rename failures. A checked
+            // sync and publication verification must precede request deletion.
+            Os.fsync(stream.fd)
+            atomic.finishWrite(stream)
+            check(!File(file.path + ".new").exists() && !File(file.path + ".bak").exists() && file.isFile &&
+                file.length() == bytes.size.toLong() && file.readBytes().contentEquals(bytes)) {
+                "Rating restore publication did not complete."
+            }
+            syncDirectory(parent)
+        } catch (error: Throwable) { atomic.failWrite(stream); throw error }
+    }
+
+    private fun syncDirectory(file: File) {
+        check(file.isDirectory)
+        val directory = Os.open(file.path, OsConstants.O_RDONLY, 0)
+        try { Os.fsync(directory) } finally { Os.close(directory) }
     }
 }

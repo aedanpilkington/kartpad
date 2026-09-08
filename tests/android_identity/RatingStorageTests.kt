@@ -45,6 +45,11 @@ fun testRatingStorage() {
             identity.writeText("{}")
             reject { KartPadRatingStorage.stage(root, profile, source) }
             identity.delete()
+            AtomicFile.silentFailSuffix = "/PendingRating.json"
+            reject { KartPadRatingStorage.stage(root, profile, source) }
+            verify(!KartPadRatingStorage.hasPending(root))
+            verify(rating.readBytes().contentEquals(prior))
+            AtomicFile.silentFailSuffix = null
             KartPadRatingStorage.stage(root, profile, source)
             identity.writeText("{}")
             verify(KartPadSaveStorage.applyPending(root) != null)
@@ -68,10 +73,41 @@ fun testRatingStorage() {
             verify(rating.readBytes().contentEquals(prior))
             verify(KartPadSaveStorage.hasPending(root))
             AtomicFile.failSuffix = null
+            // Nonthrowing AtomicFile publication failures must not consume the request.
+            for (suffix in listOf(".pul", "/RRRating.pul", "backup-only")) {
+                val beforeBackups = File(root, "KartPad/SaveBackups").listFiles().orEmpty().size
+                AtomicFile.silentBackupOnly = suffix == "backup-only"
+                AtomicFile.silentFailSuffix = suffix.takeUnless { AtomicFile.silentBackupOnly }
+                verify(KartPadSaveStorage.applyPending(root) != null)
+                verify(KartPadSaveStorage.hasPending(root))
+                verify(rating.readBytes().contentEquals(prior))
+                if (suffix != "/RRRating.pul") verify(File(root, "KartPad/SaveBackups").listFiles().orEmpty().size == beforeBackups)
+            }
+            AtomicFile.silentBackupOnly = false
+            AtomicFile.silentFailSuffix = null
+            // Checked data/directory sync failures stop before publishing live ratings.
+            for (suffix in listOf(".pul", "/RRRating.pul", "/SaveBackups", "/KartPad")) {
+                android.system.Os.failSyncSuffix = suffix
+                verify(KartPadSaveStorage.applyPending(root) != null)
+                verify(KartPadSaveStorage.hasPending(root))
+                verify(rating.readBytes().contentEquals(prior))
+            }
+            android.system.Os.failSyncSuffix = "/RetroRewind6"
+            verify(KartPadSaveStorage.applyPending(root) != null)
+            verify(KartPadSaveStorage.hasPending(root))
+            verify(File(root, "KartPad/SaveBackups").listFiles().orEmpty().any { it.readBytes().contentEquals(prior) })
+            // Simulated publication happened but directory sync failed: no gameplay or request deletion.
+            verify(rating.readBytes().contentEquals(KartPadRatingCompanion.merge(source, prior, setOf(10))))
+            android.system.Os.failSyncSuffix = null
+            rating.writeBytes(prior)
             // Preserve an unrelated record written after the initial staging.
             val latest = ratings(20, 40)
             rating.writeBytes(latest)
+            // A logged failure of AtomicFile's redundant sync is safe only because
+            // the checked fsync above already succeeded before finishWrite.
+            AtomicFile.silentSyncFailureSuffix = ".pul"
             verify(KartPadSaveStorage.applyPending(root) == null)
+            AtomicFile.silentSyncFailureSuffix = null
             verify(!KartPadSaveStorage.hasPending(root))
             verify(activeSave.readBytes().contentEquals(save(10)))
             verify(rating.readBytes().contentEquals(KartPadRatingCompanion.merge(source, latest, setOf(10))))
@@ -83,7 +119,31 @@ fun testRatingStorage() {
             verify(KartPadSaveStorage.applyPending(root) == null)
             File(root, "KartPad/Config.toml").writeText("[paths]\nnand_root = \"elsewhere\"\n")
             reject { KartPadRatingStorage.stage(root, profile, source) }
-            File(root, "KartPad/Config.toml").delete()
+            val config = File(root, "KartPad/Config.toml")
+            for (text in listOf(
+                "[paths]\n\"nand_root\" = \"elsewhere\"",
+                "[paths]\n'nand_root' = 'elsewhere'",
+                "paths.nand_root = \"elsewhere\"",
+                "\"paths\".\"nand_root\" = \"elsewhere\"",
+                "paths = { nand_root = \"elsewhere\" }",
+                "paths = { \"nand_root\" = \"elsewhere\" }",
+                "[\"paths\"]\nnand_root = \"elsewhere\"",
+                "[paths]\n\"na\\u006ed_root\" = \"elsewhere\""
+            )) {
+                config.writeText(text)
+                reject { KartPadRatingStorage.stage(root, profile, source) }
+                verify(!KartPadRatingStorage.hasPending(root))
+                verify(rating.readBytes().contentEquals(KartPadRatingCompanion.merge(source, latest, setOf(10))))
+            }
+            config.writeText("# nand_root = \"unused\"\n[paths]\ndvd_root = \"GameData\" # normal config\n[video]\nresolution_scale = 1.0\n")
+            KartPadRatingStorage.stage(root, profile, source)
+            config.writeText("paths = { nand_root = \"elsewhere\" }")
+            val beforeRefusal = rating.readBytes()
+            verify(KartPadRatingStorage.applyPending(root) != null)
+            verify(KartPadRatingStorage.hasPending(root))
+            verify(rating.readBytes().contentEquals(beforeRefusal))
+            config.delete()
+            KartPadRatingStorage.cancelPending(root)
             KartPadRatingStorage.stage(root, profile, source)
             val beforeCancel = rating.readBytes()
             KartPadRatingStorage.cancelPending(root)
@@ -92,7 +152,7 @@ fun testRatingStorage() {
             KartPadRatingStorage.cancelPending(root)
             rating.delete()
             reject { KartPadRatingStorage.stage(root, profile, source) }
-        } finally { AtomicFile.failSuffix = null; root.deleteRecursively() }
+        } finally { AtomicFile.failSuffix = null; AtomicFile.silentFailSuffix = null; AtomicFile.silentBackupOnly = false; AtomicFile.silentSyncFailureSuffix = null; android.system.Os.failSyncSuffix = null; root.deleteRecursively() }
     }
     println("Android rating storage passed: $checks checks (synthetic files only)")
 }

@@ -1,5 +1,12 @@
 # Investigation acceptance checkpoint
 
+**Superseded device-status evidence:** the earlier `:game` process checks were
+incorrect. The game runs as `dev.kartpad.android`; the chooser is `:launcher`.
+The owner subsequently reported a real run with persistent slowdowns and severe
+thermal throttling. Saved logs include intervening gameplay. See
+[pixel-owner-slowdown-followup.md](pixel-owner-slowdown-followup.md). The old
+“no game process/comparison” conclusion must not be used for publication.
+
 This records remaining gates without narrowing the original investigation goal.
 No freeze/graphics correction or complete cross-device acceptance is claimed.
 
@@ -14,9 +21,9 @@ No freeze/graphics correction or complete cross-device acceptance is claimed.
 
 Next required input: Christopher's same Mario Kart Wii track/mode run on the
 installed Pixel candidate and symptom timing. The request has remained pending
-through multiple goal continuations. No game process or comparison run exists
-at the final device check. The finite capture ended and no collector remains
-running. Do not infer acceptance or restart tests by controlling his game.
+through multiple goal continuations. The old no-game-process inference is superseded; there is gameplay evidence,
+but no temperature/scene-matched percentage comparison. The finite capture ended; later owner-run logs and CPU profiling are documented
+in the follow-up above. Do not infer acceptance or restart tests by controlling his game.
 Affected-Adreno corruption needs matching scene/validation evidence or a reduced
 failing replay; iOS reports need physical acceptance. Additional speculative
 CPU changes would not close these gates. Local integration is handed to the

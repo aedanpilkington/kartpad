@@ -18,7 +18,7 @@ clang++ -std=c++20 -I"$repo/runtime/include" "$repo/runtime/tests/android_identi
 "$out/fixtures" "$out"
 "$jdk/bin/java" -cp "$compiler:$stdlib:$annotations:$coroutines:$reflect" org.jetbrains.kotlin.cli.jvm.K2JVMCompiler \
   -no-stdlib -no-reflect -jvm-target 17 -classpath "$stdlib:$json" -d "$out/tests.jar" \
-  "$repo/tests/android_identity/AtomicFile.kt" "$repo/tests/android_identity/IdentityTests.kt" \
+  "$repo/tests/android_identity/AtomicFile.kt" "$repo/tests/android_identity/Os.kt" "$repo/tests/android_identity/IdentityTests.kt" \
   "$repo/tests/android_identity/SaveTests.kt" \
   "$repo/tests/android_identity/RatingTests.kt" \
   "$repo/tests/android_identity/RatingStorageTests.kt" \
