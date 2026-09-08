@@ -9,8 +9,9 @@ playable KartPad APK/IPA is established by this investigation.
 identifies Vulkan, Adreno 840, Qualcomm driver branch 512.842.19, build 21,
 and Retro Rewind 6.12.7. Its runtime line shows 1x, widescreen off, fit/4:3.
 The reporter tried both folded/unfolded states and all resolution/aspect
-settings. Corruption therefore is not confined to Fill Screen. Original versus
-Retro Rewind and errors after startup still need clarification. The earlier
+settings. Corruption therefore is not confined to Fill Screen. A [follow-up](https://github.com/chrissotraidis/kartpad/issues/102#issuecomment-5577732200)
+confirms identical corruption in Original, no logged WebGPU/pipeline/device-loss
+errors, reported 60 FPS, and all four synthetic checks passing on this Adreno. The earlier
 S25+ comment does not establish that its adapter/driver matches the Fold.
 
 ## Source review
@@ -61,9 +62,10 @@ KartPad itself was not installed over, uninstalled, cleared, or migrated.
 The physical phone remained locked, so APK UI acceptance is from the emulator;
 the Pixel result is the native command-line probe, not a gameplay claim.
 
-The next useful evidence is an affected-device probe result. A mismatch narrows
-which helper/layout to isolate; a pass means the remaining draw stream, shader
-stages, resource lifetime and driver interaction still need investigation.
+The affected Adreno passes all 16,384 comparisons. The next investigation is
+on our side: actual draw streams, vertex/fragment stages, texture handling and
+resource lifetime. No repeat settings sweep or general logs are needed from
+#102 at this stage; the compute pass does not establish gameplay correctness.
 
 ## Published diagnostic
 
@@ -87,6 +89,6 @@ non-debuggable, signer, exact notice assets, ARM64/16 KiB, content scan).
 The verified download also updates the separate probe package on the Pixel;
 KartPad itself is untouched. The latest game release remains `v0.4.11`.
 
-Reporters in #102 and #104 received the link and a Run/Share request. Their
-Adreno results remain pending. No issue was closed and no playable APK/IPA
+Reporters in #102 and #104 received the link and a Run/Share request. #102
+returned the passing Adreno results above; #104 is still pending. No issue was closed and no playable APK/IPA
 was released by this investigation.

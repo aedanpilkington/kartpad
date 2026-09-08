@@ -63,6 +63,8 @@ class KartPadActivity : SDLActivity() {
     private var menuSafeInsetBottom = 0
     private var menuSafeInsetsInitialized = false
     private var runtimeProfile = "base"
+    private var saveDocumentProfile: String? = null
+    private var saveRestoreStartupError: String? = null
     private lateinit var inputManager: InputManager
     private lateinit var motionSteering: KartPadMotionSteering
     private var inputListenerRegistered = false
@@ -77,6 +79,7 @@ class KartPadActivity : SDLActivity() {
     override fun createSDLSurface(context: Context): SDLSurface = KartPadSurface(context)
 
     override fun loadLibraries() {
+        saveRestoreStartupError?.let { throw IllegalStateException(it) }
         super.loadLibraries()
         // SDL catches library/startup failures and does not start the guest.
         // Resume never runs this hook, so pending edits apply only at cold launch.
@@ -89,12 +92,14 @@ class KartPadActivity : SDLActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        saveDocumentProfile = savedInstanceState?.getString("save_document_profile")
+            ?.takeIf { it in KartPadSaveStorage.profiles }
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recover(filesDir)
             if (!identityStartupChecked) {
-                KartPadSaveStorage.applyPending(filesDir)?.let { error -> Log.e(TAG, error) }
+                saveRestoreStartupError = KartPadSaveStorage.applyPending(filesDir)
                 KartPadMiiStorage.applyPending(filesDir)?.let { error -> Log.e(TAG, error) }
             }
             KartPadRuntimeResources.install(this)
@@ -358,6 +363,7 @@ class KartPadActivity : SDLActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("save_document_profile", saveDocumentProfile)
         if (debugActivityRecreateRequested) {
             outState.putBoolean(DEBUG_STATE_ACTIVITY_RECREATE, true)
         }
@@ -1229,28 +1235,42 @@ class KartPadActivity : SDLActivity() {
 
     private fun showSaveManager() {
         kartPadOverlay.clearTouchInput()
-        val validSave = runCatching { KartPadSaveStorage.readActive(filesDir) }.isSuccess
-        val pending = KartPadSaveStorage.hasPending(filesDir)
+        AlertDialog.Builder(this)
+            .setTitle("Choose Save Profile")
+            .setItems(KartPadSaveStorage.profiles.map { KartPadSaveStorage.title(it) }.toTypedArray()) { _, index ->
+                showSaveManager(KartPadSaveStorage.profiles[index])
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showSaveManager(profile: String) {
+        val title = KartPadSaveStorage.title(profile)
+        val validSave = runCatching { KartPadSaveStorage.readActive(filesDir, profile) }.isSuccess
+        val pending = KartPadSaveStorage.hasPending(filesDir, profile)
         val content = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(24), dp(4), dp(24), dp(8))
         }
         lateinit var dialog: AlertDialog
         content.addView(settingsLabel(when {
-            pending -> "A validated save restore is staged for the next game restart."
-            validSave -> "A validated Mario Kart Wii save is available for backup."
-            else -> "No initialized Mario Kart Wii save exists yet. Create a license in the game first."
+            pending -> "A validated $title restore is staged for the next game restart."
+            validSave -> "A validated $title save is available for backup."
+            else -> "No valid $title save is available for export. You can restore a compatible backup here."
         }))
+        content.addView(settingsLabel("These actions only affect $title. Choose Separate Save only if that option is enabled in Retro Rewind. Saves do not include Miis or console identity."))
         content.addView(Button(this).apply {
             text = "Export Save Backup…"
-            contentDescription = "Export Mario Kart Wii save backup"
+            contentDescription = "Export $title save backup"
             isEnabled = validSave
             setOnClickListener {
+                saveDocumentProfile = profile
+                dialog.dismiss()
                 startActivityForResult(
                     Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
                         type = "application/octet-stream"
-                        putExtra(Intent.EXTRA_TITLE, "KartPad-RMCP01-rksys.dat")
+                        putExtra(Intent.EXTRA_TITLE, "KartPad-$profile-rksys.dat")
                     },
                     REQUEST_EXPORT_SAVE,
                 )
@@ -1258,15 +1278,25 @@ class KartPadActivity : SDLActivity() {
         })
         content.addView(Button(this).apply {
             text = "Restore Save Backup…"
-            contentDescription = "Restore Mario Kart Wii save backup"
+            contentDescription = "Restore $title save backup"
+            isEnabled = !pending
             setOnClickListener {
-                startActivityForResult(
-                    Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "application/octet-stream"
-                    },
-                    REQUEST_IMPORT_SAVE,
-                )
+                AlertDialog.Builder(this@KartPadActivity)
+                    .setTitle("Restore $title?")
+                    .setMessage("Select a compatible raw rksys.dat backup for $title. After validation, it will replace this profile's save on restart, with a backup of existing progress. Other profiles remain unchanged.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Choose Backup…") { _, _ ->
+                        saveDocumentProfile = profile
+                        dialog.dismiss()
+                        startActivityForResult(
+                            Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "application/octet-stream"
+                            },
+                            REQUEST_IMPORT_SAVE,
+                        )
+                    }
+                    .show()
             }
         })
         content.addView(Button(this).apply {
@@ -1274,7 +1304,7 @@ class KartPadActivity : SDLActivity() {
             setOnClickListener { dialog.dismiss() }
         })
         dialog = AlertDialog.Builder(this)
-            .setTitle("Manage Saves")
+            .setTitle("Manage Saves • $title")
             .setView(ScrollView(this).apply { addView(content) })
             .create()
         dialog.show()
@@ -1338,14 +1368,24 @@ class KartPadActivity : SDLActivity() {
                 .show()
             return
         }
+        val saveProfile = if (requestCode == REQUEST_EXPORT_SAVE || requestCode == REQUEST_IMPORT_SAVE) {
+            val selected = saveDocumentProfile
+            saveDocumentProfile = null
+            if (resultCode != RESULT_OK) return
+            if (selected !in KartPadSaveStorage.profiles) {
+                showParityBoundary("Choose Save Profile Again", "The save selection could not be recovered. Open Manage Saves and choose the intended profile again. No save was restored.")
+                return
+            }
+            selected
+        } else null
         if (requestCode == REQUEST_EXPORT_SAVE && resultCode == RESULT_OK) {
             val uri = data?.data ?: return
             runCatching {
-                val save = KartPadSaveStorage.readActive(filesDir)
+                val save = KartPadSaveStorage.readActive(filesDir, requireNotNull(saveProfile))
                 contentResolver.openOutputStream(uri, "wt")
                     ?.use { it.write(save) } ?: error("The selected destination could not be opened.")
             }.onSuccess {
-                showParityBoundary("Save Backup Exported", "The validated RKSYS save backup was exported.")
+                showParityBoundary("Save Backup Exported", "The validated ${KartPadSaveStorage.title(requireNotNull(saveProfile))} save backup was exported.")
             }.onFailure {
                 showParityBoundary("Save Export Failed", "The save backup could not be exported.")
             }
@@ -1369,11 +1409,11 @@ class KartPadActivity : SDLActivity() {
                     }
                     buffer.copyOf(count)
                 }
-                KartPadSaveStorage.writePending(filesDir, save)
+                KartPadSaveStorage.writePending(filesDir, save, requireNotNull(saveProfile))
             }.onSuccess {
                 AlertDialog.Builder(this)
                     .setTitle("Save Restore Scheduled")
-                    .setMessage("The validated save will replace the current save after restarting. KartPad will retain a backup of the current save automatically.")
+                    .setMessage("The validated ${KartPadSaveStorage.title(requireNotNull(saveProfile))} save will replace only that profile after restarting. KartPad will retain a backup of its current save automatically.")
                     .setPositiveButton("Restart Now") { _, _ -> restartToGameSelector() }
                     .setNegativeButton("Later", null)
                     .show()

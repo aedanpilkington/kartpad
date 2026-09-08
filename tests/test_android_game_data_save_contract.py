@@ -104,6 +104,7 @@ class AndroidGameDataSaveContractTests(unittest.TestCase):
             activity.index("KartPadSaveStorage.applyPending(filesDir)"),
             activity.index("super.onCreate(savedInstanceState)"),
         )
+        self.assertIn("saveRestoreStartupError?.let { throw IllegalStateException(it) }", activity)
         self.assertIn("SAVE_BYTES = 0x2bc000", storage)
         self.assertIn('"RKSD0006"', storage)
         self.assertIn("CRC32()", storage)
