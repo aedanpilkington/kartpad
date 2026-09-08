@@ -240,11 +240,10 @@ open class KartPadLaunchActivity : Activity() {
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            translationY = -dp(18).toFloat()
+            setPadding(0, dp(16), 0, dp(16))
         }
         column.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_kartpad_steering_wheel)
-            imageTintList = ColorStateList.valueOf(Color.rgb(255, 107, 46))
+            setImageResource(R.drawable.kartpad_app_icon)
             contentDescription = "KartPad"
             scaleType = ImageView.ScaleType.CENTER_INSIDE
         }, LinearLayout.LayoutParams(dp(48), dp(48)).apply {
@@ -342,6 +341,24 @@ open class KartPadLaunchActivity : Activity() {
             }
         }, layout(0))
 
+        if (pausedProfile() == null && KartPadRatingStorage.hasPending(filesDir)) {
+            column.addView(Button(this).apply {
+                text = "Cancel Staged Rating Restore…"
+                setOnClickListener {
+                    AlertDialog.Builder(this@KartPadLaunchActivity)
+                        .setTitle("Cancel Staged Rating Restore?")
+                        .setMessage("Remove the pending request so you can start the game again. Current ratings and retained backups will stay as they are; this does not undo a restore that already completed.")
+                        .setNegativeButton("Keep Restore", null)
+                        .setPositiveButton("Cancel Restore") { _, _ ->
+                            if (pausedProfile() == null) runCatching {
+                                KartPadRatingStorage.cancelPending(filesDir)
+                            }.onSuccess { visibility = View.GONE }
+                                .onFailure { showStatus("The staged rating restore could not be cancelled.") }
+                        }.show()
+                }
+            }, layout(0))
+        }
+
         if (pausedProfile() == null) column.addView(Button(this).apply {
             fun refresh() {
                 text = "Renderer Validation: " + if (KartPadRendererDiagnostics.enabled(context)) "On" else "Off"
@@ -373,7 +390,7 @@ open class KartPadLaunchActivity : Activity() {
             addView(column, FrameLayout.LayoutParams(
                 contentWidth,
                 FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER,
+                Gravity.TOP or Gravity.CENTER_HORIZONTAL,
             ))
         }
         return FrameLayout(this).apply {

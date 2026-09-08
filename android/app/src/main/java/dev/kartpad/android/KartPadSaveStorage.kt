@@ -30,7 +30,7 @@ internal object KartPadSaveStorage {
         return File(filesDir, "KartPad/PendingSaves/$name")
     }
 
-    fun hasPending(filesDir: File): Boolean = profiles.any { hasPending(filesDir, it) }
+    fun hasPending(filesDir: File): Boolean = KartPadRatingStorage.hasPending(filesDir) || profiles.any { hasPending(filesDir, it) }
 
     fun hasPending(filesDir: File, profile: String): Boolean = pending(filesDir, profile).isFile
 
@@ -43,6 +43,7 @@ internal object KartPadSaveStorage {
     fun writePending(filesDir: File, data: ByteArray, profile: String = "original") {
         require(!KartPadIdentityStorage.hasPending(filesDir)) { "Apply pending identity edits before restoring a save." }
         require(!hasPending(filesDir, profile)) { "Restart to apply this profile's pending restore first." }
+        require(!KartPadRatingStorage.hasPending(filesDir)) { "Restart to apply the pending rating restore first." }
         validate(data)
         val file = pending(filesDir, profile)
         check(file.parentFile?.let { it.isDirectory || it.mkdirs() } == true) {
@@ -56,7 +57,7 @@ internal object KartPadSaveStorage {
         for (profile in profiles) {
             applyPending(filesDir, profile)?.let { return it }
         }
-        return null
+        return KartPadRatingStorage.applyPending(filesDir)
     }
 
     private fun applyPending(filesDir: File, profile: String): String? {

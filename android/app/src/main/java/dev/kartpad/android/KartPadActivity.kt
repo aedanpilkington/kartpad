@@ -1272,11 +1272,12 @@ class KartPadActivity : SDLActivity() {
         }
         lateinit var dialog: AlertDialog
         content.addView(settingsLabel(when {
+            KartPadRatingStorage.hasPending(filesDir) -> "A rating restore is staged. Restart before making another save or rating change."
             pending -> "A validated $title restore is staged for the next game restart."
             validSave -> "A validated $title save is available for backup."
             else -> "No valid $title save is available for export. You can restore a compatible backup here."
         }))
-        content.addView(settingsLabel("These actions only affect $title. Choose Separate Save only if that option is enabled in Retro Rewind. Saves do not include Miis or console identity."))
+        content.addView(settingsLabel("Raw save actions only affect $title. Choose Separate Save only if that option is enabled in Retro Rewind. Saves do not include Miis or console identity."))
         content.addView(Button(this).apply {
             text = "Export Save Backup…"
             contentDescription = "Export $title save backup"
@@ -1297,7 +1298,7 @@ class KartPadActivity : SDLActivity() {
         content.addView(Button(this).apply {
             text = "Restore Save Backup…"
             contentDescription = "Restore $title save backup"
-            isEnabled = !pending
+            isEnabled = !pending && !KartPadRatingStorage.hasPending(filesDir)
             setOnClickListener {
                 AlertDialog.Builder(this@KartPadActivity)
                     .setTitle("Restore $title?")
@@ -1315,6 +1316,24 @@ class KartPadActivity : SDLActivity() {
                         )
                     }
                     .show()
+            }
+        })
+        if (profile != "original") content.addView(Button(this).apply {
+            text = "Restore Retro Ratings…"
+            isEnabled = validSave && !KartPadSaveStorage.hasPending(filesDir)
+            setOnClickListener {
+                AlertDialog.Builder(this@KartPadActivity)
+                    .setTitle("Restore Ratings for $title?")
+                    .setMessage("Restore your raw save and restart first. Choose its matching RRRating.pul from your PC backup. Ratings for this save's online profiles will be applied on restart with a backup; unrelated ratings stay unchanged. Retro save modes share ratings for the same online ID. This does not import Miis or synchronize server ratings. Verify offline before going online.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Choose Ratings…") { _, _ ->
+                        saveDocumentProfile = profile
+                        dialog.dismiss()
+                        startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/octet-stream"
+                        }, REQUEST_IMPORT_RATINGS)
+                    }.show()
             }
         })
         content.addView(Button(this).apply {
@@ -1386,7 +1405,7 @@ class KartPadActivity : SDLActivity() {
                 .show()
             return
         }
-        val saveProfile = if (requestCode == REQUEST_EXPORT_SAVE || requestCode == REQUEST_IMPORT_SAVE) {
+        val saveProfile = if (requestCode == REQUEST_EXPORT_SAVE || requestCode == REQUEST_IMPORT_SAVE || requestCode == REQUEST_IMPORT_RATINGS) {
             val selected = saveDocumentProfile
             saveDocumentProfile = null
             if (resultCode != RESULT_OK) return
@@ -1396,6 +1415,35 @@ class KartPadActivity : SDLActivity() {
             }
             selected
         } else null
+        if (requestCode == REQUEST_IMPORT_RATINGS && resultCode == RESULT_OK) {
+            val uri = data?.data ?: return
+            runCatching {
+                val bytes = contentResolver.openInputStream(uri)?.use { stream ->
+                    val buffer = ByteArray(KartPadRatingCompanion.FILE_BYTES + 1)
+                    var count = 0
+                    while (count < buffer.size) {
+                        val read = stream.read(buffer, count, buffer.size - count)
+                        if (read < 0) break
+                        check(read > 0) { "The rating file could not be read." }
+                        count += read
+                    }
+                    require(count == KartPadRatingCompanion.FILE_BYTES) { "Unsupported rating file length." }
+                    buffer.copyOf(count)
+                } ?: error("The rating file could not be opened.")
+                KartPadRatingStorage.stage(filesDir, requireNotNull(saveProfile), bytes)
+            }.onSuccess {
+                AlertDialog.Builder(this)
+                    .setTitle("Rating Restore Scheduled")
+                    .setMessage("Matched ratings for ${KartPadSaveStorage.title(requireNotNull(saveProfile))} will be restored before gameplay starts, with a backup. Verify offline before going online. Miis are unchanged.")
+                    .setPositiveButton("Restart Now") { _, _ -> restartToGameSelector() }
+                    .setNegativeButton("Later", null).show()
+            }.onFailure { error ->
+                showParityBoundary("Rating Restore Failed", if (error is IllegalArgumentException)
+                    error.message ?: "The rating file could not be validated."
+                    else "The rating restore could not be staged.")
+            }
+            return
+        }
         if (requestCode == REQUEST_EXPORT_SAVE && resultCode == RESULT_OK) {
             val uri = data?.data ?: return
             runCatching {
@@ -1557,6 +1605,8 @@ class KartPadActivity : SDLActivity() {
             appendLine("Runtime profile: $runtimeProfile")
             appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
             appendLine(performanceReport())
+            appendLine("Technical context:")
+            appendLine(KartPadReportContext.snapshot(this@KartPadActivity, runtimeProfile, KartPadRendererDiagnostics.active).toString(2))
             appendLine()
             appendLine("What went wrong:")
             appendLine(problem.text.toString().trim().ifBlank { "Not provided" })
@@ -2213,6 +2263,7 @@ class KartPadActivity : SDLActivity() {
         private const val REQUEST_MANAGE_GAME_DATA = 4_302
         private const val REQUEST_EXPORT_SAVE = 4_303
         private const val REQUEST_IMPORT_SAVE = 4_304
+        private const val REQUEST_IMPORT_RATINGS = 4_305
         private const val MII_FILE_BYTES = 74
         const val EXTRA_RUNTIME_PROFILE = "dev.kartpad.android.RUNTIME_PROFILE"
         private const val TAG = "KartPadFixture"

@@ -54,3 +54,11 @@ extern "C" void KartPadAndroidRecordPhase(unsigned id, long long wall, long long
       report.mean_wall_ms(), double(report.max_wall_ns) / 1e6,
       report.cpu_available ? report.mean_cpu_ms() : -1.0);
 }
+
+// Called by the health worker, independent of SDL/guest execution.
+#include <jni.h>
+#include "kartpad/android/network_stall.h"
+extern "C" JNIEXPORT void JNICALL
+Java_dev_kartpad_android_KartPadRuntimeHealth_nativeSampleNetworkWaits(JNIEnv*, jobject) {
+  kartpad::android::SampleNetworkWaits();
+}
