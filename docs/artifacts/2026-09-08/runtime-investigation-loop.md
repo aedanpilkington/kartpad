@@ -110,3 +110,26 @@ remain (deprecated UI idiom helper and nullable mapping argument). The historica
 check script initially failed due to stale include paths/audio API, so its old
 response file was supplemented with current shared/mobile/runtime includes.
 All output is isolated; this is compilation, not an IPA build or device test.
+
+## Third result: actual submitted draw checks
+
+Android Renderer Validation now opts into CPU matrix-selection checks in both
+raw and FIFO draw submission, before the merge early return. The fixed palette
+checker records out-of-range indices and nonfinite selected position/normal
+matrices. Normal samples are limited to 32 distinct pipeline hashes; anomalies
+have an independent 64-record allowance per process. No vertex values, models,
+textures or saves are exported, and no rendering inputs are changed. Scanning
+still adds validation-only CPU work after log budgets are exhausted. Valid finite
+matrices can still be wrong; a clean result does not clear the CPU or GPU.
+
+ASan/UBSan tests pass across all 256 index bytes, truncated/invalid strides,
+unaligned NaN/Inf inputs and independent budgets (1 test, 1.114 seconds).
+All 66 Android contracts pass (6.656 seconds). Actual ARM64/API-28 NDK syntax
+compilation of the patched command processor passes. Patch apply/recount checks
+and the complete fresh dual-runtime preparation pass; shell syntax and diff
+checks pass. This is diagnostic instrumentation, not a corruption fix or device
+reproduction. Apple renderer integration is not included.
+
+The local candidate source was freshly prepared under build/investigation;
+existing prepared sources/builds remain untouched. About 23 GiB was free before
+preparation, compared with roughly 2.7 GiB per existing native build directory.
