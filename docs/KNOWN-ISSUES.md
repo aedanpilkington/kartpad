@@ -56,8 +56,12 @@ available. It is **not approved**: physical controller/race acceptance and
 portable contributor documentation remain open. See the [local review record](artifacts/2026-09-08/macos-pr112-review.md)
 for exact source and acceptance limits.
 
-Next work prioritizes completing this bounded controller fix and verifying
-save-migration companion data. Android character rendering needs an actual
+Next work prioritizes physical acceptance of the corrected controller candidate
+and implementing checked save/rating companion transfer. #105 has supplied the
+requested source/profile evidence; that importer is development work, not
+blocked on another reporter log. Ratings are loaded into memory and separately
+synchronized by network code, so live file replacement is not an accepted sync
+workflow. Android character rendering needs an actual
 failing draw reproduction; synthetic passes are insufficient. Performance and
 external-display reports still need their requested comparisons. DSU and
 Wiimmfi remain independent feature work, not bugs blocked solely on logs.
