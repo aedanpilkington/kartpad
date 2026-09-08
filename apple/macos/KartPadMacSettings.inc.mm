@@ -159,6 +159,8 @@
 
     NSView *controllers=[self settingsPage:@"Controllers"];
     [KPControllers() prepareInPanel:self.settingsPanel];
+    KPControllers().content.frame=NSMakeRect(0,0,760,740);
+    KPControllers().content.autoresizingMask=NSViewWidthSizable;
     [controllers addSubview:KPControllers().content];
 
     NSView *data=[self settingsPage:@"Game & Data"];

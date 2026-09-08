@@ -142,7 +142,8 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
 - (void)prepareInPanel:(NSPanel *)panel {
   self.panel = panel;
   if (!self.content) {
-    self.content = [[NSView alloc] initWithFrame:NSMakeRect(0,0,780,740)];
+    self.content = [[NSView alloc] initWithFrame:NSMakeRect(0,0,760,740)];
+    self.content.autoresizingMask = NSViewWidthSizable;
     self.devices = [[NSPopUpButton alloc] initWithFrame:NSMakeRect(20,690,510,28) pullsDown:NO];
     self.devices.target = self; self.devices.action = @selector(selectDevice:);
     [self.content addSubview:self.devices];
@@ -175,16 +176,16 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     self.bindings = [NSMutableArray array];
     self.altBindings = [NSMutableArray array];
     for (int i = 0; i < 12; ++i) {
-      CGFloat x = 20+(i/6)*380, y = 418-(i%6)*34;
+      CGFloat x = 20+(i/6)*370, y = 418-(i%6)*34;
       [self label:KPActions()[i] frame:NSMakeRect(x,y,150,22)];
-      NSButton *button = [self button:@"" action:@selector(remap:) frame:NSMakeRect(x+150,y-2,88,26)];
+      NSButton *button = [self button:@"" action:@selector(remap:) frame:NSMakeRect(x+150,y-2,78,26)];
       button.tag = i; [self.bindings addObject:button];
       button.accessibilityLabel = [KPActions()[i] stringByAppendingString:@" — primary binding"];
-      NSButton *alt = [self button:@"+ Add" action:@selector(remap:) frame:NSMakeRect(x+238,y-2,88,26)];
+      NSButton *alt = [self button:@"+ Add" action:@selector(remap:) frame:NSMakeRect(x+232,y-2,75,26)];
       alt.tag = i + 12; [self.altBindings addObject:alt];
       alt.accessibilityLabel = [KPActions()[i] stringByAppendingString:@" — alternative binding"];
       alt.toolTip = @"Either binding activates this action. Click to add or replace the alternative.";
-      NSButton *clear = [self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+326,y-2,49,26)];
+      NSButton *clear = [self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+311,y-2,49,26)];
       clear.tag = i; clear.toolTip = @"Clear both bindings. Item / Drift then use the default analogue trigger.";
     }
     [self label:@"Two bindings per action: either works. Click + Add, release controls, then press a button or pull a trigger."
