@@ -14,6 +14,8 @@ static int testPort=0;
 static std::array<PADButtonMapping,12> testButtons;
 static std::array<PADButtonMapping,12> testAlternates;
 static PADDeadZones testZones{true,true,8000,9000,30000,31000};
+static std::array<PADKeyButtonBinding,12> testKeys;
+static std::array<PADKeyAxisBinding,10> testKeyAxes;
 extern "C" {
 u32 PADCount(){return testPad ? 1:0;}
 s32 PADGetIndexForPort(u32 p){return (int)p==testPort ? 0:-1;}
@@ -26,6 +28,14 @@ PADDeadZones *PADGetDeadZones(u32){return &testZones;}
 void PADSetButtonMapping(u32,PADButtonMapping m){for(auto &b:testButtons)if(b.padButton==m.padButton)b=m;}
 void PADSetAltButtonMapping(u32,PADButtonMapping m){for(auto &b:testAlternates)if(b.padButton==m.padButton)b=m;}
 void PADRestoreDefaultMapping(u32){}
+PADKeyButtonBinding *PADGetKeyButtonBindings(u32,u32 *count){*count=12;return testKeys.data();}
+PADKeyAxisBinding *PADGetKeyAxisBindings(u32,u32 *count){*count=10;return testKeyAxes.data();}
+#define BOOL KPPadBOOL
+BOOL PADSetKeyButtonBinding(u32,PADKeyButtonBinding m){for(auto &b:testKeys)if(b.padButton==m.padButton){b=m;return TRUE;}return FALSE;}
+BOOL PADSetKeyAxisBinding(u32,PADKeyAxisBinding m){for(auto &b:testKeyAxes)if(b.padAxis==m.padAxis){b=m;return TRUE;}return FALSE;}
+void PADClearKeyBindings(u32){for(auto &b:testKeys)b.scancode=PAD_KEY_INVALID;for(auto &b:testKeyAxes)b.scancode=PAD_KEY_INVALID;}
+void PADSetKeyboardActive(u32,BOOL){}
+#undef BOOL
 }
 namespace Wup028Adapter { void SetPortAssignment(uint32_t,int){} }
 int main(){@autoreleasepool {
@@ -47,6 +57,15 @@ int main(){@autoreleasepool {
  assert(testButtons[0].nativeButton==0);assert(testAlternates[0].nativeButton==SDL_GAMEPAD_BUTTON_MISC1);
  assert(testZones.stickDeadZone==8000 && testZones.substickDeadZone==9000);
  assert(testZones.leftTriggerActivationZone==30000 && testZones.rightTriggerActivationZone==31000);
+ for(int i=0;i<12;++i)testKeys[i]={PAD_KEY_INVALID,KPButtons[i]};
+ for(int i=0;i<10;++i)testKeyAxes[i]={PAD_KEY_INVALID,(PADAxis)i,0};
+ second.selectedID=(SDL_JoystickID)-1; [second refreshKeyboardLabels];
+ uint32_t controllerBefore=testButtons[0].nativeButton;
+ assert(PADSetKeyButtonBinding(0,{SDL_SCANCODE_F,KPButtons[0]}));
+ assert(testKeys[0].scancode==SDL_SCANCODE_F && testButtons[0].nativeButton==controllerBefore);
+ assert(PADSetKeyAxisBinding(0,{SDL_SCANCODE_G,(PADAxis)PAD_AXIS_LEFT_X_POS,0}));
+ assert(testKeyAxes[0].scancode==SDL_SCANCODE_G);
+ PADClearKeyBindings(0); assert(testKeys[0].scancode==PAD_KEY_INVALID);
  second.selectedID=id;second.capture=0;
  [second bind:1];assert(second.capture==-1 && testButtons[0].nativeButton==1); // shared binding allowed
  second.capture=0;

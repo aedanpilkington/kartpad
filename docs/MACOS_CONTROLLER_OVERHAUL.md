@@ -16,6 +16,11 @@ saves or signing material; provide your own supported PAL `RMCP01` revision 0
 data as described in the normal macOS installation documentation.
 
 Open **Controls → Controller Settings** (also accessible from KartPad Settings).
+The device selector always includes **Keyboard** alongside connected physical
+controllers. Select Keyboard to edit keyboard buttons and steering axes; select
+a physical controller to edit its controller profile, assignment, triggers and
+dead zones. Keyboard bindings use Aurora's `keyboard_bindings.dat` persistence
+and remain separate from `ControllerProfiles.json`.
 
 To use **A or RT for Accelerate / Select**:
 
@@ -87,6 +92,9 @@ packaging, and audit commands.
 - Test Cancel, Clear, shared bindings and trigger threshold changes.
 - Verify steering, brakes, drift, item, pause, D-pad and keyboard in a race.
 - Disconnect/reconnect while the controller panel is open and during gameplay.
+- Select Keyboard, change a button and steering-axis binding, clear or reset a
+  binding, quit and relaunch, and verify the changes reload. Confirm that
+  editing Keyboard leaves each physical controller profile unchanged.
 
 Remaining scope: a broader first-run wizard, game-context-dependent mappings,
 more than two bindings per action, and raw-unmapped-device native remapping

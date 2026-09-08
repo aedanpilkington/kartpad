@@ -1,5 +1,6 @@
 // Included by KartPadMacShell.mm so all native shell targets share this UI.
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_scancode.h>
 #define BOOL KPPadBOOL
 #include <dolphin/pad.h>
 #undef BOOL
@@ -84,12 +85,19 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
 @property BOOL profileReadFailed;
 @property NSString *previousBackgroundHint;
 @property BOOL backgroundHintOwned;
+@property NSMutableArray<NSButton *> *keyboardButtons;
+@property NSMutableArray<NSButton *> *keyboardAxes;
+@property NSInteger keyboardCaptureKind;
+@property NSInteger keyboardCaptureIndex;
+@property id keyboardMonitor;
 @end
 
 @implementation KPControllerSettings
 - (instancetype)init {
   if ((self = [super init])) {
     _capture = -1;
+    _keyboardCaptureKind = -1;
+    _keyboardCaptureIndex = -1;
     _applied = [NSMutableDictionary dictionary];
     _profiles = [NSMutableDictionary dictionary];
     NSError *readError = nil;
@@ -120,6 +128,7 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   return [ApplicationSupportURL() URLByAppendingPathComponent:@"ControllerProfiles.json"];
 }
 - (SDL_Gamepad *)selectedPad { return SDL_GetGamepadFromID(self.selectedID); }
+- (BOOL)keyboardSelected { return self.selectedID == (SDL_JoystickID)-1; }
 - (int)port {
   for (int port = 0; port < 4; ++port) {
     int index = PADGetIndexForPort(port);
@@ -175,6 +184,7 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     self.feedback.font = [NSFont monospacedSystemFontOfSize:11 weight:NSFontWeightRegular];
     self.bindings = [NSMutableArray array];
     self.altBindings = [NSMutableArray array];
+    self.keyboardAxes = [NSMutableArray array];
     for (int i = 0; i < 12; ++i) {
       CGFloat x = 20+(i/6)*370, y = 418-(i%6)*34;
       [self label:KPActions()[i] frame:NSMakeRect(x,y,150,22)];
@@ -187,6 +197,15 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
       alt.toolTip = @"Either binding activates this action. Click to add or replace the alternative.";
       NSButton *clear = [self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+311,y-2,49,26)];
       clear.tag = i; clear.toolTip = @"Clear both bindings. Item / Drift then use the default analogue trigger.";
+    }
+    [self label:@"Keyboard steering axes" frame:NSMakeRect(20,218,180,22)];
+    NSArray *axisNames=@[@"Left X +",@"Left X −",@"Left Y +",@"Left Y −"];
+    for(int i=0;i<4;++i) {
+      CGFloat x=200+(i%2)*280,y=218-(i/2)*34;
+      [self label:axisNames[i] frame:NSMakeRect(x,y,90,22)];
+      NSButton *key=[self button:@"Unbound" action:@selector(remap:) frame:NSMakeRect(x+92,y-2,100,26)];
+      key.tag=100+i; [self.keyboardAxes addObject:key];
+      NSButton *clear=[self button:@"Clear" action:@selector(clear:) frame:NSMakeRect(x+196,y-2,50,26)]; clear.tag=100+i;
     }
     [self label:@"Two bindings per action: either works. Click + Add, release controls, then press a button or pull a trigger."
       frame:NSMakeRect(20,218,740,22)];
@@ -206,9 +225,18 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     [self button:@"Reset to Default" action:@selector(reset:) frame:NSMakeRect(20,24,145,32)];
     [self button:@"Cancel Remapping" action:@selector(cancel:) frame:NSMakeRect(175,24,165,32)].keyEquivalent = @"\033";
     [self button:@"Save Profile" action:@selector(save:) frame:NSMakeRect(620,24,140,32)];
+    [self button:@"Reset Keyboard Defaults" action:@selector(resetKeyboard:) frame:NSMakeRect(345,24,180,32)];
+    self.keyboardMonitor=[NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler:^NSEvent *(NSEvent *event) {
+      if(self.keyboardCaptureKind>=0) { [self handleKeyboardEvent:event]; return nil; }
+      return event;
+    }];
   }
 }
 - (void)activateInput {
+  if(!self.keyboardMonitor) self.keyboardMonitor=[NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler:^NSEvent *(NSEvent *event) {
+    if(self.keyboardCaptureKind>=0) { [self handleKeyboardEvent:event]; return nil; }
+    return event;
+  }];
   if (!self.backgroundHintOwned) {
     const char *hint=SDL_GetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS);
     self.previousBackgroundHint=hint ? [NSString stringWithUTF8String:hint] : nil;
@@ -227,11 +255,13 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     self.backgroundHintOwned=NO;
   }
   if (self.dirty) [self save:nil];
+  if(self.keyboardMonitor) { [NSEvent removeMonitor:self.keyboardMonitor]; self.keyboardMonitor=nil; }
 }
 - (void)selectDevice:(id)sender {
   (void)sender;
-  self.selectedID = [self.devices.selectedItem.representedObject unsignedIntValue];
+  self.selectedID = [self.devices.selectedItem.representedObject isEqual:@"keyboard"] ? (SDL_JoystickID)-1 : [self.devices.selectedItem.representedObject unsignedIntValue];
   self.capture = -1;
+  self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1;
 }
 - (void)assign:(id)sender {
   (void)sender;
@@ -286,12 +316,66 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   self.capture = -1; [self remember];
   self.status.stringValue = shared ? @"Binding updated. This control is also bound to another action; both will activate. Clear the other binding if unintended. Save Profile to keep changes." : @"Binding updated. Either binding activates the action. Save Profile to keep your changes.";
 }
+- (NSString *)keyName:(int)scancode {
+  if (scancode < 0) return @"Unbound";
+  const char *name = SDL_GetScancodeName((SDL_Scancode)scancode);
+  return name && *name ? [NSString stringWithUTF8String:name] : [NSString stringWithFormat:@"Key %d",scancode];
+}
+- (void)refreshKeyboardLabels {
+  unsigned count=0; auto *buttons=PADGetKeyButtonBindings(0,&count);
+  for (int i=0;i<12;++i) {
+    int sc=-1; if(buttons && count==PAD_BUTTON_COUNT) for(unsigned j=0;j<count;++j) if(buttons[j].padButton==KPButtons[i]) sc=buttons[j].scancode;
+    self.bindings[i].title=(self.keyboardCaptureKind==0 && self.keyboardCaptureIndex==i) ? @"Press…" : [self keyName:sc];
+    self.altBindings[i].hidden=YES; self.bindings[i].enabled=YES;
+  }
+  unsigned axes=0; auto *mapping=PADGetKeyAxisBindings(0,&axes);
+  for (int i=0;i<4;++i) {
+    int sc=-1; if(mapping && axes==PAD_AXIS_COUNT) for(unsigned j=0;j<axes;++j) if(mapping[j].padAxis==(PADAxis)(PAD_AXIS_LEFT_X_POS+i)) sc=mapping[j].scancode;
+    self.keyboardAxes[i].title=(self.keyboardCaptureKind==1 && self.keyboardCaptureIndex==i) ? @"Press…" : [self keyName:sc];
+    self.keyboardAxes[i].enabled=YES;
+  }
+}
+- (void)captureKeyboard:(NSButton *)sender {
+  self.keyboardCaptureKind=sender.tag>=100 ? 1 : 0;
+  self.keyboardCaptureIndex=sender.tag>=100 ? sender.tag-100 : sender.tag;
+  self.status.stringValue=@"Press a keyboard key. Controller input will not be captured.";
+  [self refreshKeyboardLabels];
+}
+- (void)clearKeyboard:(NSButton *)sender {
+  if(sender.tag>=100) PADSetKeyAxisBinding(0,{PAD_KEY_INVALID,(PADAxis)(PAD_AXIS_LEFT_X_POS+sender.tag-100),0});
+  else PADSetKeyButtonBinding(0,{PAD_KEY_INVALID,KPButtons[sender.tag]});
+  self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels];
+  self.status.stringValue=@"Keyboard binding cleared. Changes are saved by Aurora when KartPad exits.";
+}
+- (void)resetKeyboard:(id)sender {
+  (void)sender; PADClearKeyBindings(0); PADSetKeyboardActive(0,TRUE);
+  self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels];
+  self.status.stringValue=@"Keyboard defaults restored. Changes are saved by Aurora when KartPad exits.";
+}
+- (void)handleKeyboardEvent:(NSEvent *)event {
+  if(self.keyboardCaptureKind<0 || event.type!=NSEventTypeKeyDown || event.isARepeat) return;
+  NSString *text=event.charactersIgnoringModifiers.uppercaseString;
+  SDL_Scancode converted=text.length ? SDL_GetScancodeFromName(text.UTF8String) : SDL_SCANCODE_UNKNOWN;
+  int sc=(int)converted;
+  if(sc==SDL_SCANCODE_UNKNOWN) {
+    NSDictionary *special=@{@"\uF700":@(SDL_SCANCODE_UP),@"\uF701":@(SDL_SCANCODE_DOWN),@"\uF702":@(SDL_SCANCODE_LEFT),@"\uF703":@(SDL_SCANCODE_RIGHT),@"\u001b":@(SDL_SCANCODE_ESCAPE),@"\r":@(SDL_SCANCODE_RETURN),@"\b":@(SDL_SCANCODE_BACKSPACE),@" ":@(SDL_SCANCODE_SPACE)};
+    sc=[special[text] intValue];
+  }
+  if(sc<=SDL_SCANCODE_UNKNOWN) return;
+  if(self.keyboardCaptureKind==0) PADSetKeyButtonBinding(0,{sc,KPButtons[self.keyboardCaptureIndex]});
+  else PADSetKeyAxisBinding(0,{sc,(PADAxis)(PAD_AXIS_LEFT_X_POS+self.keyboardCaptureIndex),0});
+  PADSetKeyboardActive(0,TRUE); self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1;
+  self.status.stringValue=@"Keyboard binding updated. Changes are saved by Aurora when KartPad exits.";
+  [self refreshKeyboardLabels];
+}
 - (void)remap:(NSButton *)sender {
+  if([self keyboardSelected]) { [self captureKeyboard:sender]; return; }
   if ([self port] < 0) { self.status.stringValue=@"Assign this controller to a player before editing mappings."; return; }
   self.capture = sender.tag % 12; self.captureAlternate = sender.tag >= 12; self.armed = NO;
   self.status.stringValue = [NSString stringWithFormat:@"Release all buttons and triggers, then press a button or pull a trigger for %@.", KPActions()[self.capture]];
 }
 - (void)clear:(NSButton *)sender {
+  if([self keyboardSelected]) { [self clearKeyboard:sender]; return; }
   int port=[self port]; if(port<0)return;
   PADSetAltButtonMapping(port,{PAD_NATIVE_BUTTON_INVALID,KPButtons[sender.tag]});
   self.capture=sender.tag; self.captureAlternate=NO; [self bind:PAD_NATIVE_BUTTON_INVALID];
@@ -373,19 +457,25 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   }
   if(!self.panel.visible)return;
   SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, NSApp.active ? "1" : "0");
+  [ids insertObject:@"keyboard" atIndex:0];
   NSArray *old=[self.devices.itemArray valueForKey:@"representedObject"];
   if(![old isEqual:ids]) {
     [self.devices removeAllItems];
+    [self.devices addItemWithTitle:@"Keyboard"];
+    self.devices.lastItem.representedObject=@"keyboard";
     for(NSNumber *number in ids) {
+      if([number isKindOfClass:NSString.class]) continue;
       const char *name=SDL_GetJoystickNameForID(number.unsignedIntValue);
       if(name && strcmp(name,"Controller")==0 && SDL_GetGamepadTypeForID(number.unsignedIntValue)==SDL_GAMEPAD_TYPE_XBOXONE)name="Xbox One Controller";
       [self.devices addItemWithTitle:[NSString stringWithFormat:@"%s — Connected%@",name ?: "Unknown controller",
         SDL_IsGamepad(number.unsignedIntValue) ? @"" : @" (raw joystick)"]];
       self.devices.lastItem.representedObject=number;
     }
-    if(![ids containsObject:@(self.selectedID)]) { self.selectedID=[ids.firstObject unsignedIntValue]; self.capture=-1; }
-    for(NSMenuItem *item in self.devices.itemArray) if([item.representedObject unsignedIntValue]==self.selectedID) [self.devices selectItem:item];
+    if(self.selectedID!=(SDL_JoystickID)-1 && ![ids containsObject:@(self.selectedID)]) { self.selectedID=(SDL_JoystickID)-1; self.capture=-1; }
+    for(NSMenuItem *item in self.devices.itemArray) if(([item.representedObject isEqual:@"keyboard"] && self.keyboardSelected) || [item.representedObject unsignedIntValue]==self.selectedID) [self.devices selectItem:item];
   }
+  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; for(NSButton *button in self.bindings) button.enabled=YES; for(NSButton *button in self.keyboardAxes) button.enabled=YES; for(NSSlider *slider in self.zones) slider.enabled=NO; return; }
+  for(NSButton *button in self.altBindings) button.hidden=NO;
   SDL_Gamepad *pad=[self selectedPad]; int port=[self port];
   [self.player selectItemAtIndex:port+1]; self.player.enabled=pad!=nullptr;
   self.profileLabel.stringValue=pad ? [NSString stringWithFormat:@"%@ · %@ · %@",

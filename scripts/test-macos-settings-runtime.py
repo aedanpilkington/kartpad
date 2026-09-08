@@ -76,6 +76,12 @@ int main(){
 }
 '''
 assert 'SDL_SCANCODE_F10' not in s and 'DrawTopBar' not in s
+controllers = (Path(__file__).resolve().parents[1] / 'apple/macos/KartPadControllers.inc.mm').read_text()
+for marker in ('PADGetKeyButtonBindings', 'PADSetKeyButtonBinding',
+               'PADGetKeyAxisBindings', 'PADSetKeyAxisBinding',
+               'Keyboard', 'NSEventMaskKeyDown'):
+    assert marker in controllers, marker
+assert 'ControllerProfiles.json' not in controllers.split('- (void)refreshKeyboardLabels', 1)[1].split('- (void)captureKeyboard', 1)[0]
 assert 'DrawAudioSettings' not in s and 'DrawGraphicsSettings' not in s
 assert 'DrawFpsOverlay();' in s and 'DrawShaderCompilationStatus();' in s
 with tempfile.TemporaryDirectory() as d:
