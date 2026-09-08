@@ -5,7 +5,7 @@ repo_root="$(git rev-parse --show-toplevel)"
 translation="${1:-${repo_root}/private/self-build/translation}"
 runtime_source="${2:-${repo_root}/build/self-build-macos-source}"
 runtime_build="${3:-${repo_root}/build/self-build-macos-build}"
-app="${4:-${repo_root}/build/KartPad-self-built.app}"
+app="${4:-${repo_root}/build/KartPad.app}"
 product="${5:-base}"
 case "${product}" in
   base) product_target="WiiCompiled" ;;

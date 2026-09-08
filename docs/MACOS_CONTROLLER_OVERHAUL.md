@@ -1,17 +1,19 @@
-# Local macOS controller improvements
+# macOS controller improvements
 
-Source baseline: KartPad `v0.4.11-macos.1`, commit `0c700618e91eda0eac86cd134e3130c8f4fc37a0`.
-Working branch: `macos-controller-overhaul`.
+This document describes the macOS controller and settings implementation.
 
 ## Run the current build
 
-Quit the older KartPad after finishing your current game, then run:
+From a checkout of this repository, build the app and then run:
 
 ```sh
-open "/Users/aedanpilkington/KartPad Home/build/KartPad-multibind.app"
+open "$PWD/build/KartPad.app"
 ```
 
-This is a **base Mario Kart Wii build**. Your downloaded dual-game app remains untouched; Retro Rewind was not rebuilt or play-tested. Existing game data, Config.toml and saves are reused. No disc contents were modified. The existing DOL and REL matched the pinned RMCP01 revision-0 hashes.
+The build uses the supported game-data and profile configuration already
+selected on the machine. It does not include game data, extracted assets,
+saves or signing material; provide your own supported PAL `RMCP01` revision 0
+data as described in the normal macOS installation documentation.
 
 Open **Controls → Controller Settings** (also accessible from KartPad Settings).
 
@@ -32,7 +34,6 @@ Either input activates the same action in menus and races; this does not switch 
 - Assignment and unassignment updated SDL without updating Aurora's cached player index. Both now change together, including when displacing another device.
 - The raw joystick wizard emitted `platform:Windows` on macOS. It now uses SDL's actual platform name.
 - SDL suppresses controller events when an AppKit panel owns focus instead of an SDL window. The panel scopes the background-input hint to its active lifetime and restores the prior value on close.
-- The user initially still received no input, then confirmed input worked after unplugging/reconnecting. **The cold-connect issue is not conclusively resolved**; the focus change alone was insufficient in that test.
 - The initial remapper listened only to buttons, so analogue triggers could never bind. Trigger capture and runtime translation now use explicit LT/RT binding identifiers and the real trigger thresholds.
 - The initial duplicate-binding restriction made most already-mapped buttons unavailable. Shared bindings now work with a visible warning.
 - Primary and alternative bindings are independently editable and persisted per hashed GUID/serial identity. Existing legacy primary/secondary bindings and dead zones are retained when first saving a profile. Identical devices without serials share a profile.
@@ -59,24 +60,23 @@ Either input activates the same action in menus and races; this does not switch 
 - Real SDL virtual input verifies that A and RT independently activate the binding predicate used by the runtime, and release deactivates it. The A/RT pair survives save/reload.
 - Tests exercise the prepared runtime's actual player-assignment functions for cached-index fallback, displacement, unassignment and Player 4.
 - Applying both Aurora patches to clean pinned sources reproduces the compiled input sources exactly.
-- The newest multi-binding build has not yet been physically tested in a race. The running older game was deliberately left open at race results.
 
-## Rebuild this prepared workspace
+## Build from a repository checkout
 
-The existing translation and dependency build are available locally. `build/generated` points at the validated private base translation.
+The supported local macOS build entry point is the repository's self-build
+workflow. It requires a supported Mario Kart Wii WBFS image and prepares the
+private extraction and translation outputs before building and auditing the
+app:
 
 ```sh
-cd "/Users/aedanpilkington/KartPad Home"
-cmake --build build/self-build-macos-build --target WiiCompiled --parallel 4
-scripts/test-macos-controller-profiles.sh
-python3 scripts/test-macos-controller-assignment.py
-scripts/package-macos-runtime.sh \
-  "$PWD/build/self-build-macos-build" "$PWD/build/KartPad-next.app"
-scripts/audit-macos-package.sh "$PWD/build/KartPad-next.app" base
-open "$PWD/build/KartPad-next.app"
+./scripts/self-build-macos.sh /path/to/your/Mario-Kart-Wii.wbfs
+open build/KartPad.app
 ```
 
-Choose a fresh app output name if `KartPad-next.app` already exists. Native shell source changes are picked up directly. If changing patch files, regenerate the prepared runtime with `scripts/build-macos-app.sh` using fresh source/build/output paths; merely editing a patch does not update an already prepared runtime.
+For lower-level runtime preparation after a translation graph already exists,
+use `scripts/build-macos-app.sh`; its arguments and product names are defined
+by that script. The repository README documents the corresponding preparation,
+packaging, and audit commands.
 
 ## Manual checklist
 
@@ -88,4 +88,8 @@ Choose a fresh app output name if `KartPad-next.app` already exists. Native shel
 - Verify steering, brakes, drift, item, pause, D-pad and keyboard in a race.
 - Disconnect/reconnect while the controller panel is open and during gameplay.
 
-Remaining scope: a broader first-run wizard, game-context-dependent mappings, more than two bindings per action, raw-unmapped-device native remapping, and a rebuilt/validated dual-game Retro Rewind package are not included.
+Remaining scope: a broader first-run wizard, game-context-dependent mappings,
+more than two bindings per action, and raw-unmapped-device native remapping
+are not included. Testers should exercise the available Original and Retro
+Rewind products, fullscreen/notch behavior, and additional controllers when
+those products and devices are enabled.

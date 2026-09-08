@@ -55,7 +55,7 @@ Install the prerequisites listed in the README, then run:
 
 ```sh
 ./scripts/self-build-macos.sh /path/to/your/Mario-Kart-Wii.wbfs
-open build/KartPad-self-built.app
+open build/KartPad.app
 ```
 
 The workflow fetches and verifies pinned public dependencies and the exact

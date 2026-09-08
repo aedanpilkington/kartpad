@@ -468,7 +468,7 @@ Retro Rewind file, or Retro-WFC payload has the wrong identity.
 Launch the audited local app:
 
 ```sh
-open build/KartPad-self-built.app
+open build/KartPad.app
 ```
 
 The resulting app is a local development build. It is ignored by Git, may
@@ -533,7 +533,7 @@ results.
 ## First launch on Mac
 
 The one-command build has already prepared the supported private data tree.
-Open `KartPad-self-built.app`; if the app asks for game data, choose the
+Open `KartPad.app`; if the app asks for game data, choose the
 extracted `RMCP01` folder containing `sys/` and `files/`. KartPad validates the
 identity before starting the runtime and preserves the previous valid setting
 if a replacement is rejected.
