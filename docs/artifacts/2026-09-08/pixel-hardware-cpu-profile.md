@@ -63,3 +63,23 @@ Phone locked during the operation benchmark; thermal/frequency drift remains
 a limitation despite alternating order. Raw data is retained privately in
 `build/fenv-experiment/`. A matched game build and owner-controlled scene test
 remain necessary; existing installed candidate remains unchanged at this point.
+
+## Installed comparison candidate
+
+Implementation a850ada, local debug 0.4.13-local.a850ada code25, ARM64 API28+.
+Full fresh dual native build + release lint passed in10m6s (70 tasks,37executed,
+18fromcache,15up-to-date). Initial attempt failed because the fresh worktree
+lacked ignored SDL AAR; copying the same retained dependency resolved setup.
+Prepared runtime source matches the prior candidate byte-for-byte; native helper
+and translated compilation use this worktree, O3/O2 respectively, no LTO.
+Package privacy/dependency/alignment audit and v2 signature verification passed.
+APK SHA256 c68a3e8a0a7e7d27f5c2769490fe28a65896881512c4974591dd758adfe48eb7.
+Retained in `build/fenv-experiment/candidates/` with exact input/test provenance.
+
+Verified Pixel chooser with no game process, matched existing signing certificate,
+and backed up429 state entries before in-place installation. Installation
+succeeded; all406 regular state files remain identical immediately afterwards.
+Package manager confirms code25 and exact version. Chooser reopened; Christopher
+was asked to replay the same scene. No gameplay improvement is established yet.
+App-only UID-filtered180-second log capture started; owner retains controls.
+No public release, GitHub response, root/system setting change or IPA.
