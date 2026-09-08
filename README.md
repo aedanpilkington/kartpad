@@ -50,8 +50,9 @@ chooser, game-data management, packaging, and release workflows.
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
 Android also has an **[unstable 0.4.13 preview · code 28](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)**
-with Retro rating transfer and expanded diagnostics. Physical acceptance remains
-pending; it is not a verified graphics, slowdown or online-stall fix.
+with Retro rating transfer and expanded diagnostics. Offline rating transfer is
+reporter-confirmed; broader device acceptance remains open. It is not a verified
+graphics, slowdown or online-stall fix.
 
 The iPhone/iPad preview adds a generic ARM64 CPU baseline, KartPad chooser
 artwork and richer problem reports. Older-device startup confirmation and
@@ -206,7 +207,7 @@ Those settings applied to Sunshine-specific CPU-clock and 60 FPS behavior and di
 <details>
 <summary>Do saves survive an update, and can I transfer Retro ratings?</summary>
 
-Supported in-place updates preserve saves; **do not uninstall or clear app data**. Keep backups and the same signing identity/bundle ID. Android private previews have a different signer and need a planned migration. Raw save backups do not include every companion file: Android preview 1 adds matched offline Retro rating restore, but Mii transfer and real-save acceptance remain pending. See [save and rating transfer](docs/SUPPORT.md).
+Supported in-place updates preserve saves; **do not uninstall or clear app data**. Keep backups and the same signing identity/bundle ID. Android private previews have a different signer and need a planned migration. Raw save backups do not include every companion file: Android preview 1 adds matched offline Retro rating restore, and the reporter confirmed that workflow succeeded. Mii transfer and online/server synchronization remain separate unfinished work. See [save and rating transfer](docs/SUPPORT.md).
 
 </details>
 
