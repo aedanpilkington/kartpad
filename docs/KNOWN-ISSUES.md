@@ -4,6 +4,8 @@
 
 See the [support guide](SUPPORT.md) for workarounds and the exact diagnostic
 steps. Open reports are not treated as verified root causes.
+The [maintenance workflow](MAINTENANCE.md) defines how evidence advances into
+reviewed fixes, platform tests and accepted builds.
 
 | Issue | Current boundary / next evidence |
 | --- | --- |
