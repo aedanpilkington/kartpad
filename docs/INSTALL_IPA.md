@@ -5,6 +5,11 @@ community release, not an App Store or TestFlight build, and it will not
 install until it is re-signed with your own Apple identity or compatible
 personal sideloading tool.
 
+The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
+These package requirements do not establish compatibility or performance on
+every older chip. A10X startup compatibility is currently unverified; see
+[issue #135](https://github.com/chrissotraidis/kartpad/issues/135).
+
 **Update before online play:** 0.4.11/build 26 fixes the incorrect console-serial
 value reported in [issue #94](https://github.com/chrissotraidis/kartpad/issues/94).
 Older IPAs should remain offline. This does not erase incorrect serial history
