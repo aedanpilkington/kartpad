@@ -28,9 +28,17 @@ Original PAL save, even when opened while playing Retro Rewind. It does not
 export or restore Retro Rewind's separate save files. Do not use it expecting
 a Retro Rewind migration. The confirmed PC WiiCompiled → Android KartPad
 Retro Rewind/PAL transfer is tracked in
-[#105](https://github.com/chrissotraidis/kartpad/issues/105). Explicit profile
-selection and separate-save backup/restore still need implementation and tests;
-there is no supported Retro Rewind transfer route in the current APK.
+[#105](https://github.com/chrissotraidis/kartpad/issues/105). Profile selection is now implemented in source and under release validation;
+there is no supported Retro Rewind transfer route in the current public APK.
+
+**Next Android build:** Manage Saves first asks for **Original Mario Kart Wii**,
+**Retro Rewind**, or **Retro Rewind (Separate Save)**. Choose the profile that
+matches the save you want to transfer; the separate profile is for Retro
+Rewind's Separate Save option. Each export and restore targets only that
+profile, and the selected profile is retained if Android recreates the app
+while its file picker is open. Restore uses **Choose Backup…** after showing
+the destination profile. Existing pending Original restores remain compatible.
+This provides manual transfers, not automatic Syncthing synchronization.
 
 The importer accepts a raw 2,867,200-byte `RKSD0006` save with a valid core
 checksum. That validation does not prove cross-region, cross-mod, or online

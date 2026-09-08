@@ -54,6 +54,24 @@ internal class KartPadSaveStorageFixtureActivity : Activity() {
         check(runCatching { KartPadSaveStorage.validate(corrupt) }.isFailure) {
             "checksum-corrupt save was accepted"
         }
+        // Exercise Android's real AtomicFile with all three target profiles.
+        for (profile in KartPadSaveStorage.profiles) {
+            KartPadSaveStorage.active(root, profile).apply {
+                parentFile?.mkdirs()
+                writeBytes(original)
+            }
+        }
+        for (profile in KartPadSaveStorage.profiles) {
+            val before = KartPadSaveStorage.profiles.associateWith {
+                KartPadSaveStorage.readActive(root, it)
+            }
+            KartPadSaveStorage.writePending(root, replacement, profile)
+            check(KartPadSaveStorage.applyPending(root) == null)
+            check(KartPadSaveStorage.readActive(root, profile).contentEquals(replacement))
+            for (other in KartPadSaveStorage.profiles - profile) {
+                check(KartPadSaveStorage.readActive(root, other).contentEquals(before.getValue(other)))
+            }
+        }
     }
 
     private fun validSave(marker: Int): ByteArray {
