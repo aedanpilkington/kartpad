@@ -46,3 +46,7 @@ The patched socket/SSL files also pass an ARM64 Android NDK syntax check in
 the existing network unity compilation, using an isolated copy and the existing
 Android compiler flags. No complete APK build, Pixel runtime reproduction,
 gameplay fix, or release is claimed. This change leaves guest networking behavior intact.
+
+Integration verification: all 66 Android Python tests pass, including the
+compiled timing harness and existing Android TLS contracts. The #104 follow-up
+also clarifies console/health/exit file selection in the guide and export README.
