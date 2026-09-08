@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 repo="$(git rev-parse --show-toplevel)"
-jdk="$repo/.android-bootstrap/jdk-17.0.20.1+1/Contents/Home"
+jdk="${KARTPAD_TEST_JDK:-$repo/.android-bootstrap/jdk-17.0.20.1+1/Contents/Home}"
 cache="$HOME/.gradle/caches/modules-2/files-2.1"
 jar() { rg --files --hidden --no-ignore "$cache/$1" | awk '/\.jar$/ {print; exit}'; }
 compiler="$(jar org.jetbrains.kotlin/kotlin-compiler-embeddable/2.2.21)"
@@ -20,6 +20,8 @@ clang++ -std=c++20 -I"$repo/runtime/include" "$repo/runtime/tests/android_identi
   -no-stdlib -no-reflect -jvm-target 17 -classpath "$stdlib:$json" -d "$out/tests.jar" \
   "$repo/tests/android_identity/AtomicFile.kt" "$repo/tests/android_identity/IdentityTests.kt" \
   "$repo/tests/android_identity/SaveTests.kt" \
+  "$repo/tests/android_identity/RatingTests.kt" \
+  "$repo/android/app/src/main/java/dev/kartpad/android/KartPadRatingCompanion.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadIdentityStorage.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadSaveStorage.kt" \
   "$repo/android/app/src/main/java/dev/kartpad/android/KartPadMiiStorage.kt"
