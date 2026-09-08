@@ -6,7 +6,7 @@
 #include <mutex>
 #include "kartpad/android/phase_metrics.h"
 
-// Called only for coarse runtime metrics (roughly once per 300 presents).
+// Used for coarse runtime metrics and capped slow-network-call diagnostics.
 // stderr is already mirrored into the app's private per-launch console log.
 extern "C" void KartPadAndroidLogMetric(const char* tag, const char* format, ...) {
   char message[1024];

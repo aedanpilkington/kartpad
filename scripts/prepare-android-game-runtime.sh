@@ -91,6 +91,9 @@ patch --batch -p1 -d "$runtime_source" < \
 patch --batch -p1 -d "$runtime_source" < \
   "$repo_root/patches/wiicompiled-android-dns-ioctl-fixture.patch"
 
+patch --batch -p1 -d "$runtime_source" < \
+  "$repo_root/patches/wiicompiled-android-network-stall.patch"
+
 generated_link="$(dirname "$runtime_source")/generated"
 if [[ -e "$generated_link" && ! -L "$generated_link" ]]; then
   echo "ERROR: generated path exists and is not a symlink: $generated_link" >&2
