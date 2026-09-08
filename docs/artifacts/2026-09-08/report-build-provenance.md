@@ -40,3 +40,26 @@ this manifest. Full artifact resource/signing audit and physical report/share
 checks remain. Generated output must be outside fingerprinted inputs and
 ignored by the source inventory.
 No public reply, release or IPA.
+
+## Final Android artifact and export verification
+
+Full local dual debug APK0.4.13-local.de9731a, code26, ARM64/API28+,
+implementation de9731a92fdfff38dee5088aeeed9accbb355af6. Build+lint passed
+in9m23s (71tasks,39executed,5fromcache,27up-to-date). APK resource/privacy/
+dependency/alignment audit and signature verification pass. APK SHA256:
+82f60f42cf4a3ac502633c65fcf1c9c48abf2b4e65e1ed7b13b5fa2612a65bd3.
+Retained under build/candidates with adjacent provenance, no publication.
+
+Existing synthetic API36 ARM64 emulator updated in place. Actual chooser >
+Export Private Diagnostics > DocumentsUI > unique new filename produced a
+32,516-byte ZIP: eight entries, ZIP integrity pass, exact candidate version,
+report build_provenance equal to the APK asset, correct source revision and
+clean state, active renderer setting null outside game, no memory dumps.
+Emulator stopped successfully; previous APKs, exports and synthetic data kept.
+No new native game-boot/performance acceptance is claimed from this report test.
+Native source directories are unchanged from owner-tested a850ada; this is
+source equivalence, not hardware performance proof for the repackaged binary.
+
+Pixel remains0.4.13-local.a850ada with no game process at final read-only check.
+No additional physical update or data change. Owner same-scene comparison and
+iOS physical report/share/full-app packaging acceptance remain open.
