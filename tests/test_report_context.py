@@ -70,7 +70,7 @@ object KartPadTouchSettings {
  fun resolutionScale(context: android.content.Context) = 1
  fun aspectMode(context: android.content.Context) = 0
 }
-object KartPadRendererDiagnostics { val active = false }
+object KartPadRendererDiagnostics { fun enabled(context: android.content.Context) = true }
 ''',
             "Test.kt": r'''package dev.kartpad.android
 import java.nio.file.Files
@@ -96,6 +96,12 @@ fun main() {
    else check(result.isNull("retro_installed_version"))
   }
   check(KartPadReportContext.snapshot(context, "private-profile").getString("runtime_profile") == "unknown")
+  val exported = KartPadReportContext.snapshot(context, null)
+  check(exported.isNull("renderer_validation"))
+  check(exported.getBoolean("renderer_validation_configured"))
+  val inGame = KartPadReportContext.snapshot(context, "base", false)
+  check(!inGame.getBoolean("renderer_validation"))
+  check(inGame.getBoolean("renderer_validation_configured"))
  } finally { root.deleteRecursively() }
 }
 '''

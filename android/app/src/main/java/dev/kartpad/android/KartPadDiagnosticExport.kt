@@ -31,6 +31,7 @@ internal object KartPadDiagnosticExport {
                 appendLine("Retro Rewind: ${RetroRewindRelease.VERSION}")
                 appendLine("Native KartPadPerf/CPU/GPU metrics and android-health.log use elapsed_ms since boot.")
                 appendLine("report-context.json describes the export time, not the source/version of every older log.")
+                appendLine("Context renderer_validation is null outside the game process; renderer_validation_configured is the saved next-launch setting.")
                 appendLine("Its version_match_only status does not revalidate Retro code or prove online compatibility.")
                 appendLine("KartPadNetWait observes unfinished calls >=1 second; KartPadNetStall describes completed slow calls.")
                 appendLine("Network wait operation codes: 0=socket scalar, 1=socket vector, 2=SSL vector. call is a process-local correlation token.")

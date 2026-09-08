@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 /** Bounded, structured context shared by the short report and private export. */
 internal object KartPadReportContext {
-    fun snapshot(context: Context, profile: String?): JSONObject {
+    fun snapshot(context: Context, profile: String?, activeRendererValidation: Boolean? = null): JSONObject {
         val versionFile = File(context.filesDir, "KartPad/RetroRewind/${RetroRewindRelease.ROOT}/version.txt")
         val installed = runCatching { versionFile.inputStream().use { input ->
             val bytes = ByteArray(129)
@@ -42,6 +42,7 @@ internal object KartPadReportContext {
             .put("retro_code_validation", "not_rechecked_for_report")
             .put("resolution_scale", KartPadTouchSettings.resolutionScale(context))
             .put("aspect_mode", KartPadTouchSettings.aspectMode(context))
-            .put("renderer_validation", KartPadRendererDiagnostics.active)
+            .put("renderer_validation", activeRendererValidation ?: JSONObject.NULL)
+            .put("renderer_validation_configured", KartPadRendererDiagnostics.enabled(context))
     }
 }

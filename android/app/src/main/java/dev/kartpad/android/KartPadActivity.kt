@@ -1606,7 +1606,7 @@ class KartPadActivity : SDLActivity() {
             appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
             appendLine(performanceReport())
             appendLine("Technical context:")
-            appendLine(KartPadReportContext.snapshot(this@KartPadActivity, runtimeProfile).toString(2))
+            appendLine(KartPadReportContext.snapshot(this@KartPadActivity, runtimeProfile, KartPadRendererDiagnostics.active).toString(2))
             appendLine()
             appendLine("What went wrong:")
             appendLine(problem.text.toString().trim().ifBlank { "Not provided" })

@@ -159,3 +159,23 @@ public version reservation. Release lint passed. After integration, executable
 identity/save tests and 52 rating-format + 64 rating-storage checks pass; both
 Android/Apple context formatter tests pass (5.281 seconds). Full link, APK audit
 and disposable runtime checks remain. The attached physical phone is untouched.
+
+## Candidate runtime checkpoint and process-context correction
+
+The full dual Android debug candidate linked and lint passed in 9m14s. Package
+audit passed, v2 signature verified, and the new JNI sampler symbol is exported.
+Initial candidate SHA-256: 010622a51eae636769fc83dcf09e60990d46f9654cb1f358687d92bcd56f844a.
+Disposable API36 ARM64/host-Vulkan emulator reaches the original title screen,
+opens/returns through the native menu, and writes health samples with no missing
+sampler warning. The first manually seeded launch lacked dvd_root and exited;
+adding the fixture's normal GameData configuration resolved it. No importer
+regression is claimed from that incomplete fixture setup.
+
+Actual DocumentsUI private export succeeds: seven entries, structured current
+version/content context, and no crash memory dumps. Testing exposed a process
+boundary ambiguity: the chooser cannot observe the game's static active renderer
+flag. The formatter now takes an explicitly supplied active flag for in-game
+reports; exported context uses null and separately reports the durable configured
+next-launch setting. Host tests cover configured-on/active-off and unknown active
+state; both platform formatter tests pass in 6.588 seconds. A refreshed APK is
+required to include this correction; the initial candidate is retained privately.
