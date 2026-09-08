@@ -83,3 +83,11 @@ Package manager confirms code25 and exact version. Chooser reopened; Christopher
 was asked to replay the same scene. No gameplay improvement is established yet.
 App-only UID-filtered180-second log capture started; owner retains controls.
 No public release, GitHub response, root/system setting change or IPA.
+
+Linked ARM64 disassembly confirms PpcFmulsStateInline calls the new clear
+helper before arithmetic and the existing capture helper afterward. The helper
+contains MRS FPSR, exception-mask comparison and conditional MSR FPSR. It also
+confirms two CurrentCpuContext calls per multiply (before evaluation and before
+commit), matching a concrete follow-up to sampled TLS/context costs. This is
+a separate lead; no context-lookup change was added to the comparison build.
+Raw disassembly remains in `build/fenv-experiment/`.
