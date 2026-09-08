@@ -133,3 +133,29 @@ reproduction. Apple renderer integration is not included.
 The local candidate source was freshly prepared under build/investigation;
 existing prepared sources/builds remain untouched. About 23 GiB was free before
 preparation, compared with roughly 2.7 GiB per existing native build directory.
+
+## Fourth result: online payload update boundary and combined candidate
+
+The source trace reaches the guest executable-download path in Pulsar WiiLink.cpp:
+it normally authenticates a downloaded payload and calls its entry point. KartPad's
+builder instead supplies a size/hash/signature-validated pinned payload to the
+translator, configures `retro_wfc_legacy_bootstrap_hook`, and the translator
+requires/removes exactly that branch before static lowering. The candidate's
+existing generated payload matches the profile's size and SHA-256. Its generated
+mod code registers RunRetroWfcInitializer; its authentication overlay begins with
+the normal stack prologue, not the old bootstrap branch. The overlay still has
+a dispatch entry, which by itself is not evidence that downloading remains active.
+
+This supports a fixed compiled online-code contract, not arbitrary live executable
+updates. It does not guarantee that future servers accept this older client or
+that all non-code downloads remain compatible. A future Retro code/server change
+still needs a coordinated translation/build and physical online acceptance. No
+server protocol or authentication behavior was changed in this investigation.
+
+Combined local source is `dd72167`, incorporating the rating importer after
+`9985008`. Fresh dual native Android build is running separately with code 24
+and version `0.4.13-local.dd72167`; those are local candidate identifiers, not a
+public version reservation. Release lint passed. After integration, executable
+identity/save tests and 52 rating-format + 64 rating-storage checks pass; both
+Android/Apple context formatter tests pass (5.281 seconds). Full link, APK audit
+and disposable runtime checks remain. The attached physical phone is untouched.
