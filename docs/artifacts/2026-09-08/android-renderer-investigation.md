@@ -64,3 +64,29 @@ the Pixel result is the native command-line probe, not a gameplay claim.
 The next useful evidence is an affected-device probe result. A mismatch narrows
 which helper/layout to isolate; a pass means the remaining draw stream, shader
 stages, resource lifetime and driver interaction still need investigation.
+
+## Published diagnostic
+
+[Renderer Check 0.1.0](https://github.com/chrissotraidis/kartpad/releases/tag/renderer-probe-v0.1.0)
+is a prerelease, not GitHub's latest game release. PR #109 merged to
+`2774827a77695afe141e7b3c15b969075fdc7771`; the annotated diagnostic tag points
+to that exact source. Rebuilt from merged source; two release-signing outputs
+match byte-for-byte. The published APK's Java, JNI library and manifest match
+the emulator-tested candidate exactly (only notice formatting changed).
+
+- APK: `KartPad-Renderer-Check-0.1.0-arm64.apk`, 14,722,620 bytes.
+- SHA-256: `2bc8f507bc0646088d1ec350d77e05e38d6bd3d521ec846e130973fc8c53f0db`.
+- JNI library SHA-256: `3484a5d946f28efb0cad8c65c19a2acace7174798e2828690d0a33c175d16292`.
+- Public release certificate SHA-256:
+  `c1dbe0a0d72d830a5779476b346a750d0a37515adef992cad2f3863058f7f2f2`.
+
+Only the APK, source/dependency provenance JSON and checksums were uploaded.
+Fresh anonymous downloads match all three local artifacts byte-for-byte; the
+downloaded APK passes the standalone audit (package, no permissions,
+non-debuggable, signer, exact notice assets, ARM64/16 KiB, content scan).
+The verified download also updates the separate probe package on the Pixel;
+KartPad itself is untouched. The latest game release remains `v0.4.11`.
+
+Reporters in #102 and #104 received the link and a Run/Share request. Their
+Adreno results remain pending. No issue was closed and no playable APK/IPA
+was released by this investigation.
