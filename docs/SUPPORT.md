@@ -116,7 +116,8 @@ paths. Neither is currently accepted as supported iPhone/iPad output.
 For black video with working audio, report the phone/tablet and OS, TV/monitor,
 cable/adapter or AirPlay receiver, whether the device itself keeps rendering,
 and whether connecting before versus after game launch changes the result.
-See [#100](https://github.com/chrissotraidis/kartpad/issues/100).
+See [#100](https://github.com/chrissotraidis/kartpad/issues/100) and the
+[Apple/Android external-display test plan](EXTERNAL-DISPLAYS.md).
 
 ## Collect a useful report
 
