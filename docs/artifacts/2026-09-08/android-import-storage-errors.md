@@ -44,3 +44,11 @@ with its extraction-failure message and removed the new staging tree. The
 entire prior GameData tar digest remained identical before and after both
 failed replacements. The injected filler was removed immediately afterward.
 All 140 Python tests and the repository safety audit pass.
+
+Release packaging distinguishes the JNI build output from the stripped APK
+library. Applying the pinned NDK's `llvm-strip --strip-unneeded` to the tested
+JNI output reproduces the packaged library SHA-256
+`0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b`.
+The notices packager checks that APK hash. The merged-source APK is byte-identical
+to the import-fixed emulator candidate and to a second signed derivation:
+`ce42a501c9e14d616e096511fc17329541fbc6e31dc2ab9e6d0f9066094b0c56`.

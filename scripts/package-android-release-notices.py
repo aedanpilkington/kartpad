@@ -16,7 +16,8 @@ VERSION = "0.4.12-android.1"
 CODE = 22
 # Exact rebuilt native libraries validated for this testing release.
 APPROVED_MAIN_SHA256 = "68af841be72ea90c1c9d43ae276afd0d3a2a150cee46906e6201c1ab1daf4b37"
-APPROVED_DISCIO_SHA256 = "694b9e41e7df429c060f0fbd740ecfe6bad987a3b77bc4f207bc180c9952370c"
+# APK libraries have Gradle release stripping applied.
+APPROVED_DISCIO_SHA256 = "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b"
 REPO = Path(__file__).resolve().parents[1]
 
 
