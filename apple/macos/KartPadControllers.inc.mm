@@ -483,8 +483,8 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
     if(self.selectedID!=(SDL_JoystickID)-1 && ![ids containsObject:@(self.selectedID)]) { self.selectedID=(SDL_JoystickID)-1; self.capture=-1; }
     for(NSMenuItem *item in self.devices.itemArray) if(([item.representedObject isEqual:@"keyboard"] && self.keyboardSelected) || [item.representedObject unsignedIntValue]==self.selectedID) [self.devices selectItem:item];
   }
-  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; self.mappingHint.hidden=YES; self.status.frame=NSMakeRect(20,145,740,38); self.status.maximumNumberOfLines=2; for(NSView *view in self.controllerOnlyViews) view.hidden=YES; for(NSView *view in self.keyboardOnlyViews) view.hidden=NO; for(NSButton *button in self.bindings) button.enabled=YES; return; }
-  self.mappingHint.hidden=NO; self.status.frame=NSMakeRect(20,72,740,70); self.status.maximumNumberOfLines=3; for(NSView *view in self.controllerOnlyViews) view.hidden=NO; for(NSView *view in self.keyboardOnlyViews) view.hidden=YES;
+  if(self.keyboardSelected) { [self refreshKeyboardLabels]; self.profileLabel.stringValue=@"Keyboard · built-in keyboard bindings"; self.player.enabled=NO; self.mappingHint.hidden=YES; self.status.hidden=YES; for(NSView *view in self.controllerOnlyViews) view.hidden=YES; for(NSView *view in self.keyboardOnlyViews) view.hidden=NO; for(NSButton *button in self.bindings) button.enabled=YES; return; }
+  self.mappingHint.hidden=NO; self.status.hidden=NO; self.status.frame=NSMakeRect(20,72,740,70); self.status.maximumNumberOfLines=3; for(NSView *view in self.controllerOnlyViews) view.hidden=NO; for(NSView *view in self.keyboardOnlyViews) view.hidden=YES;
   for(NSButton *button in self.altBindings) button.hidden=NO;
   SDL_Gamepad *pad=[self selectedPad]; int port=[self port];
   [self.player selectItemAtIndex:port+1]; self.player.enabled=pad!=nullptr;
