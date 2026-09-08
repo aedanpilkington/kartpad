@@ -65,3 +65,24 @@ and KartPad Binary Images UUID/load address/range. For JSON .ips reports, retain
 the matching usedImages entry and imageOffset; ARM ESR is useful if present.
 Those fields distinguish the instruction above from abort/assert/loader failures
 without requiring personal identifiers, saves or a full diagnostics archive.
+
+## Cross-platform review correction
+
+Independent review found that Android invokes the shared iOS preparation first.
+Its later `wiicompiled-android-runtime.patch` still expected the old tvOS-only
+conditional and rejected the target-options hunk. The follow-up updates that
+hunk's context while preserving its `elseif(APPLE)` delta: Android gets no Apple
+CPU flags; physical iOS retains the new baseline; Simulator/macOS remain as
+before. A regression now replays the real Android hunk onto the iOS patch
+postimage and evaluates the resulting Android condition. Five focused tests pass.
+Fresh complete iOS and Android preparation both pass, with separate local logs
+`build/cross-ios-prepare.log` and `build/cross-android-prepare.log`. No full game
+build is involved.
+
+The stale-source guard checks a preparation marker only. It does not prove the
+configured or compiled flags. Before accepting a new physical iOS candidate,
+the release owner must inspect generated build settings/actual compile commands
+for every runtime/translated target and audit the final executable, including
+this initializer's disassembly, for the intended baseline. Imported libraries
+still need separate ISA consideration. The small compiled-object test establishes
+the compiler behavior for its input only, not whole-application compatibility.
