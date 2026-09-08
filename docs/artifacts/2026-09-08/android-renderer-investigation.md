@@ -135,3 +135,21 @@ and 512.762.41 in
 Both pass all four compute checks, with uniform/storage alignment 256/64.
 Both threads received the expanded diagnostic, with its additional scope and
 limitations explained. No game saves or general private logs were requested.
+
+## Build-23 Fold comparison and Turnip question
+
+At 07:45 UTC, [#102 confirmed](https://github.com/chrissotraidis/kartpad/issues/102#issuecomment-5581255824)
+actual-game validation/robustness enabled, no crash, and unchanged corruption
+compared with validation off. The supplied steady-state interval presents near
+60 FPS with no queued pipelines. This is not geometry correctness or a
+whole-session performance result. No validation failure appears in the excerpt.
+The dropped SetViewport line follows input suspension/backgrounding in that
+sequence; it does not establish the cause of earlier visible corruption.
+Further repeated off/on runs or full logs are not needed now. A failing draw,
+its character transforms/generated shaders, and vendor behavior remain targets.
+
+The #104 reporter reimported without resolving corruption and asked about
+Turnip. KartPad has no custom-driver loader or driver ZIP picker. An alternate
+driver comparison is a possible future investigation, not a present workaround
+or verified correction. The reporter received a Portuguese explanation and
+clarification that each `base_...` directory is a separate run's console log.
