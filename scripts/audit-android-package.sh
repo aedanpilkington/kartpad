@@ -116,6 +116,9 @@ if [[ -n "$asset_members" ]]; then
     assets/wii/shared2/wc24/nwc24msg.cbk \
     assets/wii/shared2/wc24/nwc24msg.cfg | sort)"
   fi
+  if printf '%s\n' "$asset_members" | grep -Fxq assets/kartpad-build.json; then
+    expected_asset_members="$(printf '%s\n' "$expected_asset_members" assets/kartpad-build.json | sort)"
+  fi
   if printf '%s\n' "$asset_members" | grep -Eq '^assets/dexopt/baseline\.profm?$'; then
     # bundletool materializes AGP's two audited BUNDLE-METADATA baseline-profile
     # entries under assets/dexopt in store-derived APKs. Require the complete,

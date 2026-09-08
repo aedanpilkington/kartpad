@@ -17,8 +17,26 @@ privacy, relocation, renamed inputs, unavailable inputs and symlink rejection.
 A real invocation against the retained Pixel prepared source and full
 translation graph succeeds, with JSON retained privately in build/.
 
-Not integrated yet: Android generated assets, iOS unsigned app resource
-packaging, bounded report readers, package/audit allowlists and report tests.
-Do not claim the installed candidate contains this manifest. Ensure generated
-output is outside fingerprinted inputs (and ignored by the source inventory).
+Android preBuild now generates an immutable asset; iOS simulator/device build
+scripts generate before compilation and copy it into the unsigned app before
+audit/signing. Both report readers cap input at8193bytes, accept at most8192,
+validate revision/hash/count/boolean fields, and rebuild an allowlisted object.
+Missing/malformed/oversized manifests yield null; unknown fields are omitted.
+APK/AAB resource allowlists accept only the added kartpad-build.json name.
+
+Validation: Android compileDebugKotlin + mergeDebugAssets + lintRelease passed
+in35s (49tasks,24executed,25fromcache). Generated/merged manifests match exactly
+(480bytes, explicit dirty source during development, real runtime/translation
+fingerprints). Kotlin and Foundation executable tests passed in5.300s, including
+actual synthetic Foundation bundle resource lookup, missing/oversized fallback,
+malformed hashes and private-field omission. iOS ARM64/min16 SDK syntax with
+-Werror passed. Shell syntax/diff checks pass. Android66 contract tests passed
+after retaining the existing icon dependency declaration as a separate call;
+the initial literal-string icon contract failed on an equivalent combined call.
+
+No full game APK/AAB or iOS app was rebuilt for this report-only follow-up, and
+no device report acceptance is claimed. The installed candidate does not contain
+this manifest. Full artifact resource/signing audit and physical report/share
+checks remain. Generated output must be outside fingerprinted inputs and
+ignored by the source inventory.
 No public reply, release or IPA.

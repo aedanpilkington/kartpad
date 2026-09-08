@@ -17,6 +17,20 @@ class ReportContextTests(unittest.TestCase):
 #import "KartPadDiagnosticContext.h"
 #include <cassert>
 int main() { @autoreleasepool {
+  NSString *buildText = @"{\"schema\":1,\"source_revision\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"source_dirty\":false,\"scope\":\"source_inputs_only_not_dependency_or_binary_identity\",\"kartpad_source\":{\"sha256\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"files\":12},\"prepared_runtime\":null,\"translation\":null,\"extra\":\"private-content-must-not-export\"}";
+  NSData *buildData = [buildText dataUsingEncoding:NSUTF8StringEncoding];
+  NSDictionary *build = KartPadBuildProvenance(buildData);
+  assert(build != nil && build[@"extra"] == nil);
+  NSString *buildPath = [NSBundle.mainBundle.resourcePath stringByAppendingPathComponent:@"kartpad-build.json"];
+  assert([buildData writeToFile:buildPath atomically:YES]);
+  assert(KartPadPackagedBuildProvenance() != nil);
+  assert([[NSMutableData dataWithLength:8193] writeToFile:buildPath atomically:YES]);
+  assert(KartPadPackagedBuildProvenance() == nil);
+  assert([NSFileManager.defaultManager removeItemAtPath:buildPath error:nil]);
+  assert(KartPadPackagedBuildProvenance() == nil);
+  assert(KartPadBuildProvenance([@"{}" dataUsingEncoding:NSUTF8StringEncoding]) == nil);
+  assert(KartPadBuildProvenance([NSMutableData dataWithLength:8193]) == nil);
+  assert(KartPadBuildProvenance([[buildText stringByReplacingOccurrencesOfString:@"bbbb" withString:@"secret"] dataUsingEncoding:NSUTF8StringEncoding]) == nil);
   NSString *dir = [NSTemporaryDirectory() stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
   [NSFileManager.defaultManager createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
   NSString *path = [dir stringByAppendingPathComponent:@"version.txt"];
@@ -42,7 +56,12 @@ int main() { @autoreleasepool {
 } }
 '''
         with tempfile.TemporaryDirectory() as temp:
-            cpp, exe = Path(temp) / "test.mm", Path(temp) / "test"
+            cpp = Path(temp) / "test.mm"
+            bundle = Path(temp) / "Test.app/Contents"
+            exe = bundle / "MacOS/test"
+            exe.parent.mkdir(parents=True)
+            (bundle / "Resources").mkdir()
+            (bundle / "Info.plist").write_text('<?xml version="1.0"?><plist version="1.0"><dict><key>CFBundleExecutable</key><string>test</string><key>CFBundleIdentifier</key><string>invalid.test.provenance</string></dict></plist>')
             cpp.write_text(source)
             subprocess.run(["xcrun", "clang++", "-std=c++17", "-fobjc-arc", "-Wall", "-Wextra", "-Werror",
                             "-framework", "Foundation", "-I", str(ROOT / "apple/ios"), str(cpp), "-o", str(exe)], check=True)
@@ -61,7 +80,7 @@ int main() { @autoreleasepool {
             jar("org.jetbrains/annotations/13.0"), jar("org.jetbrains.kotlin/kotlin-reflect/2.2.0"),
             jar("org.jetbrains.kotlinx/kotlinx-coroutines-core-jvm/1.8.0")])
         stubs = {
-            "Context.kt": 'package android.content\nclass Context(val filesDir: java.io.File)',
+            "Context.kt": 'package android.content\nclass Context(val filesDir: java.io.File) { val assets = Assets(filesDir) }\nclass Assets(val root: java.io.File) { fun open(name: String): java.io.InputStream = java.io.File(root, "assets/$name").inputStream() }',
             "Clock.kt": 'package android.os\nobject SystemClock { fun elapsedRealtime() = 1234L }',
             "Settings.kt": '''package dev.kartpad.android
 object BuildConfig { const val VERSION_NAME = "test"; const val VERSION_CODE = 1 }
@@ -79,6 +98,17 @@ fun main() {
  val root = Files.createTempDirectory("kartpad-report-context-").toFile()
  try {
   val context = android.content.Context(root)
+  val buildText = """{"schema":1,"source_revision":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","source_dirty":false,"scope":"source_inputs_only_not_dependency_or_binary_identity","kartpad_source":{"sha256":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","files":12},"prepared_runtime":null,"translation":null,"extra":"private-content-must-not-export"}"""
+  val build = KartPadReportContext.buildProvenance(buildText.toByteArray())!!
+  check(!build.has("extra"))
+  check(KartPadReportContext.buildProvenance("{}".toByteArray()) == null)
+  check(KartPadReportContext.buildProvenance(ByteArray(8193)) == null)
+  check(KartPadReportContext.buildProvenance(buildText.replace("bbbb", "secret").toByteArray()) == null)
+  check(KartPadReportContext.snapshot(context, null).isNull("build_provenance"))
+  val asset = File(root, "assets/kartpad-build.json")
+  asset.parentFile.mkdirs()
+  asset.writeText(buildText)
+  check(KartPadReportContext.snapshot(context, null).getJSONObject("build_provenance").getString("source_revision") == "a".repeat(40))
   val path = File(root, "KartPad/RetroRewind/RetroRewind6/version.txt")
   check(KartPadReportContext.snapshot(context, null).getString("retro_version_state") == "not_installed")
   path.parentFile.mkdirs()

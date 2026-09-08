@@ -1,6 +1,45 @@
 #pragma once
 #import <Foundation/Foundation.h>
 
+static inline NSDictionary *KartPadBuildProvenance(NSData *data) {
+  if (data == nil || data.length > 8192) return nil;
+  id value = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+  if (![value isKindOfClass:NSDictionary.class]) return nil;
+  NSDictionary *input = value;
+  auto hex = [](id text, NSUInteger length) {
+    if (![text isKindOfClass:NSString.class] || [text length] != length) return false;
+    return [text rangeOfCharacterFromSet:
+        [[NSCharacterSet characterSetWithCharactersInString:@"0123456789abcdef"] invertedSet]].location == NSNotFound;
+  };
+  if (![input[@"schema"] isEqual:@1] ||
+      !(hex(input[@"source_revision"], 40) || hex(input[@"source_revision"], 64)) ||
+      CFGetTypeID((__bridge CFTypeRef)(input[@"source_dirty"] ?: NSNull.null)) != CFBooleanGetTypeID() ||
+      ![input[@"scope"] isEqual:@"source_inputs_only_not_dependency_or_binary_identity"]) return nil;
+  NSMutableDictionary *result = [@{@"schema": @1, @"source_revision": input[@"source_revision"],
+      @"source_dirty": input[@"source_dirty"], @"scope": input[@"scope"]} mutableCopy];
+  for (NSString *key in @[@"kartpad_source", @"prepared_runtime", @"translation"]) {
+    id tree = input[key];
+    if (tree == NSNull.null && ![key isEqual:@"kartpad_source"]) { result[key] = NSNull.null; continue; }
+    if (![tree isKindOfClass:NSDictionary.class] || !hex(tree[@"sha256"], 64)) return nil;
+    id count = tree[@"files"];
+    if (![count isKindOfClass:NSNumber.class] || CFGetTypeID((__bridge CFTypeRef)count) == CFBooleanGetTypeID() ||
+        [count doubleValue] != [count longLongValue] || [count longLongValue] < 1 || [count longLongValue] > 10000000) return nil;
+    result[key] = @{@"sha256": tree[@"sha256"], @"files": count};
+  }
+  return result;
+}
+
+static inline NSDictionary *KartPadPackagedBuildProvenance() {
+  @try {
+    NSString *path = [NSBundle.mainBundle pathForResource:@"kartpad-build" ofType:@"json"];
+    if (path == nil) return nil;
+    NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
+    NSData *data = [file readDataOfLength:8193];
+    [file closeFile];
+    return KartPadBuildProvenance(data);
+  } @catch (NSException *exception) { (void)exception; return nil; }
+}
+
 // Same schema/field semantics as Android's KartPadReportContext. No network or raw file data.
 static inline NSString *KartPadDiagnosticContext(NSString *versionPath, NSString *supported,
                                                 NSString *profile, double resolution, NSInteger aspect) {
@@ -29,6 +68,7 @@ static inline NSString *KartPadDiagnosticContext(NSString *versionPath, NSString
     @"schema": @1, @"platform": @"ios",
     @"app_version": [bundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"] ?: @"unknown",
     @"app_build": [bundle objectForInfoDictionaryKey:@"CFBundleVersion"] ?: @"unknown",
+    @"build_provenance": KartPadPackagedBuildProvenance() ?: NSNull.null,
     @"runtime_profile": profile ?: @"unknown",
     @"captured_unix_ms": @((long long)(NSDate.date.timeIntervalSince1970 * 1000.0)),
     @"monotonic_ms": @((long long)(NSProcessInfo.processInfo.systemUptime * 1000.0)),
