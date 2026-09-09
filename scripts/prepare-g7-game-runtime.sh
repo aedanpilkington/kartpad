@@ -53,6 +53,8 @@ PYTHONPATH="${repo_root}/builder" python3 -m kartpad_builder.release_header \
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-present-telemetry.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
+  "${repo_root}/patches/aurora-metal-view-lifetime.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-gx-resolve-snapshot-copy-src.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-viewport-policy-window-guard.patch"

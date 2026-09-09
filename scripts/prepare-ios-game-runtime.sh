@@ -77,6 +77,8 @@ cp -R "${repo_root}/ref/upstream/Wiicompiled/aurora-main" \
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-present-telemetry.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
+  "${repo_root}/patches/aurora-metal-view-lifetime.patch"
+patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-gx-resolve-snapshot-copy-src.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-ios-opaque-letterbox.patch"
