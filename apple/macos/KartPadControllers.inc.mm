@@ -361,15 +361,15 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels];
   self.status.stringValue=@"Keyboard defaults restored. Changes are saved by Aurora when KartPad exits.";
 }
+- (SDL_Scancode)scancodeForPhysicalKeyCode:(NSUInteger)keyCode {
+  static const SDL_Scancode table[] = { SDL_SCANCODE_A,SDL_SCANCODE_S,SDL_SCANCODE_D,SDL_SCANCODE_F,SDL_SCANCODE_H,SDL_SCANCODE_G,SDL_SCANCODE_Z,SDL_SCANCODE_X,SDL_SCANCODE_C,SDL_SCANCODE_V,SDL_SCANCODE_NONUSBACKSLASH,SDL_SCANCODE_B,SDL_SCANCODE_Q,SDL_SCANCODE_W,SDL_SCANCODE_E,SDL_SCANCODE_R,SDL_SCANCODE_Y,SDL_SCANCODE_T,SDL_SCANCODE_1,SDL_SCANCODE_2,SDL_SCANCODE_3,SDL_SCANCODE_4,SDL_SCANCODE_6,SDL_SCANCODE_5,SDL_SCANCODE_EQUALS,SDL_SCANCODE_9,SDL_SCANCODE_7,SDL_SCANCODE_MINUS,SDL_SCANCODE_8,SDL_SCANCODE_0,SDL_SCANCODE_RIGHTBRACKET,SDL_SCANCODE_O,SDL_SCANCODE_U,SDL_SCANCODE_LEFTBRACKET,SDL_SCANCODE_I,SDL_SCANCODE_P,SDL_SCANCODE_RETURN,SDL_SCANCODE_L,SDL_SCANCODE_J,SDL_SCANCODE_APOSTROPHE,SDL_SCANCODE_K,SDL_SCANCODE_SEMICOLON,SDL_SCANCODE_BACKSLASH,SDL_SCANCODE_COMMA,SDL_SCANCODE_SLASH,SDL_SCANCODE_N,SDL_SCANCODE_M,SDL_SCANCODE_PERIOD,SDL_SCANCODE_TAB,SDL_SCANCODE_SPACE,SDL_SCANCODE_GRAVE,SDL_SCANCODE_BACKSPACE,SDL_SCANCODE_KP_ENTER,SDL_SCANCODE_ESCAPE,SDL_SCANCODE_RGUI,SDL_SCANCODE_LGUI,SDL_SCANCODE_LSHIFT,SDL_SCANCODE_CAPSLOCK,SDL_SCANCODE_LALT,SDL_SCANCODE_LCTRL,SDL_SCANCODE_RSHIFT,SDL_SCANCODE_RALT,SDL_SCANCODE_RCTRL,SDL_SCANCODE_RGUI };
+  if(keyCode < sizeof(table)/sizeof(table[0])) return table[keyCode];
+  switch(keyCode) { case 123:return SDL_SCANCODE_LEFT; case 124:return SDL_SCANCODE_RIGHT; case 125:return SDL_SCANCODE_DOWN; case 126:return SDL_SCANCODE_UP; case 115:return SDL_SCANCODE_HOME; case 119:return SDL_SCANCODE_END; case 116:return SDL_SCANCODE_PAGEUP; case 121:return SDL_SCANCODE_PAGEDOWN; case 117:return SDL_SCANCODE_DELETE; case 114:return SDL_SCANCODE_INSERT; default:return SDL_SCANCODE_UNKNOWN; }
+}
 - (void)handleKeyboardEvent:(NSEvent *)event {
   if(self.keyboardCaptureKind<0 || event.type!=NSEventTypeKeyDown || event.isARepeat) return;
-  NSString *text=event.charactersIgnoringModifiers.uppercaseString;
-  SDL_Scancode converted=text.length ? SDL_GetScancodeFromName(text.UTF8String) : SDL_SCANCODE_UNKNOWN;
-  int sc=(int)converted;
-  if(sc==SDL_SCANCODE_UNKNOWN) {
-    NSDictionary *special=@{@"\uF700":@(SDL_SCANCODE_UP),@"\uF701":@(SDL_SCANCODE_DOWN),@"\uF702":@(SDL_SCANCODE_LEFT),@"\uF703":@(SDL_SCANCODE_RIGHT),@"\u001b":@(SDL_SCANCODE_ESCAPE),@"\r":@(SDL_SCANCODE_RETURN),@"\b":@(SDL_SCANCODE_BACKSPACE),@" ":@(SDL_SCANCODE_SPACE)};
-    sc=[special[text] intValue];
-  }
+  if(event.keyCode==53) { [self cancel:nil]; return; }
+  int sc=(int)[self scancodeForPhysicalKeyCode:event.keyCode];
   if(sc<=SDL_SCANCODE_UNKNOWN) return;
   if(self.keyboardCaptureKind==0) PADSetKeyButtonBinding(0,{sc,KPButtons[self.keyboardCaptureIndex]});
   else PADSetKeyAxisBinding(0,{sc,(PADAxis)(PAD_AXIS_LEFT_X_POS+self.keyboardCaptureIndex),0});
@@ -389,7 +389,7 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   PADSetAltButtonMapping(port,{PAD_NATIVE_BUTTON_INVALID,KPButtons[sender.tag]});
   self.capture=sender.tag; self.captureAlternate=NO; [self bind:PAD_NATIVE_BUTTON_INVALID];
 }
-- (void)cancel:(id)sender { (void)sender; self.capture=-1; self.status.stringValue=@"Remapping cancelled."; }
+- (void)cancel:(id)sender { (void)sender; self.capture=-1; self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels]; self.status.stringValue=@"Remapping cancelled."; }
 - (void)reset:(id)sender {
   (void)sender; int port=[self port]; if(port<0)return;
   PADRestoreDefaultMapping(port);
