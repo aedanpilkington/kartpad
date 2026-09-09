@@ -4,7 +4,7 @@
 
 ## Findings and changes
 
-1. **Choose a game — improved; physical review pending.** The actual M2 iPad
+1. **Choose a game — improved; owner accepted build 32.** The actual M2 iPad
    chooser had two small central buttons, a large decorative gradient, and no
    setup-help entry. The native replacement uses quiet bordered cards, the
    existing KartPad mark and platform icons, explicit imported/required/ready
@@ -77,12 +77,14 @@ under `build/chooser-review`; installation/signing evidence is under
 `09-iphone-no-scroll.png`; help is `04-iphone-help-preview.png`. Intermediate
 letterboxed/rotated simulator captures are not the final visual handoff.
 
-The physical iPad's redesigned menu still needs the owner's visual/interaction
-review. An initial full-app Retro Rewind launch was observed, then the mirror
-became unavailable; no physical after-menu screenshot is claimed. Full fresh
+The owner subsequently accepted the full build-32 candidate on the hardware
+iPad and requested its official release. An initial full-app Retro Rewind launch
+was observed; no physical after-menu screenshot is claimed. The owner feedback
+is recorded separately from screenshots and simulator evidence. Full fresh
 setup on physical hardware was not tested because its existing game data was
 preserved. Android chooser propagation follows this iPad review as requested;
 this branch does not change Android's chooser or use its owner's hardware.
+The accepted changes are published in [0.4.14/build 33](ios-v0414-release.md).
 
 Build 32 source: `2e46881f6694423c896288fccaddfa53f1b4dcce`.
 Private signed executable SHA-256:
