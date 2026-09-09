@@ -223,7 +223,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("DEBUG_EXTRA_TOUCH_SETTINGS", activity)
         self.assertIn("showTouchControlSettings()", activity)
         for label in (
-            '"Touch Control Settings"', '"1×"', '"4×"',
+            '"Touch Control Settings"',
             '"Opacity: 82%"', '"All sizes: 100%"',
             '"Hide on controller"', '"Modern C-stick L/R"',
             '"MOVE CONTROLS"', '"RESET THIS DEVICE LAYOUT"', '"DONE"',
@@ -236,7 +236,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
         runner = (REPO / "scripts/test-android-touch-settings-flow.sh").read_text()
         self.assertIn("TEST_TOUCH_SETTINGS_FLOW", activity)
-        self.assertIn("render3.performClick()", activity)
+        self.assertIn("touch settings changed the display resolution", activity)
         self.assertIn("AccessibilityAction.ACTION_SET_PROGRESS.id", activity)
         self.assertIn("setProgress(opacity, 39f)", activity)
         self.assertIn("setProgress(size, 50f)", activity)
@@ -291,9 +291,10 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('text = "Reset This Device Layout"', activity)
         self.assertIn('text = "Move controls"', activity)
         self.assertIn('text = "Modern C-stick L/R"', activity)
-        self.assertIn('val renderScales = floatArrayOf(1f, 2f, 3f, 4f)', activity)
-        self.assertIn('contentDescription = "Render resolution"', activity)
-        self.assertIn("KartPadTouchSettings.setResolutionScale(this, scale)", activity)
+        touch_settings = activity.split("private fun showTouchControlSettings(", 1)[1].split("private fun ", 1)[0]
+        self.assertNotIn('"Render resolution"', touch_settings)
+        self.assertNotIn("setResolutionScale", touch_settings)
+        self.assertIn("KartPadTouchSettings.setResolutionScale(this, scales[which])", activity)
         self.assertIn("val leftColumn = LinearLayout(this).apply", activity)
         self.assertIn("val rightColumn = LinearLayout(this).apply", activity)
         self.assertIn('text = "Back"', activity)
@@ -441,7 +442,8 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("pendingProfile?.takeIf { gameDataReady }", activity)
         self.assertNotIn('text = "Manage Game Data…"', activity)
         self.assertNotIn('"Manage Game Data…",', verifier)
-        self.assertIn("translationY = -dp(18).toFloat()", activity)
+        self.assertNotIn("translationY = -dp(18).toFloat()", activity)
+        self.assertIn("Gravity.TOP or Gravity.CENTER_HORIZONTAL", activity)
         self.assertIn("setPadding(dp(28), dp(24), dp(28), dp(24))", activity)
         self.assertIn("bottomMargin = dp(12)", activity)
         self.assertIn('17f,\n                Color.argb(158', activity)

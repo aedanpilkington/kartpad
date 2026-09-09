@@ -37,6 +37,7 @@ open class KartPadLaunchActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        KartPadExitDiagnostics.mark(this, pausedProfile() ?: "chooser")
         setContentView(buildContent())
         original.setOnClickListener { selectMode("base") }
         retro.setOnClickListener { selectMode("retro_rewind") }
@@ -239,11 +240,10 @@ open class KartPadLaunchActivity : Activity() {
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            translationY = -dp(18).toFloat()
+            setPadding(0, dp(16), 0, dp(16))
         }
         column.addView(ImageView(this).apply {
-            setImageResource(R.drawable.ic_kartpad_steering_wheel)
-            imageTintList = ColorStateList.valueOf(Color.rgb(255, 107, 46))
+            setImageResource(R.drawable.kartpad_app_icon)
             contentDescription = "KartPad"
             scaleType = ImageView.ScaleType.CENTER_INSIDE
         }, LinearLayout.LayoutParams(dp(48), dp(48)).apply {
@@ -341,6 +341,47 @@ open class KartPadLaunchActivity : Activity() {
             }
         }, layout(0))
 
+        if (pausedProfile() == null && KartPadRatingStorage.hasPending(filesDir)) {
+            column.addView(Button(this).apply {
+                text = "Cancel Staged Rating Restore…"
+                setOnClickListener {
+                    AlertDialog.Builder(this@KartPadLaunchActivity)
+                        .setTitle("Cancel Staged Rating Restore?")
+                        .setMessage("Remove the pending request so you can start the game again. Current ratings and retained backups will stay as they are; this does not undo a restore that already completed.")
+                        .setNegativeButton("Keep Restore", null)
+                        .setPositiveButton("Cancel Restore") { _, _ ->
+                            if (pausedProfile() == null) runCatching {
+                                KartPadRatingStorage.cancelPending(filesDir)
+                            }.onSuccess { visibility = View.GONE }
+                                .onFailure { showStatus("The staged rating restore could not be cancelled.") }
+                        }.show()
+                }
+            }, layout(0))
+        }
+
+        if (pausedProfile() == null) column.addView(Button(this).apply {
+            fun refresh() {
+                text = "Renderer Validation: " + if (KartPadRendererDiagnostics.enabled(context)) "On" else "Off"
+            }
+            refresh()
+            isAllCaps = false
+            setTextColor(Color.argb(184, 255, 255, 255))
+            setBackgroundColor(Color.TRANSPARENT)
+            setOnClickListener {
+                val enable = !KartPadRendererDiagnostics.enabled(context)
+                AlertDialog.Builder(this@KartPadLaunchActivity)
+                    .setTitle("Renderer Validation")
+                    .setMessage("Checks the actual game renderer and enables buffer bounds protection. This may slow the game down; it is a diagnostic mode, not a graphics fix. Applies when you next open a game. After reproducing once, close KartPad, reopen this chooser and export private diagnostics. Turn it off here for normal play.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton(if (enable) "Enable" else "Turn Off") { _, _ ->
+                        if (!KartPadRendererDiagnostics.setEnabled(context, enable)) {
+                            showStatus("The diagnostic setting could not be saved. Please try again.")
+                        }
+                        refresh()
+                    }.show()
+            }
+        }, layout(0))
+
         val availableWidthDp = (resources.displayMetrics.widthPixels / density).toInt() - 64
         val contentWidth = dp(minOf(760, maxOf(320, availableWidthDp)))
         val scroll = ScrollView(this).apply {
@@ -349,7 +390,7 @@ open class KartPadLaunchActivity : Activity() {
             addView(column, FrameLayout.LayoutParams(
                 contentWidth,
                 FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.CENTER,
+                Gravity.TOP or Gravity.CENTER_HORIZONTAL,
             ))
         }
         return FrameLayout(this).apply {

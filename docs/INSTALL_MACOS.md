@@ -49,9 +49,22 @@ Regenerable graphics caches live under `~/Library/Caches/KartPad`. Replacing
 the app does not remove either folder, but back up important saves before
 manually deleting application data.
 
+## Experimental Wii Remote and Nunchuk
+
+Enable **Controls → Experimental Wii Remote + Nunchuk**, use the Wii Remote's
+red **SYNC** button to pair, attach the Nunchuk, then select **Wii Remote +
+Nunchuk (Experimental)** in Controller Settings. The intended hardware is an
+original `RVL-CNT-01` or Wii Remote Plus `RVL-CNT-01-TR`.
+
+This opt-in path pairs through the Mac's Bluetooth hardware without a DolphinBar
+and hands input to SDL. It uses private macOS Bluetooth interfaces and is not a
+Mac App Store workflow. Actual pairing, Nunchuk input, reconnect and long-session
+behavior need wider hardware testing. iPhone/iPad do not provide this direct
+pairing path; a similarly named informational menu is not support for it.
+
 ## Build it yourself
 
-Install the prerequisites listed in the README, then run:
+Install the [Apple build prerequisites](BUILDING.md#prerequisites), then run:
 
 ```sh
 ./scripts/self-build-macos.sh /path/to/your/Mario-Kart-Wii.wbfs

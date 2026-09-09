@@ -1,5 +1,16 @@
 # Install KartPad on Android
 
+## Testing update
+
+[**0.4.13 preview 1 / code 28**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)
+is the latest published unstable Android preview. It adds checked Retro rating
+companion restore and expanded diagnostics, retaining profile-aware save
+transfer and checked imports. It uses the same public signer and can update
+older public APKs in place. Download the APK, notices ZIP and `SHA256SUMS`.
+Follow the [preview test steps](releases/v0.4.13-android-preview.1.md); physical,
+real-save and performance acceptance remain pending. It is not a verified
+fix for graphics corruption, slowdown, online stalls or cup crashes.
+
 ## Download and first launch
 
 1. Open the [first Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1).
@@ -28,19 +39,21 @@
 
 Install future public APKs over the existing public app. Keep the same signing
 identity and use a forward version code. Export the **Original Mario Kart Wii**
-save through
-**Game Data & Saves → Manage Saves…** before updating, and keep your owned image
-separately. The current save manager does not back up Retro Rewind saves, Miis,
-preferences, or downloaded content; opening it from Retro Rewind still targets
-Original. See [save transfer and its limits](SUPPORT.md#android-save-transfer).
+save through **Game Data & Saves → Manage Saves…** before updating, and keep
+your owned image separately. Version `0.4.10-android.1` does not back up Retro
+Rewind saves; it always targets Original. Version `0.4.12-android.1` adds a
+profile selector for Original, Retro Rewind and Retro Rewind (Separate Save).
+Export each initialized profile separately. Save exports do not include Miis,
+console identity, preferences or downloaded content. See
+[save transfer and its limits](SUPPORT.md#android-save-transfer).
 Never uninstall or clear storage as an update step.
 
 **Private preview users:** earlier hardware previews use a different local
 debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
-The maintainer's tested Pixel was deliberately left on Preview 15/code 20.
-The public package is code 21; changing its signature is not a save migration.
+The first public package is code 21; the testing preview is code 28.
+Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
 Earlier previews also lack the issue #94 console-serial correction. Do not use
@@ -75,7 +88,8 @@ complete results, reconnect and network-transition coverage remain open.
 
 Saves live in internal app-private storage, so they are not visible in a normal
 file manager under `Android/data`. Use **••• → Game Data & Saves → Manage Saves…**
-to export or restore an Original `rksys.dat` through the system picker. Follow
+to export or restore a `rksys.dat` through the system picker. The testing update
+asks you to choose the matching profile first. Follow
 the [transfer steps and profile limitations](SUPPORT.md#android-save-transfer);
 root access is not needed.
 
@@ -89,7 +103,8 @@ after reproducing it. The [support guide](SUPPORT.md#collect-a-useful-report)
 explains which excerpts to share and how this differs from **Report a Problem…**.
 Runtime, renderer-phase and bounded battery/thermal diagnostics are retained
 locally; the app does not upload those reports automatically. Shell profiling
-is enabled in this first release, but the app is non-debuggable.
+is enabled in the first release; the later testing builds disable shell profiling.
+Public game packages are non-debuggable.
 
 Review diagnostics before sharing; do not attach raw private archives, game
 images, extracted assets, saves, account/device identifiers or signing keys to

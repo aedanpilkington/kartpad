@@ -26,8 +26,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -96,6 +94,7 @@ class KartPadActivity : SDLActivity() {
             ?.takeIf { it in KartPadSaveStorage.profiles }
         Os.setenv("KARTPAD_ANDROID_FILES_DIR", filesDir.absolutePath, true)
         Os.setenv("KARTPAD_ANDROID_CACHE_DIR", cacheDir.absolutePath, true)
+        KartPadRendererDiagnostics.configure(this)
         if (BuildConfig.GAME_RUNTIME) {
             RetroRewindInstallStorage.recover(filesDir)
             if (!identityStartupChecked) {
@@ -110,6 +109,7 @@ class KartPadActivity : SDLActivity() {
             configureDebugStateTrace()
         }
         super.onCreate(savedInstanceState)
+        KartPadExitDiagnostics.mark(this, runtimeProfile)
         if (mBrokenLibraries) return
         nativeEnableActivityRecreation()
         inputManager = getSystemService(InputManager::class.java)
@@ -376,6 +376,22 @@ class KartPadActivity : SDLActivity() {
             verifyDebugLifecycleClear("focus-loss")
         }
         super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) hideGameSystemBars()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun hideGameSystemBars() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.insetsController?.let { controller ->
+                controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.hide(WindowInsets.Type.systemBars())
+            }
+        } else {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -1254,11 +1270,12 @@ class KartPadActivity : SDLActivity() {
         }
         lateinit var dialog: AlertDialog
         content.addView(settingsLabel(when {
+            KartPadRatingStorage.hasPending(filesDir) -> "A rating restore is staged. Restart before making another save or rating change."
             pending -> "A validated $title restore is staged for the next game restart."
             validSave -> "A validated $title save is available for backup."
             else -> "No valid $title save is available for export. You can restore a compatible backup here."
         }))
-        content.addView(settingsLabel("These actions only affect $title. Choose Separate Save only if that option is enabled in Retro Rewind. Saves do not include Miis or console identity."))
+        content.addView(settingsLabel("Raw save actions only affect $title. Choose Separate Save only if that option is enabled in Retro Rewind. Saves do not include Miis or console identity."))
         content.addView(Button(this).apply {
             text = "Export Save Backup…"
             contentDescription = "Export $title save backup"
@@ -1279,7 +1296,7 @@ class KartPadActivity : SDLActivity() {
         content.addView(Button(this).apply {
             text = "Restore Save Backup…"
             contentDescription = "Restore $title save backup"
-            isEnabled = !pending
+            isEnabled = !pending && !KartPadRatingStorage.hasPending(filesDir)
             setOnClickListener {
                 AlertDialog.Builder(this@KartPadActivity)
                     .setTitle("Restore $title?")
@@ -1297,6 +1314,24 @@ class KartPadActivity : SDLActivity() {
                         )
                     }
                     .show()
+            }
+        })
+        if (profile != "original") content.addView(Button(this).apply {
+            text = "Restore Retro Ratings…"
+            isEnabled = validSave && !KartPadSaveStorage.hasPending(filesDir)
+            setOnClickListener {
+                AlertDialog.Builder(this@KartPadActivity)
+                    .setTitle("Restore Ratings for $title?")
+                    .setMessage("Restore your raw save and restart first. Choose its matching RRRating.pul from your PC backup. Ratings for this save's online profiles will be applied on restart with a backup; unrelated ratings stay unchanged. Retro save modes share ratings for the same online ID. This does not import Miis or synchronize server ratings. Verify offline before going online.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Choose Ratings…") { _, _ ->
+                        saveDocumentProfile = profile
+                        dialog.dismiss()
+                        startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "application/octet-stream"
+                        }, REQUEST_IMPORT_RATINGS)
+                    }.show()
             }
         })
         content.addView(Button(this).apply {
@@ -1368,7 +1403,7 @@ class KartPadActivity : SDLActivity() {
                 .show()
             return
         }
-        val saveProfile = if (requestCode == REQUEST_EXPORT_SAVE || requestCode == REQUEST_IMPORT_SAVE) {
+        val saveProfile = if (requestCode == REQUEST_EXPORT_SAVE || requestCode == REQUEST_IMPORT_SAVE || requestCode == REQUEST_IMPORT_RATINGS) {
             val selected = saveDocumentProfile
             saveDocumentProfile = null
             if (resultCode != RESULT_OK) return
@@ -1378,6 +1413,35 @@ class KartPadActivity : SDLActivity() {
             }
             selected
         } else null
+        if (requestCode == REQUEST_IMPORT_RATINGS && resultCode == RESULT_OK) {
+            val uri = data?.data ?: return
+            runCatching {
+                val bytes = contentResolver.openInputStream(uri)?.use { stream ->
+                    val buffer = ByteArray(KartPadRatingCompanion.FILE_BYTES + 1)
+                    var count = 0
+                    while (count < buffer.size) {
+                        val read = stream.read(buffer, count, buffer.size - count)
+                        if (read < 0) break
+                        check(read > 0) { "The rating file could not be read." }
+                        count += read
+                    }
+                    require(count == KartPadRatingCompanion.FILE_BYTES) { "Unsupported rating file length." }
+                    buffer.copyOf(count)
+                } ?: error("The rating file could not be opened.")
+                KartPadRatingStorage.stage(filesDir, requireNotNull(saveProfile), bytes)
+            }.onSuccess {
+                AlertDialog.Builder(this)
+                    .setTitle("Rating Restore Scheduled")
+                    .setMessage("Matched ratings for ${KartPadSaveStorage.title(requireNotNull(saveProfile))} will be restored before gameplay starts, with a backup. Verify offline before going online. Miis are unchanged.")
+                    .setPositiveButton("Restart Now") { _, _ -> restartToGameSelector() }
+                    .setNegativeButton("Later", null).show()
+            }.onFailure { error ->
+                showParityBoundary("Rating Restore Failed", if (error is IllegalArgumentException)
+                    error.message ?: "The rating file could not be validated."
+                    else "The rating restore could not be staged.")
+            }
+            return
+        }
         if (requestCode == REQUEST_EXPORT_SAVE && resultCode == RESULT_OK) {
             val uri = data?.data ?: return
             runCatching {
@@ -1519,6 +1583,17 @@ class KartPadActivity : SDLActivity() {
         fields.addView(frequency)
 
         fun reportId() = "KP-${UUID.randomUUID().toString().take(8).uppercase()}"
+        fun performanceReport() = buildString {
+            val aspect = when (KartPadTouchSettings.aspectMode(this@KartPadActivity)) {
+                0 -> "Original 4:3"
+                1 -> "16:9 (Experimental)"
+                2 -> "Fill Screen (Experimental)"
+                else -> "Unknown"
+            }
+            appendLine("Configured render resolution: ${KartPadTouchSettings.resolutionScale(this@KartPadActivity)}x")
+            appendLine("Configured aspect: $aspect")
+            append("Active renderer validation: ${if (KartPadRendererDiagnostics.active) "On" else "Off"}")
+        }
         fun diagnosticReport(id: String) = buildString {
             appendLine("KartPad Android diagnostic report")
             appendLine("Report ID: $id")
@@ -1527,6 +1602,9 @@ class KartPadActivity : SDLActivity() {
             appendLine("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
             appendLine("Runtime profile: $runtimeProfile")
             appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
+            appendLine(performanceReport())
+            appendLine("Technical context:")
+            appendLine(KartPadReportContext.snapshot(this@KartPadActivity, runtimeProfile, KartPadRendererDiagnostics.active).toString(2))
             appendLine()
             appendLine("What went wrong:")
             appendLine(problem.text.toString().trim().ifBlank { "Not provided" })
@@ -1560,10 +1638,14 @@ class KartPadActivity : SDLActivity() {
                     .appendQueryParameter(
                         "revision", "${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
                     )
-                    .appendQueryParameter("platform", "Android ${android.os.Build.VERSION.RELEASE}")
-                    .appendQueryParameter("performance-profile", runtimeProfile)
+                    .appendQueryParameter("platform", "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}; Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
+                    .appendQueryParameter("performance-profile", performanceReport())
                     .appendQueryParameter("summary", problem.text.toString().trim())
-                    .appendQueryParameter("context", area.text.toString().trim())
+                    .appendQueryParameter("context", buildString {
+                        appendLine("Runtime profile: $runtimeProfile")
+                        if (runtimeProfile == "retro_rewind") appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
+                        append(area.text.toString().trim())
+                    })
                     .appendQueryParameter("frequency", frequency.text.toString().trim())
                     .build()
                 startActivity(Intent(Intent.ACTION_VIEW, url))
@@ -1590,29 +1672,6 @@ class KartPadActivity : SDLActivity() {
             setPadding(dp(18), dp(4), dp(18), dp(4))
         }
         val opacityLabel = settingsLabel("")
-        val renderLabel = settingsLabel("Render")
-        val renderScales = floatArrayOf(1f, 2f, 3f, 4f)
-        val render = RadioGroup(this).apply {
-            orientation = RadioGroup.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            contentDescription = "Render resolution"
-        }
-        val currentRenderScale = KartPadTouchSettings.resolutionScale(this)
-        renderScales.forEach { scale ->
-            render.addView(RadioButton(this).apply {
-                id = View.generateViewId()
-                text = if (scale == 1f) "1×" else "${scale.toInt()}×"
-                setTextColor(Color.WHITE)
-                tag = scale
-                isChecked = kotlin.math.abs(scale - currentRenderScale) < 0.01f
-            })
-        }
-        render.setOnCheckedChangeListener { group, checkedId ->
-            val scale = group.findViewById<RadioButton>(checkedId)?.tag as? Float
-                ?: return@setOnCheckedChangeListener
-            KartPadTouchSettings.setResolutionScale(this, scale)
-            applyDisplaySettings()
-        }
         val opacity = SeekBar(this).apply {
             max = 75
             progress = (KartPadTouchSettings.opacity(this@KartPadActivity) * 100f)
@@ -1697,8 +1756,6 @@ class KartPadActivity : SDLActivity() {
         val leftColumn = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, 0, dp(12), 0)
-            addView(renderLabel)
-            addView(render)
             addView(opacityLabel)
             addView(opacity)
             addView(sizeLabel)
@@ -1735,15 +1792,10 @@ class KartPadActivity : SDLActivity() {
         dialog.show()
         touchSettingsDialog = dialog
         if (debugSettingsFlow != null) {
-            render.post {
+            content.post {
                 runCatching {
-                    val render3 = (0 until render.childCount)
-                        .map { render.getChildAt(it) as RadioButton }
-                        .first { it.tag == 3f }
                     when (debugSettingsFlow) {
                         "seed" -> {
-                            render3.performClick()
-                            check(render3.isChecked) { "3x render did not become checked" }
                             fun setProgress(control: SeekBar, value: Float) {
                                 val arguments = Bundle().apply {
                                     putFloat(
@@ -1768,34 +1820,34 @@ class KartPadActivity : SDLActivity() {
                             val savedSize = KartPadTouchSettings.size(this)
                             val savedHide = KartPadTouchSettings.hideOnController(this)
                             val savedModern = KartPadTouchSettings.modernCStickHorizontal(this)
-                            check(savedRender == 3f && kotlin.math.abs(savedOpacity - 0.64f) < 0.001f &&
+                            check(savedRender == 1f && kotlin.math.abs(savedOpacity - 0.64f) < 0.001f &&
                                 kotlin.math.abs(savedSize - 1.20f) < 0.001f && !savedHide && savedModern
                             ) {
                                 "touch settings seeded render=$savedRender opacity=$savedOpacity " +
                                     "size=$savedSize hide=$savedHide modern=$savedModern"
                             }
                             check(nativeDebugDisplaySettings() ==
-                                "fps=true aspect=0 scale=3.0"
-                            ) { "3x render did not cross the source-fixture JNI bridge" }
+                                "fps=true aspect=0 scale=1.0"
+                            ) { "touch settings changed the display resolution" }
                             Log.i(
                                 TAG,
-                                "A4 touch settings flow seeded render=3x opacity=64 size=120 " +
+                                "A4 touch settings flow seeded render=1x opacity=64 size=120 " +
                                     "hide=false modern=true",
                             )
                         }
                         "verify" -> {
-                            check(render3.isChecked && opacity.progress == 39 && size.progress == 50 &&
+                            check(KartPadTouchSettings.resolutionScale(this) == 1f &&
+                                opacity.progress == 39 && size.progress == 50 &&
                                 opacityLabel.text == "Opacity: 64%" &&
                                 sizeLabel.text == "All sizes: 120%" &&
                                 !hide.isChecked && modernCStick.isChecked
                             ) { "touch settings widgets did not reload persisted values" }
                             KartPadTouchSettings.resetTouchControls(this)
-                            KartPadTouchSettings.setResolutionScale(this, 1f)
                             KartPadTouchSettings.setHideOnController(this, true)
                             KartPadTouchSettings.setModernCStickHorizontal(this, false)
                             Log.i(
                                 TAG,
-                                "A4 touch settings flow passed render=3x opacity=64 size=120 " +
+                                "A4 touch settings flow passed render=1x opacity=64 size=120 " +
                                     "hide=false modern=true",
                             )
                         }
@@ -2179,6 +2231,7 @@ class KartPadActivity : SDLActivity() {
         private const val REQUEST_MANAGE_GAME_DATA = 4_302
         private const val REQUEST_EXPORT_SAVE = 4_303
         private const val REQUEST_IMPORT_SAVE = 4_304
+        private const val REQUEST_IMPORT_RATINGS = 4_305
         private const val MII_FILE_BYTES = 74
         const val EXTRA_RUNTIME_PROFILE = "dev.kartpad.android.RUNTIME_PROFILE"
         private const val TAG = "KartPadFixture"
