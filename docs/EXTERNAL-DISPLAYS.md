@@ -60,3 +60,9 @@ KartPad controls remain on the previous root. Reuse/destruction and control
 ownership need a forced-recovery test; display attachment causing that recovery
 and TV-only black video remain unconfirmed. This is separate from dedicated
 external output and does not authorize a scheduled IPA publication.
+
+The [native recovery correction and tests](artifacts/2026-09-09/apple-metal-surface-recovery.md)
+now preserve one Metal view per window. macOS and iPhone/iPad simulator probes
+pass repeated descriptor recreation, presentation and teardown, with failing
+unpatched controls. tvOS probe compilation also passes. Full-game surface loss
+and physical external-output acceptance remain open; this does not close #100.
