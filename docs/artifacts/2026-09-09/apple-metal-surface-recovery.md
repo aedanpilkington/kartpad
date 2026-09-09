@@ -74,10 +74,39 @@ The iPhone was not modified. Device identifiers, signing details, backups and
 raw device logs remain outside the repository.
 
 The separate native probe also ran successfully on this physical iPad and was
-removed after its test. Game
-launch from the chooser and forced surface loss in the full game still require
-the pending on-device interaction; the probe and chooser are not gameplay
-acceptance.
+removed after its test. The user subsequently entered a Mario / Luigi Circuit
+Grand Prix race: the game and touch overlay were visible. The game exited during
+an attempted debugger attachment, before any graphics fault was injected. Its
+exact exit cause remains unconfirmed. This is not a successful full-game recovery
+test; subsequent automated checks use a separate app without a debugger.
+
+## Real WebGPU surface recreation on the physical iPad
+
+`apple_webgpu_surface_probe.mm` links the same pinned physical-iOS Dawn and SDL
+libraries and compiles the actual Metal descriptor helper. It automatically
+acquires, submits and presents 120 frames, replacing its Dawn surface after frames
+30, 60 and 90. It drains submitted GPU work, unconfigures/releases the old surface,
+creates/configures a replacement, and continues rendering. Every frame checks
+native root and overlay attachment; every recreation checks Metal-layer identity.
+Any acquisition, submission-completion, presentation or uncaptured Dawn error
+fails the test.
+
+On the same physical M2 iPad and iPadOS 26.6.1:
+
+- Corrected helper: **PASS**, three actual Dawn surface recreations and 120
+  acquired/submitted/presented frames; root, overlay and Metal layer preserved.
+- Original helper: **FAIL at frame 30**, before completing its first recreation,
+  because the Metal layer is replaced. The preceding 30 frames rendered normally.
+- The signed passing test executable has SHA-256
+  `ffb2ca0fb3089bf447c686ffe0e661e23885448801a0dc80ecb46c688fd59aed`.
+  Private signing details and device logs remain outside the repository.
+
+This is a bounded, automatic test with a separate bundle identifier,
+`dev.kartpad.webgpu-recovery-probe`. It requires no game files, debugger attachment,
+race setup, or user taps. Its own frame loop deliberately requests recreation;
+it does not simulate an OS-generated SurfaceLost event or execute Aurora's full
+presenter/worker scheduling. It also does not test physical touch delivery to
+KartPad's actual game controls.
 
 ## Reproduction
 
@@ -90,10 +119,18 @@ Run the macOS executable directly; simulator apps use bundle identifier
 Pass the unpatched Aurora directory for the negative control. No game import or
 installed KartPad data is necessary.
 
+For the WebGPU variant, add `--dawn-library` pointing to the matching SDK's pinned
+`libwebgpu_dawn.a`. The builder selects the automatic WebGPU probe and its separate
+bundle identifier. Physical-device signing/installation is still separate from
+the builder. For the negative control, use the unpatched Aurora directory with
+otherwise identical SDL/Dawn inputs; the expected failure is the first recreation
+at frame 30.
+
 ## Acceptance boundary
 
-These are native helper/recovery-path tests, not a forced Dawn surface-loss
-result inside a running game. They establish the view-ownership fix, not the
+These include native helper and actual WebGPU surface-recreation tests, not a
+forced Dawn surface-loss result inside a running game. They establish the
+view-ownership fix, not the
 cause or resolution of TV-only black video in #100. Full-game surface recovery,
 touch/controller continuity, wired mirroring, AirPlay and Apple TV gameplay
 remain separate acceptance gates. No public IPA or game release is produced here.

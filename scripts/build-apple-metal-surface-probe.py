@@ -14,6 +14,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('aurora', 'sdl-include', 'sdl-library', 'dawn-include', 'output'):
         parser.add_argument('--' + name, required=True, type=Path)
+    parser.add_argument('--dawn-library', type=Path,
+                        help='Link Dawn and exercise real WebGPU surface recreation')
     parser.add_argument('--sdk', choices=('macosx', 'iphonesimulator', 'appletvsimulator',
                                          'iphoneos', 'appletvos'), required=True)
     args = parser.parse_args()
@@ -31,7 +33,8 @@ def main():
         app.mkdir(exist_ok=True)
         binary = app / 'MetalProbe'
         with (app / 'Info.plist').open('wb') as f:
-            plistlib.dump(dict(CFBundleIdentifier='dev.kartpad.metal-recovery-probe',
+            plistlib.dump(dict(CFBundleIdentifier=('dev.kartpad.webgpu-recovery-probe' if args.dawn_library
+                                                 else 'dev.kartpad.metal-recovery-probe'),
                               CFBundleName='Metal Recovery Probe', CFBundleExecutable='MetalProbe',
                               CFBundleVersion='1', CFBundleShortVersionString='1.0',
                               CFBundlePackageType='APPL', MinimumOSVersion='17.0' if 'tvos' in args.sdk else '16.0',
@@ -49,9 +52,13 @@ def main():
            '-target', targets[args.sdk], '-isysroot', sdk,
            '-I' + str(args.sdl_include), '-I' + str(args.dawn_include),
            '-I' + str(args.aurora / 'lib/dawn'),
-           str(root / 'tests/native/apple_metal_surface_probe.mm'),
+           str(root / ('tests/native/apple_webgpu_surface_probe.mm' if args.dawn_library
+                       else 'tests/native/apple_metal_surface_probe.mm')),
            str(args.aurora / 'lib/dawn/MetalBinding.mm'), str(args.sdl_library),
            '-liconv', '-o', str(binary)]
+    if args.dawn_library:
+        cmd += [str(args.dawn_library)]
+        frameworks += ['IOSurface', 'Security']
     for framework in frameworks:
         cmd += ['-framework', framework]
     subprocess.run(cmd, check=True)
