@@ -80,7 +80,7 @@ controllers = (Path(__file__).resolve().parents[1] / 'apple/macos/KartPadControl
 for marker in ('PADGetKeyButtonBindings', 'PADSetKeyButtonBinding',
                'PADGetKeyAxisBindings', 'PADSetKeyAxisBinding',
                'Keyboard', 'NSEventMaskKeyDown',
-               'scancodeForPhysicalKeyCode', 'event.keyCode==53',
+               'scancodeForPhysicalKeyCode', 'KPMacPhysicalScancode',
                'self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1'):
     assert marker in controllers, marker
 assert 'ControllerProfiles.json' not in controllers.split('- (void)refreshKeyboardLabels', 1)[1].split('- (void)captureKeyboard', 1)[0]

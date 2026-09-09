@@ -1,6 +1,16 @@
 // Included by KartPadMacShell.mm so all native shell targets share this UI.
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_scancode.h>
+#include <iterator>
+#import <Carbon/Carbon.h>
+#include "../third_party/sdl/scancodes_darwin.h"
+
+static SDL_Scancode KPMacPhysicalScancode(unsigned short keyCode, bool isoKeyboard) {
+  // Match SDL Cocoa, including the hardware ISO grave/non-US key swap.
+  if (isoKeyboard && (keyCode == 10 || keyCode == 50)) keyCode = 60 - keyCode;
+  return keyCode < std::size(darwin_scancode_table)
+      ? darwin_scancode_table[keyCode] : SDL_SCANCODE_UNKNOWN;
+}
 #define BOOL KPPadBOOL
 #include <dolphin/pad.h>
 #undef BOOL
@@ -256,9 +266,16 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
   [self tick];
 }
+- (void)cancelCapture {
+  self.capture = -1; self.armed = NO;
+  self.keyboardCaptureKind = -1; self.keyboardCaptureIndex = -1;
+  if ([self keyboardSelected]) [self refreshKeyboardLabels];
+}
+- (void)windowDidResignKey:(NSNotification *)notification {
+  (void)notification; [self cancelCapture];
+}
 - (void)windowWillClose:(NSNotification *)notification {
-  (void)notification; self.capture = -1; self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1;
-  [self refreshKeyboardLabels];
+  (void)notification; [self cancelCapture];
   if(self.backgroundHintOwned) {
     if(self.previousBackgroundHint) SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,self.previousBackgroundHint.UTF8String);
     else SDL_ResetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS);
@@ -269,9 +286,8 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
 }
 - (void)selectDevice:(id)sender {
   (void)sender;
+  [self cancelCapture];
   self.selectedID = [self.devices.selectedItem.representedObject isEqual:@"keyboard"] ? (SDL_JoystickID)-1 : [self.devices.selectedItem.representedObject unsignedIntValue];
-  self.capture = -1;
-  self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1;
 }
 - (void)assign:(id)sender {
   (void)sender;
@@ -346,6 +362,7 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   }
 }
 - (void)captureKeyboard:(NSButton *)sender {
+  [self cancelCapture];
   self.keyboardCaptureKind=sender.tag>=100 ? 1 : 0;
   self.keyboardCaptureIndex=sender.tag>=100 ? sender.tag-100 : sender.tag;
   self.status.stringValue=@"Press a keyboard key. Controller input will not be captured.";
@@ -357,26 +374,20 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels];
   self.status.stringValue=@"Keyboard binding cleared. Changes are saved by Aurora when KartPad exits.";
 }
+- (SDL_Scancode)scancodeForPhysicalKeyCode:(NSUInteger)keyCode {
+  return KPMacPhysicalScancode((unsigned short)keyCode,
+                               KBGetLayoutType(LMGetKbdType()) == kKeyboardISO);
+}
 - (void)resetKeyboard:(id)sender {
   (void)sender; PADClearKeyBindings(0); PADSetKeyboardActive(0,TRUE);
   self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels];
   self.status.stringValue=@"Keyboard defaults restored. Changes are saved by Aurora when KartPad exits.";
 }
-- (SDL_Scancode)scancodeForPhysicalKeyCode:(NSUInteger)keyCode {
-  static const SDL_Scancode table[] = { SDL_SCANCODE_A,SDL_SCANCODE_S,SDL_SCANCODE_D,SDL_SCANCODE_F,SDL_SCANCODE_H,SDL_SCANCODE_G,SDL_SCANCODE_Z,SDL_SCANCODE_X,SDL_SCANCODE_C,SDL_SCANCODE_V,SDL_SCANCODE_NONUSBACKSLASH,SDL_SCANCODE_B,SDL_SCANCODE_Q,SDL_SCANCODE_W,SDL_SCANCODE_E,SDL_SCANCODE_R,SDL_SCANCODE_Y,SDL_SCANCODE_T,SDL_SCANCODE_1,SDL_SCANCODE_2,SDL_SCANCODE_3,SDL_SCANCODE_4,SDL_SCANCODE_6,SDL_SCANCODE_5,SDL_SCANCODE_EQUALS,SDL_SCANCODE_9,SDL_SCANCODE_7,SDL_SCANCODE_MINUS,SDL_SCANCODE_8,SDL_SCANCODE_0,SDL_SCANCODE_RIGHTBRACKET,SDL_SCANCODE_O,SDL_SCANCODE_U,SDL_SCANCODE_LEFTBRACKET,SDL_SCANCODE_I,SDL_SCANCODE_P,SDL_SCANCODE_RETURN,SDL_SCANCODE_L,SDL_SCANCODE_J,SDL_SCANCODE_APOSTROPHE,SDL_SCANCODE_K,SDL_SCANCODE_SEMICOLON,SDL_SCANCODE_BACKSLASH,SDL_SCANCODE_COMMA,SDL_SCANCODE_SLASH,SDL_SCANCODE_N,SDL_SCANCODE_M,SDL_SCANCODE_PERIOD,SDL_SCANCODE_TAB,SDL_SCANCODE_SPACE,SDL_SCANCODE_GRAVE,SDL_SCANCODE_BACKSPACE,SDL_SCANCODE_KP_ENTER,SDL_SCANCODE_ESCAPE,SDL_SCANCODE_RGUI,SDL_SCANCODE_LGUI,SDL_SCANCODE_LSHIFT,SDL_SCANCODE_CAPSLOCK,SDL_SCANCODE_LALT,SDL_SCANCODE_LCTRL,SDL_SCANCODE_RSHIFT,SDL_SCANCODE_RALT,SDL_SCANCODE_RCTRL,SDL_SCANCODE_RGUI };
-  if(keyCode < sizeof(table)/sizeof(table[0])) return table[keyCode];
-  switch(keyCode) {
-    case 123:return SDL_SCANCODE_LEFT; case 124:return SDL_SCANCODE_RIGHT; case 125:return SDL_SCANCODE_DOWN; case 126:return SDL_SCANCODE_UP;
-    case 115:return SDL_SCANCODE_HOME; case 119:return SDL_SCANCODE_END; case 116:return SDL_SCANCODE_PAGEUP; case 121:return SDL_SCANCODE_PAGEDOWN; case 117:return SDL_SCANCODE_DELETE; case 114:return SDL_SCANCODE_INSERT;
-    case 122:return SDL_SCANCODE_F1; case 120:return SDL_SCANCODE_F2; case 99:return SDL_SCANCODE_F3; case 118:return SDL_SCANCODE_F4; case 96:return SDL_SCANCODE_F5; case 97:return SDL_SCANCODE_F6; case 98:return SDL_SCANCODE_F7; case 100:return SDL_SCANCODE_F8; case 101:return SDL_SCANCODE_F9; case 109:return SDL_SCANCODE_F10; case 103:return SDL_SCANCODE_F11; case 111:return SDL_SCANCODE_F12; case 105:return SDL_SCANCODE_F13; case 107:return SDL_SCANCODE_F14; case 113:return SDL_SCANCODE_F15; case 106:return SDL_SCANCODE_F16; case 64:return SDL_SCANCODE_F17; case 79:return SDL_SCANCODE_F18; case 80:return SDL_SCANCODE_F19; case 90:return SDL_SCANCODE_F20;
-    case 65:return SDL_SCANCODE_KP_PERIOD; case 67:return SDL_SCANCODE_KP_MULTIPLY; case 69:return SDL_SCANCODE_KP_PLUS; case 75:return SDL_SCANCODE_KP_DIVIDE; case 76:return SDL_SCANCODE_KP_ENTER; case 78:return SDL_SCANCODE_KP_MINUS; case 81:return SDL_SCANCODE_KP_EQUALS; case 82:return SDL_SCANCODE_KP_0; case 83:return SDL_SCANCODE_KP_1; case 84:return SDL_SCANCODE_KP_2; case 85:return SDL_SCANCODE_KP_3; case 86:return SDL_SCANCODE_KP_4; case 87:return SDL_SCANCODE_KP_5; case 88:return SDL_SCANCODE_KP_6; case 89:return SDL_SCANCODE_KP_7; case 91:return SDL_SCANCODE_KP_8; case 92:return SDL_SCANCODE_KP_9;
-    default:return SDL_SCANCODE_UNKNOWN;
-  }
-}
 - (void)handleKeyboardEvent:(NSEvent *)event {
   if(self.keyboardCaptureKind<0 || event.type!=NSEventTypeKeyDown || event.isARepeat) return;
-  if(event.keyCode==53) { [self cancel:nil]; return; }
-  int sc=(int)[self scancodeForPhysicalKeyCode:event.keyCode];
+  // Escape cancels before the local monitor can consume it as a binding.
+  if (event.keyCode == kVK_Escape) { [self cancel:nil]; return; }
+  int sc = KPMacPhysicalScancode(event.keyCode, KBGetLayoutType(LMGetKbdType()) == kKeyboardISO);
   if(sc<=SDL_SCANCODE_UNKNOWN) return;
   if(self.keyboardCaptureKind==0) PADSetKeyButtonBinding(0,{sc,KPButtons[self.keyboardCaptureIndex]});
   else PADSetKeyAxisBinding(0,{sc,(PADAxis)(PAD_AXIS_LEFT_X_POS+self.keyboardCaptureIndex),0});
@@ -396,7 +407,7 @@ static NSString *KPProfileKey(SDL_Gamepad *pad) {
   PADSetAltButtonMapping(port,{PAD_NATIVE_BUTTON_INVALID,KPButtons[sender.tag]});
   self.capture=sender.tag; self.captureAlternate=NO; [self bind:PAD_NATIVE_BUTTON_INVALID];
 }
-- (void)cancel:(id)sender { (void)sender; self.capture=-1; self.keyboardCaptureKind=-1; self.keyboardCaptureIndex=-1; [self refreshKeyboardLabels]; self.status.stringValue=@"Remapping cancelled."; }
+- (void)cancel:(id)sender { (void)sender; [self cancelCapture]; self.status.stringValue=@"Remapping cancelled."; }
 - (void)reset:(id)sender {
   (void)sender; int port=[self port]; if(port<0)return;
   PADRestoreDefaultMapping(port);
