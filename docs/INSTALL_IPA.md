@@ -1,15 +1,17 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.13-ios.1` (0.4.13, build 29) is an unsigned ARM64 IPA for iPhone and iPad. It is a free
-community preview, not an App Store or TestFlight build, and it will not
-install until it is re-signed with your own Apple identity or compatible
-personal sideloading tool. Physical acceptance of this exact build remains open;
-see the [release notes](releases/v0.4.13-ios.1.md).
+KartPad `v0.4.14-ios.1` (0.4.14, build 33) is the current official unsigned
+ARM64 IPA for iPhone and iPad. It is a free community release, not an App Store
+or TestFlight build. Re-sign it with your existing Apple identity or compatible
+personal sideloading tool before installing. The owner accepted the build-32
+candidate on iPad; build 33 publishes the same app changes with release metadata.
+See the [release notes](releases/v0.4.14-ios.1.md).
 
 The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
-These package requirements do not establish compatibility or performance on
-every older chip. A10X startup compatibility is currently unverified; see
-[issue #135](https://github.com/chrissotraidis/kartpad/issues/135).
+The generic ARM64 startup correction is retained. The A10X reporter confirmed
+startup and Original/Retro loading in build 29, but reported lower performance;
+see [issue #135](https://github.com/chrissotraidis/kartpad/issues/135).
+These results do not establish performance on every device.
 
 **Update before online play:** 0.4.11/build 26 fixes the incorrect console-serial
 value reported in [issue #94](https://github.com/chrissotraidis/kartpad/issues/94).
@@ -17,17 +19,22 @@ Older IPAs should remain offline. This does not erase incorrect serial history
 already held by a server or clear bans; affected accounts may need service-admin
 help. Never reset identities or delete saves as a workaround.
 
-1. Download `KartPad-v0.4.13-ios.1-unsigned.ipa` and `SHA256SUMS` from the
-   [iPhone/iPad preview release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1).
+1. Download `KartPad-v0.4.14-ios.1-unsigned.ipa` and `SHA256SUMS` from the
+   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-ios.1).
 2. Verify the IPA with `shasum -a 256 -c SHA256SUMS` on a Mac.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary
    unsigned IPA files.
-4. On first launch, choose your own legally obtained supported PAL `RMCP01`
-   revision 0 WBFS/ISO through the native importer.
+4. On first launch, choose **Import Game** on the Mario Kart Wii card and select
+   your own legally obtained PAL (Europe) `RMCP01` revision 0 ISO/WBFS. An extracted
+   DATA folder also works; convert RVZ before importing.
 5. Choose **Mario Kart Wii** for the original game or **Retro Rewind** for the
    optional expanded game. KartPad can download, verify, and install the
    official version-locked Retro Rewind 6.12.7 full pack.
+
+Choose **Help** on the game chooser for the two-step setup instructions and
+GitHub guides. The normal landscape iPhone chooser fits without scrolling;
+large accessibility text can scroll to remain readable.
 
 ## Player identity
 
