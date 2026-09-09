@@ -153,10 +153,17 @@ raw. Remove usernames, private paths, IP/MAC addresses, console/account IDs,
 friend codes, tokens, and other personal data from excerpts. Do not clear logs
 or app storage before collecting them. No USB debugging or root is needed.
 
-**iPhone/iPad:** **••• → Report a Problem… → Share Report…** creates the bounded
-technical report. Review it and attach it to the existing issue with a
-screenshot if relevant. **Report on GitHub** prefills the form but does not
-attach the report file; its report ID alone is not a log upload.
+**iPhone/iPad:** After reproducing the problem, open **••• → Report a
+Problem…** and describe what happened. If the app crashed, reopen it first.
+
+1. Choose **Share Report…** to save or share the diagnostic `.log` file. It
+   includes device/settings details and current/previous session logs.
+2. Review the file before attaching it to an existing issue or a new GitHub
+   report. Add a screenshot for a visual issue.
+3. **Report on GitHub** creates the file and prefills a new issue, but does
+   **not** upload the log. Attach it from **Files → On My iPhone/iPad →
+   KartPad → Diagnostics → Latest-SunPad-Diagnostic.log**. The report ID
+   alone is not a log upload.
 
 **Mac:** **Help → Save Diagnostics Report…** creates a bounded report with
 settings and current/previous session tails. Review it before attaching.
