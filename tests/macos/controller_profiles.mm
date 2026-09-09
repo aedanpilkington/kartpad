@@ -66,6 +66,13 @@ int main(){@autoreleasepool {
  assert(PADSetKeyAxisBinding(0,{SDL_SCANCODE_G,(PADAxis)PAD_AXIS_LEFT_X_POS,0}));
  assert(testKeyAxes[0].scancode==SDL_SCANCODE_G);
  PADClearKeyBindings(0); assert(testKeys[0].scancode==PAD_KEY_INVALID);
+ assert([second scancodeForPhysicalKeyCode:12]==SDL_SCANCODE_Q); // physical key, independent of layout character
+ assert([second scancodeForPhysicalKeyCode:76]==SDL_SCANCODE_KP_ENTER);
+ assert([second scancodeForPhysicalKeyCode:122]==SDL_SCANCODE_F1);
+ second.keyboardCaptureKind=0; second.keyboardCaptureIndex=0; [second cancel:nil];
+ assert(second.keyboardCaptureKind==-1 && second.keyboardCaptureIndex==-1);
+ second.keyboardCaptureKind=1; second.keyboardCaptureIndex=2; [second windowWillClose:nil];
+ assert(second.keyboardCaptureKind==-1 && second.keyboardCaptureIndex==-1);
  second.selectedID=id;second.capture=0;
  [second bind:1];assert(second.capture==-1 && testButtons[0].nativeButton==1); // shared binding allowed
  second.capture=0;
