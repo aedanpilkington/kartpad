@@ -66,3 +66,10 @@ passing result applies to the unsigned source app before signing. The full
 app retains KartPad's actual control adaptations, unlike the temporary menu
 fixture. No controller-mapping behavior or renderer algorithm is changed by
 this follow-up.
+
+The candidate was installed in place and launched without a debugger. Device
+inventory confirms 0.4.13 / build 30. All 32 protected files (19,871,307 bytes)
+are byte-identical between fresh pre-install and post-install snapshots,
+including the owner's current preferences. The older baseline differs only in
+preferences following the owner's settings changes; nothing was restored.
+The new full-game menu appearance awaits the owner's in-game check.
