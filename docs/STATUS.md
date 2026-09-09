@@ -10,7 +10,7 @@ next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 | --- | --- | --- |
 | Android | [0.4.10-android.1, code 21](releases/v0.4.10-android.1.md) | Promotes the Pixel 9 Pro XL / Razer Kishi runtime with the console-serial correction; broader hardware and sustained performance remain open |
 | Android testing | [0.4.13 preview 1, code 28](releases/v0.4.13-android-preview.1.md) | Rating companion transfer and diagnostics; #105 confirms offline ratings/information transfer. Broad physical performance, Mii migration and server-sync acceptance remain open |
-| iPhone / iPad preview | [0.4.13, build 29](releases/v0.4.13-ios.1.md) | Generic ARM64 baseline, chooser artwork and diagnostics; exact-build physical acceptance and reported older-device crash confirmation pending |
+| iPhone / iPad | [0.4.14, build 33](releases/v0.4.14-ios.1.md) | Current official release: clearer chooser/help, reporting instructions, touch-settings cleanup and Metal view ownership. Build-32 candidate accepted by owner on M2 iPad; build 33 updates release metadata. Wider device/external-display acceptance remains open |
 | Apple Silicon Mac | [0.4.11, build 26](releases/v0.4.11-macos.1.md) | Published native identity-fix rebuild; title-screen/normal-close smoke preserved installed state |
 | Apple TV experimental | [0.4.11, build 9](releases/v0.4.11-tvos.1.md) | Published identity-fix and compiler-hardened package; exact-build hardware acceptance remains open |
 
@@ -28,10 +28,13 @@ checksums and bounded emulator result are in the
   touch hiding, and reported Retro WFC login, worldwide matchmaking and live
   racing. These apply to the tested runtime, not every later preview. Graphics
   corruption, online-menu stalls, cup crashes and warm slowdown remain open.
-- **iPhone/iPad:** earlier builds reached physical races, imported owned game
-  data and preserved saves. iPad build 25's Retro launch/menu/layout checks
-  remain [historical acceptance](iterations/ipad-identity-build25.md), not
-  proof for build 29 or complete production-online races.
+- **iPhone/iPad:** the owner accepted build 32 on the M2 iPad after controller
+  gameplay, reporting/menu and chooser checks. Build 33 publishes those app
+  changes with updated version metadata. All 32 protected save/settings files
+  were preserved across the build-32 update. The A10X reporter confirms build-29
+  startup and Original/Retro loading; their lower FPS remains a separate issue.
+  Touch gameplay, custom remapping, external displays and complete production
+  online behavior are not newly accepted by these results.
 - **Mac:** the original correctness and offline test program includes all 32
   retail tracks, race/save cycles, two-player results and representative audio
   continuity. New two-player rendering reports and controller changes need

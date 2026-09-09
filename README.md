@@ -16,7 +16,7 @@ chooser, game-data management, packaging, and release workflows.
   <img alt="Android ARM64 with Vulkan" src="https://img.shields.io/badge/Android-ARM64%20%2F%20Vulkan-3DDC84?logo=android">
   <img alt="Ahead-of-time static recompilation" src="https://img.shields.io/badge/PowerPC-static%20recompilation-FF9F0A">
   <img alt="macOS development target" src="https://img.shields.io/badge/macOS%20target-14%2B-0A84FF">
-  <img alt="iPhone and iPad preview" src="https://img.shields.io/badge/iPhone%20%2F%20iPad-preview-FF9F0A">
+  <img alt="iPhone and iPad 0.4.14" src="https://img.shields.io/badge/iPhone%20%2F%20iPad-0.4.14-0A84FF">
   <img alt="Retro Rewind supported" src="https://img.shields.io/badge/Retro%20Rewind-6.12.7-FF375F">
   <img alt="Game data not included" src="https://img.shields.io/badge/game%20data-not%20included-FF453A">
 </p>
@@ -45,7 +45,7 @@ chooser, game-data management, packaging, and release workflows.
 | Platform | Download | Setup |
 | --- | --- | --- |
 | Android ARM64 | [0.4.10-android.1 · code 21](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad preview | [0.4.13 · build 29](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
+| iPhone / iPad | [0.4.14 · build 33](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
 | Apple Silicon Mac | [0.4.11 · build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
@@ -54,10 +54,12 @@ with Retro rating transfer and expanded diagnostics. Offline rating transfer is
 reporter-confirmed; broader device acceptance remains open. It is not a verified
 graphics, slowdown or online-stall fix.
 
-The iPhone/iPad preview adds a generic ARM64 CPU baseline, KartPad chooser
-artwork and richer problem reports. Older-device startup confirmation and
-physical acceptance of build 29 remain open. See its
-[release notes](docs/releases/v0.4.13-ios.1.md).
+**0.4.14 is the current official iPhone/iPad build.** It adds a clearer game
+chooser with setup help, an iPhone layout that fits on one screen, clearer
+problem-report attachment instructions, and Apple Metal view recovery fixes.
+The owner accepted the build-32 candidate on iPad; build 33 publishes those
+changes with updated release metadata. See the
+[release notes](docs/releases/v0.4.14-ios.1.md).
 
 Download the checksums and accompanying notices with each package. **Update in
 place using the same signing identity; do not uninstall or clear app data.**
@@ -81,8 +83,8 @@ Private Android previews use a different signer and need a backed-up migration.
 
 Android Original gameplay with a Razer Kishi was accepted on Pixel 9 Pro XL;
 Retro WFC login, worldwide matchmaking and live racing were owner-reported.
-Earlier iPhone/iPad builds have physical gameplay acceptance. These results do
-not establish every device, the latest previews, complete online results or
+The iPad release candidate has owner-accepted controller gameplay and menu
+checks. These results do not establish every device, complete online results or
 reconnect behavior. Native private-room hosting and Wiimmfi support for
 Original remain unfinished. [Online status](docs/ONLINE.md) records the limits.
 
@@ -95,7 +97,7 @@ known issues. Android's suggested starting point is **1x Native**. Sustained
 <details>
 <summary>Can I download an IPA or playable app?</summary>
 
-Yes—use the [platform downloads above](#downloads). The latest iPhone/iPad preview is **0.4.13 build 29**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
+Yes—use the [platform downloads above](#downloads). The current official iPhone/iPad build is **0.4.14 build 33**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
 
 </details>
 
@@ -158,7 +160,7 @@ Experimentally, on **macOS only**, using the direct Bluetooth pairing flow. It s
 <details>
 <summary>How much storage does KartPad use?</summary>
 
-Package size varies by platform and version; the iPhone/iPad build 29 IPA download is about **45 MB**. Extracted base-game data is roughly **2.5 GiB**, and Retro content, the original image and temporary installation files require more. Android setup recommends at least **6 GiB free**. Check the platform guide and leave room for updates; the IPA download size is not the installed-data footprint.
+Package size varies by platform and version; the iPhone/iPad IPA download is about **45 MB**. Extracted base-game data is roughly **2.5 GiB**, and Retro content, the original image and temporary installation files require more. Android setup recommends at least **6 GiB free**. Check the platform guide and leave room for updates; the IPA download size is not the installed-data footprint.
 
 </details>
 
