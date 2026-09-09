@@ -36,7 +36,31 @@ passes 153 Python tests with one skip; final version/package results follow.
 
 ## Publication evidence
 
-Exact merged source, public IPA SHA-256, size, repeat packaging and anonymous
-hosted-download verification will be recorded here by the manual release owner.
-No private device data, identifiers, screenshots or signing material are part
-of the public artifact.
+Published as the latest non-prerelease GitHub release
+[`v0.4.14-ios.1`](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-ios.1).
+The release tag points to merged main source
+`de4ea58dc6c354bfb35443de1613de08a4d03ba4` (release metadata PR #163).
+
+- IPA: `KartPad-v0.4.14-ios.1-unsigned.ipa`, **45,068,854 bytes**.
+- SHA-256: `8892b7e148a4f0604735f5b6b6a5ddf69d8349a344b1b561eb1d400ab457dcaa`.
+- Native executable: `ae83eba1fa67f9f1cad9bc5de91e822996bf2aeed82921366532da704db06f46`,
+  byte-identical to the unsigned build-32 candidate executable. There is no app
+  source difference between the accepted candidate and release source; iOS
+  version/build metadata and the generated diagnostic/release records change.
+- Architecture/families/minimum OS: ARM64, iPhone and iPad, iOS/iPadOS 16.
+- Final Python suite: 153 tests pass, one skip. Fresh pinned runtime patch
+  preparation, three changed patch hunks and the unchanged SunPad snapshot pass.
+- Full main-source iOS build and unsigned app audit pass. Two independently
+  generated IPAs are byte-identical; the complete public IPA/provenance audit
+  passes. No signing profile, signing identity or private game data is included.
+- All six hosted assets were downloaded anonymously with curl (no credentials or
+  curl configuration), compared byte-for-byte with local files, and verified
+  against SHA256SUMS. The downloaded IPA passed its full audit again with the
+  exact source commit supplied. The hosted tag and latest-release state match.
+- README, install guide, status, maintenance board and versioned notes identify
+  this release. Eighty local document links pass and all 18 README FAQ sections
+  remain. Android's owner received the scoped cross-platform handoff directly.
+
+The hardware iPad retains the accepted private 0.4.13/build-32 installation;
+this public 0.4.14/build-33 IPA requires the user's own re-signing. Public package
+verification is separate from the recorded private-device acceptance.
