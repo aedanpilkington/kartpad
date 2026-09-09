@@ -26,8 +26,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.SeekBar
@@ -1674,29 +1672,6 @@ class KartPadActivity : SDLActivity() {
             setPadding(dp(18), dp(4), dp(18), dp(4))
         }
         val opacityLabel = settingsLabel("")
-        val renderLabel = settingsLabel("Render")
-        val renderScales = floatArrayOf(1f, 2f, 3f, 4f)
-        val render = RadioGroup(this).apply {
-            orientation = RadioGroup.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            contentDescription = "Render resolution"
-        }
-        val currentRenderScale = KartPadTouchSettings.resolutionScale(this)
-        renderScales.forEach { scale ->
-            render.addView(RadioButton(this).apply {
-                id = View.generateViewId()
-                text = if (scale == 1f) "1×" else "${scale.toInt()}×"
-                setTextColor(Color.WHITE)
-                tag = scale
-                isChecked = kotlin.math.abs(scale - currentRenderScale) < 0.01f
-            })
-        }
-        render.setOnCheckedChangeListener { group, checkedId ->
-            val scale = group.findViewById<RadioButton>(checkedId)?.tag as? Float
-                ?: return@setOnCheckedChangeListener
-            KartPadTouchSettings.setResolutionScale(this, scale)
-            applyDisplaySettings()
-        }
         val opacity = SeekBar(this).apply {
             max = 75
             progress = (KartPadTouchSettings.opacity(this@KartPadActivity) * 100f)
@@ -1781,8 +1756,6 @@ class KartPadActivity : SDLActivity() {
         val leftColumn = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(0, 0, dp(12), 0)
-            addView(renderLabel)
-            addView(render)
             addView(opacityLabel)
             addView(opacity)
             addView(sizeLabel)
@@ -1819,15 +1792,10 @@ class KartPadActivity : SDLActivity() {
         dialog.show()
         touchSettingsDialog = dialog
         if (debugSettingsFlow != null) {
-            render.post {
+            content.post {
                 runCatching {
-                    val render3 = (0 until render.childCount)
-                        .map { render.getChildAt(it) as RadioButton }
-                        .first { it.tag == 3f }
                     when (debugSettingsFlow) {
                         "seed" -> {
-                            render3.performClick()
-                            check(render3.isChecked) { "3x render did not become checked" }
                             fun setProgress(control: SeekBar, value: Float) {
                                 val arguments = Bundle().apply {
                                     putFloat(
@@ -1852,34 +1820,34 @@ class KartPadActivity : SDLActivity() {
                             val savedSize = KartPadTouchSettings.size(this)
                             val savedHide = KartPadTouchSettings.hideOnController(this)
                             val savedModern = KartPadTouchSettings.modernCStickHorizontal(this)
-                            check(savedRender == 3f && kotlin.math.abs(savedOpacity - 0.64f) < 0.001f &&
+                            check(savedRender == 1f && kotlin.math.abs(savedOpacity - 0.64f) < 0.001f &&
                                 kotlin.math.abs(savedSize - 1.20f) < 0.001f && !savedHide && savedModern
                             ) {
                                 "touch settings seeded render=$savedRender opacity=$savedOpacity " +
                                     "size=$savedSize hide=$savedHide modern=$savedModern"
                             }
                             check(nativeDebugDisplaySettings() ==
-                                "fps=true aspect=0 scale=3.0"
-                            ) { "3x render did not cross the source-fixture JNI bridge" }
+                                "fps=true aspect=0 scale=1.0"
+                            ) { "touch settings changed the display resolution" }
                             Log.i(
                                 TAG,
-                                "A4 touch settings flow seeded render=3x opacity=64 size=120 " +
+                                "A4 touch settings flow seeded render=1x opacity=64 size=120 " +
                                     "hide=false modern=true",
                             )
                         }
                         "verify" -> {
-                            check(render3.isChecked && opacity.progress == 39 && size.progress == 50 &&
+                            check(KartPadTouchSettings.resolutionScale(this) == 1f &&
+                                opacity.progress == 39 && size.progress == 50 &&
                                 opacityLabel.text == "Opacity: 64%" &&
                                 sizeLabel.text == "All sizes: 120%" &&
                                 !hide.isChecked && modernCStick.isChecked
                             ) { "touch settings widgets did not reload persisted values" }
                             KartPadTouchSettings.resetTouchControls(this)
-                            KartPadTouchSettings.setResolutionScale(this, 1f)
                             KartPadTouchSettings.setHideOnController(this, true)
                             KartPadTouchSettings.setModernCStickHorizontal(this, false)
                             Log.i(
                                 TAG,
-                                "A4 touch settings flow passed render=3x opacity=64 size=120 " +
+                                "A4 touch settings flow passed render=1x opacity=64 size=120 " +
                                     "hide=false modern=true",
                             )
                         }

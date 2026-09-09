@@ -70,6 +70,7 @@ extern "C" int g_gxFrameCount;
 - (void)endLayoutEditing;
 - (void)finishLayoutEditing;
 - (void)refreshMenuButton;
+- (void)buildSettingsPanel;
 - (void)resetLayout;
 - (void)toggleSettingsPanel;
 - (void)selectControlForEditing:(UIView *)control;
@@ -1499,6 +1500,19 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   [self layoutIfNeeded];
 }
 
+- (void)buildSettingsPanel {
+  [super buildSettingsPanel];
+  // Resolution belongs in Display. Remove the inherited duplicate row while
+  // retaining the pinned SunPad implementation and the user's saved scale.
+  UIView *resolution = KartPadSubviewWithAccessibilityLabel(
+      self, @"Render resolution", UISegmentedControl.class);
+  UIView *row = resolution.superview;
+  if ([row.superview isKindOfClass:UIStackView.class]) {
+    [(UIStackView *)row.superview removeArrangedSubview:row];
+    [row removeFromSuperview];
+  }
+}
+
 - (void)kartPadConfigureTouchLayoutEditor {
   UIButton *done = (UIButton *)KartPadSubviewWithAccessibilityLabel(
       self, @"Finish moving touch controls", UIButton.class);
@@ -1979,9 +1993,12 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 - (void)reportProblem {
   UIViewController *presenter = KartPadVisibleViewController(self.window);
   if (presenter == nil) return;
+  NSString *instructions =
+      @"Describe the problem. KartPad adds device details and recent logs.\n\n"
+       "Attach the log and relevant screenshots. GitHub reports are public; review before posting.";
   UIAlertController *prompt =
       [UIAlertController alertControllerWithTitle:@"Report a Problem"
-                                          message:@"Answer briefly and KartPad will add the technical details. If the problem is visual, take a screenshot first and attach it with the report on GitHub. The report never includes your game image, extracted files, saves, signing material, or controller inputs. GitHub reports and attachments are public."
+                                          message:instructions
                                    preferredStyle:UIAlertControllerStyleAlert];
   [prompt addTextFieldWithConfigurationHandler:^(UITextField *field) {
     field.placeholder = @"What went wrong?";
@@ -2061,7 +2078,26 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   }
 
   if (openGitHub) {
-    [self openGitHubReportWithID:reportID answers:answers];
+    NSString *localDevice = self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad
+        ? @"On My iPad" : @"On My iPhone";
+    NSString *steps = [NSString stringWithFormat:
+        @"Your diagnostic log is saved.\n\n"
+         "1. Review the prefilled GitHub report.\n\n"
+         "2. Attach %@ from Files → %@ → KartPad → Diagnostics.\n\n"
+         "3. Add a screenshot for visual issues.\n\n"
+         "The log is not uploaded automatically. Game files, saves, signing material and controller inputs are excluded.",
+        reportURL.lastPathComponent, localDevice];
+    UIAlertController *attachmentHelp = [UIAlertController
+        alertControllerWithTitle:@"Attach Your Diagnostic Log"
+                         message:steps preferredStyle:UIAlertControllerStyleAlert];
+    [attachmentHelp addAction:[UIAlertAction actionWithTitle:@"Cancel"
+        style:UIAlertActionStyleCancel handler:nil]];
+    __weak KartPadGameOverlay *weakSelf = self;
+    [attachmentHelp addAction:[UIAlertAction actionWithTitle:@"Open GitHub"
+        style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+      [weakSelf openGitHubReportWithID:reportID answers:answers];
+    }]];
+    [presenter presentViewController:attachmentHelp animated:YES completion:nil];
     return;
   }
 
@@ -2105,6 +2141,10 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [NSURLQueryItem queryItemWithName:@"summary" value:answers[@"problem"]],
     [NSURLQueryItem queryItemWithName:@"context" value:answers[@"context"]],
     [NSURLQueryItem queryItemWithName:@"frequency" value:answers[@"frequency"]],
+    [NSURLQueryItem queryItemWithName:@"diagnostics" value:
+        @"Attach the diagnostic .log file from Files → KartPad → Diagnostics here. "
+         "Review it before posting and add a screenshot for visual issues. "
+         "The report ID above does not upload the log."],
   ];
   NSURL *url = components.URL;
   if (url == nil) return;
