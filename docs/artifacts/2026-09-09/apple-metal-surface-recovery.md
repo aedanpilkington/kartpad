@@ -65,14 +65,16 @@ The candidate was development-signed with an existing profile that includes the
 attached iPad and installed in place over 0.4.10 / build 25. Before installation,
 the stopped app's normal NAND, Retro Rewind save directory, Mii/save backups,
 console identity, configuration and preferences were copied privately. All 32
-files (19,871,307 bytes) have identical hashes immediately after installation.
+files (19,871,307 bytes) have identical hashes immediately after installation
+and again after the candidate reached its chooser.
 The chooser launches and recognizes the existing Original and Retro Rewind
 6.12.7 installations. The signed executable SHA-256 is
 `2ea1c5e86ac43e04f4fcf362f447062d80100573eb4e47a9915111bd672ed402`.
 The iPhone was not modified. Device identifiers, signing details, backups and
 raw device logs remain outside the repository.
 
-The separate native probe also ran successfully on this physical iPad. Game
+The separate native probe also ran successfully on this physical iPad and was
+removed after its test. Game
 launch from the chooser and forced surface loss in the full game still require
 the pending on-device interaction; the probe and chooser are not gameplay
 acceptance.
