@@ -672,6 +672,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 @property(nonatomic, assign) BOOL gameDataReady;
 @property(nonatomic, strong) NSLayoutConstraint *contentWidthConstraint;
 @property(nonatomic, strong) UIStackView *choices;
+@property(nonatomic, strong) UIStackView *content;
+@property(nonatomic, strong) UIStackView *header;
+@property(nonatomic, strong) NSMutableArray<UILabel *> *cardTitles;
 @property(nonatomic, strong) NSMutableArray<UIView *> *compactDetails;
 @end
 
@@ -745,8 +748,12 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   UIButton *troubleshooting = [self link:@"Troubleshooting on GitHub" symbol:@"wrench.and.screwdriver" action:^{
     [weakSelf openGuide:@"blob/main/docs/SUPPORT.md"];
   }];
+  UILabel *version = [self label:[NSString stringWithFormat:@"KartPad %@ · Build %@",
+      [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"] ?: @"",
+      [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"] ?: @""]
+      style:UIFontTextStyleCaption1 secondary:YES];
   UIStackView *content = [[UIStackView alloc] initWithArrangedSubviews:
-      @[importTitle, importBody, retroTitle, retroBody, supportTitle, supportBody, setup, troubleshooting]];
+      @[importTitle, importBody, retroTitle, retroBody, supportTitle, supportBody, setup, troubleshooting, version]];
   content.axis = UILayoutConstraintAxisVertical;
   content.spacing = 12;
   [content setCustomSpacing:28 afterView:importBody];
@@ -802,6 +809,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   UILabel *title = [self label:retro ? @"Retro Rewind" : @"Mario Kart Wii"
       style:UIFontTextStyleTitle1 secondary:NO];
   title.accessibilityTraits |= UIAccessibilityTraitHeader;
+  [self.cardTitles addObject:title];
   NSString *detail = retro ? @"More tracks, characters and Retro WFC online play. Uses your Mario Kart Wii game data."
                            : @"Grand Prix, time trials and local races. Your original game, on this device.";
   UILabel *description = [self label:detail style:UIFontTextStyleBody secondary:YES];
@@ -812,7 +820,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   UILabel *metadata = [self label:note style:UIFontTextStyleFootnote secondary:YES];
   [self.compactDetails addObjectsFromArray:@[description, metadata]];
   NSString *actionTitle = current ? @"Resume Game" : (self.resumingGame ? @"Use on Next Launch"
-      : (ready ? @"Play Game" : (retro ? @"Set Up Retro Rewind" : @"Import Mario Kart Wii")));
+      : (ready ? @"Play Game" : (retro ? @"Set Up Game" : @"Import Game")));
   UIButtonConfiguration *configuration = [UIButtonConfiguration filledButtonConfiguration];
   configuration.title = actionTitle;
   configuration.image = [UIImage systemImageNamed:current || ready ? @"play.fill" : @"arrow.right"];
@@ -860,13 +868,14 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.compactDetails = [NSMutableArray array];
+  self.cardTitles = [NSMutableArray array];
   self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   self.view.backgroundColor = [UIColor colorWithRed:0.035 green:0.05 blue:0.08 alpha:1];
   UIImageView *mark = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"KartPadLogo"]];
   mark.contentMode = UIViewContentModeScaleAspectFit;
   mark.isAccessibilityElement = NO;
   [NSLayoutConstraint activateConstraints:@[
-    [mark.widthAnchor constraintEqualToConstant:64], [mark.heightAnchor constraintEqualToConstant:64],
+    [mark.widthAnchor constraintEqualToConstant:48], [mark.heightAnchor constraintEqualToConstant:48],
   ]];
   UILabel *brand = [self label:@"KartPad" style:UIFontTextStyleTitle1 secondary:NO];
   brand.font = [UIFontMetrics.defaultMetrics scaledFontForFont:
@@ -884,6 +893,8 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   header.axis = UILayoutConstraintAxisHorizontal;
   header.alignment = UIStackViewAlignmentCenter;
   header.spacing = 16;
+  self.header = header;
+  [self.compactDetails addObject:platform];
 
   UILabel *heading = [self label:self.resumingGame ? @"Back to the race" : @"Choose a game"
       style:UIFontTextStyleLargeTitle secondary:NO];
@@ -924,6 +935,8 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
       @[header, heading, intro, self.choices, supportTitle, supportText, links, footer]];
   content.translatesAutoresizingMaskIntoConstraints = NO;
   content.axis = UILayoutConstraintAxisVertical;
+  self.content = content;
+  [self.compactDetails addObjectsFromArray:@[supportTitle, supportText, links, footer]];
   content.spacing = 10;
   [content setCustomSpacing:30 afterView:header];
   [content setCustomSpacing:22 afterView:intro];
@@ -951,8 +964,8 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [canvas.heightAnchor constraintGreaterThanOrEqualToAnchor:scroll.frameLayoutGuide.heightAnchor],
     [content.centerXAnchor constraintEqualToAnchor:canvas.centerXAnchor],
     [content.centerYAnchor constraintEqualToAnchor:canvas.centerYAnchor],
-    [content.topAnchor constraintGreaterThanOrEqualToAnchor:canvas.topAnchor constant:24],
-    [content.bottomAnchor constraintLessThanOrEqualToAnchor:canvas.bottomAnchor constant:-24],
+    [content.topAnchor constraintGreaterThanOrEqualToAnchor:canvas.topAnchor constant:16],
+    [content.bottomAnchor constraintLessThanOrEqualToAnchor:canvas.bottomAnchor constant:-16],
     self.contentWidthConstraint, height,
   ]];
 }
@@ -963,9 +976,13 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   const CGFloat available = CGRectGetWidth(self.view.bounds) - insets.left - insets.right - 48;
   self.contentWidthConstraint.constant = MIN(920, MAX(0, available));
   BOOL accessibilityText = UIContentSizeCategoryIsAccessibilityCategory(self.traitCollection.preferredContentSizeCategory);
-  self.choices.axis = available < 660 || accessibilityText
-      ? UILayoutConstraintAxisVertical : UILayoutConstraintAxisHorizontal;
   BOOL compact = CGRectGetHeight(self.view.bounds) - insets.top - insets.bottom < 500 && !accessibilityText;
+  self.choices.axis = (!compact && available < 660) || accessibilityText
+      ? UILayoutConstraintAxisVertical : UILayoutConstraintAxisHorizontal;
+  [self.content setCustomSpacing:compact ? 12 : 30 afterView:self.header];
+  for (UILabel *title in self.cardTitles) {
+    title.font = [UIFont preferredFontForTextStyle:compact ? UIFontTextStyleTitle2 : UIFontTextStyleTitle1];
+  }
   for (UIView *detail in self.compactDetails) detail.hidden = compact;
 }
 
