@@ -61,8 +61,11 @@ presentation feedback. No community reply was sent as part of this work.
   32 protected files (19,871,359 bytes) were byte-identical between fresh pre-
   and post-install snapshots, including preferences. No restore was performed.
 - Private full build 32 contains the compact-phone correction and passes strict
-  signing verification. It is staged locally; the hardware iPad remains on build
-  31. Neither candidate is a published IPA. Build numbers are overridden only in
+  signing verification. At the owner's request it was subsequently installed
+  in place on the hardware iPad and launched without a debugger. Device inventory
+  confirms build 32. All 32 protected files (19,871,308 bytes) are byte-identical
+  between fresh build-32 pre/post-install snapshots. Neither candidate is a
+  published IPA. Build numbers are overridden only in
   the private staged bundles; public release metadata is unchanged.
 
 ## Review evidence and remaining scope
