@@ -112,3 +112,18 @@ Owner and Retro acceptance remain open.
 correction is distributed on every platform, and the upstream reporter confirmed
 server-history cleanup on 8 September. Persistent login failures or an unavailable
 original IP need service-admin help, not identity resets.
+
+## macOS screen tearing and V-Sync control report
+
+On 10 September, Christopher relayed a report of screen tearing and no V-Sync
+option in the macOS build. This is not yet reproduced; the affected version,
+display/refresh rate and window mode are unspecified. The absence of an exposed
+option does not establish that presentation synchronization is disabled.
+
+Queued investigation: inspect the current presentation mode and settings UI,
+then reproduce the reported scene and distinguish tearing from uneven frame
+pacing before deciding whether a correction or user-facing control is needed.
+This is separate from PR #157's split-screen interpolation defect. Android,
+iPhone/iPad and tvOS applicability has not been evaluated. No fix or build is
+claimed. No matching issue title/body was found in the GitHub issue search at
+recording time; this entry preserves the owner-relayed report.
