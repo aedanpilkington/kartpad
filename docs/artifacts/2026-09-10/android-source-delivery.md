@@ -30,9 +30,12 @@ names. `SOURCE-MANIFEST.json` identifies every delivered file by SHA-256.
   emitters and tracked injections, with fresh output equivalence verified.
 
 No disc image, extracted retail assets, translated game functions, locally generated
-game-data blobs, mod payload, saves, device logs or private signing identity is
+game-data blobs, privately supplied mod payload, saves, device logs or private signing identity is
 included. Public upstream source archives retain their upstream test fixtures
 and license material; they are not copied from an owner's game or device.
+The exact public `rr-pulsar` snapshot retains its tracked
+`PulsarPackCreator/Resources/Code.pul` resource. No owner's downloaded Retro
+pack or separately supplied WFC payload is copied into this archive.
 
 ## Restore source identities
 
