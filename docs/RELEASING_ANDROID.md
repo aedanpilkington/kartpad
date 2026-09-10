@@ -42,7 +42,8 @@ Normal users should follow [installation](INSTALL_ANDROID.md) or
      /absolute/path/to/the/audited-release.apk \
      android/app/build/outputs/bundle/release/app-release.aab \
      /absolute/path/to/the/exact/arm64-v8a/cmake-build \
-     --certificate-sha256 c1dbe0a0d72d830a5779476b346a750d0a37515adef992cad2f3863058f7f2f2
+     --certificate-sha256 c1dbe0a0d72d830a5779476b346a750d0a37515adef992cad2f3863058f7f2f2 \
+     --source-archive /absolute/path/to/KartPad-2026-09-10-source.tar.gz
    ```
 
    The native-build directory is the Gradle CMake build containing `_deps` for
@@ -55,7 +56,7 @@ Normal users should follow [installation](INSTALL_ANDROID.md) or
    Record its exact tracked-file coverage and identify omitted generated and
    dependency sources against the actual compiled inputs. See the
    [candidate 63 source assessment](artifacts/2026-09-10/android-release63-source-assessment.md).
-7. Publish only the APK, companion notices ZIP and `SHA256SUMS` at the exact
+7. Publish the APK, companion notices ZIP, reviewed source archive and `SHA256SUMS` at the exact
    audited source tag, with its matching versioned file under `docs/releases/` as release notes.
    Publish unaccepted testing builds as prereleases with `--latest=false`. This Android-only release must not replace the Apple downloads.
    No Google Play, store submission, private game data, translated source or
