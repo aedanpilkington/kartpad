@@ -21,6 +21,11 @@ Those documents must link to the board for current ownership/build/test state.
 - Keep one primary investigation through its next distinguishing result. Use a
   roughly 60–90 minute bounded assignment; retain a safe checkpoint/process handle
   for longer work. This is a planning limit, not a scheduler-enforced timeout.
+- Pilot capacity: at most two new engineering blocks per Japan calendar day,
+  normally 60–90 minutes each. Record the date and dispatched work references in
+  the local checkpoint before dispatch; intake and collecting finished results
+  continue after that allocation. This is coordinator policy, not a hard helper
+  timeout. A build already running keeps its owner and process handle.
 - Test already published relevant changes before producing a replacement.
   A new candidate needs reviewed source or a justified diagnostic, an exact
   configuration and an identified tester or executable fixture.

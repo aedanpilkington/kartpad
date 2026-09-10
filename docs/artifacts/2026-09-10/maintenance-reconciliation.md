@@ -52,6 +52,8 @@ rejection, required evidence/absolute shared path, and safe token arguments.
 Independent validation caught URL-safe random tokens beginning with a dash;
 claim/recover now prefix them and a deterministic regression covers both paths.
 
+The [PR185 CI run](https://github.com/chrissotraidis/kartpad/actions/runs/34444011448)
+passed the same 11 tests on Ubuntu/Python3.12 at source `9c61f35`.
 A small GitHub PR workflow runs only these portable coordinator tests. It is not
 native build, storage-fixture, physical-device, gameplay or cross-platform acceptance.
 Markdown links and diff whitespace are checked before integration. The earlier
