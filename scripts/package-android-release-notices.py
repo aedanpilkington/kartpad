@@ -11,15 +11,15 @@ import re
 import subprocess
 import zipfile
 
-TAG = "v0.4.13-android-preview.1"
-VERSION = "0.4.13-android-preview.1"
-CODE = 28
+TAG = "v0.4.14-android-preview.1"
+VERSION = "0.4.14-android-preview.1"
+CODE = 63
 # Exact candidate; changing notes must not relabel its compiled source as HEAD.
-APPROVED_SOURCE = "cecd69c504f66aa0d8a40f485406618b9b616791"
-APPROVED_APK = "e70ff84fb64ce52294ac13608530bdbed3e22395e5fab7a8ef85799c22de0607"
-APPROVED_AAB = "bb1143228a476c89be78eb55187ac855dae133c435b0ff24f58543e5f1f36855"
+APPROVED_SOURCE = "6a2dffc30f8f0d55a7eb928c614c88e054240d14"
+APPROVED_APK = "4e27897b9bb89e7b24fbe0b2e3dc66fae4efd549edaadf2f748ca22f376d87ff"
+APPROVED_AAB = "7d49f7dd7706b1b1f89fbaa4933f7ae4ac4a79c42ab96c567023b5646238f273"
 APPROVED_NATIVE = {
-    "lib/arm64-v8a/libmain.so": "be6833ba835fe5bbd0a93664bcaef50e7387a41b4834b26a8603a132eeca6029",
+    "lib/arm64-v8a/libmain.so": "1502c10b591809d3117b1e057d2273b53ec81fe76bf87d06d31dd1114286cf42",
     "lib/arm64-v8a/libkartpad_discio.so": "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b",
     "lib/arm64-v8a/libSDL3.so": "d7a17c375adcb71818210581b885f59832d5f95b663aa7a7d493484a00a94753",
     "lib/arm64-v8a/libc++_shared.so": "c4c2fe5cbcb1fba0003a31fc7ab29a9bb12df6cc187ec45a806462540e83d93b",
@@ -115,7 +115,7 @@ def main() -> None:
     # A later release tag may include notes and this packager, not changed app code.
     changed = subprocess.check_output(["git", "diff", "--name-only", APPROVED_SOURCE, commit],
                                       cwd=REPO, text=True).splitlines()
-    if any(not name.startswith("docs/") and name != "scripts/package-android-release-notices.py"
+    if any(not name.startswith("docs/") and name not in ("README.md", "scripts/package-android-release-notices.py")
            for name in changed):
         parser.error("packaging source differs from candidate beyond documentation/packager")
     provenance = {
@@ -129,7 +129,7 @@ def main() -> None:
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
         "physicalAcceptance": "Pending for this exact APK; earlier owner runs do not establish acceptance",
-        "emulatorAcceptance": "API 36 ARM64: actual public-signer fresh install/chooser, default validation off, incomplete-data guard, disc-picker cancellation, seeded Original intro rendering >=1201 frames; same-AAB alternate-signer diagnostics export. No positive full-disc import, sustained performance, Retro real-save or online-race acceptance claimed",
+        "emulatorAcceptance": "API 36 ARM64 software GPU, audio disabled: premerge release candidate with identical game payload passed public28 update preserving19 fixture files; Original and Retro race startup, acceleration/steering and Home return; Original report return and live resize; Retro fixture license reloaded after restart. Final merged-source APK update preserved25 fixture files. No completed race/cup, full import, audio, online, physical performance or affected-Adreno acceptance claimed",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
     data["PROVENANCE.json"] = (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()

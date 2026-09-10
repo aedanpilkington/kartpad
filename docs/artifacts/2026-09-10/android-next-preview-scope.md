@@ -48,6 +48,13 @@ Delfino Square and is rejected as a controlled input-duration comparison.
 
 ## Current validation and remaining release gates
 
+Superseded checkpoint: the source below was subsequently reviewed and merged as
+`6a2dffc30f8f0d55a7eb928c614c88e054240d14`. The non-debug APK is built and audited.
+See [the release verification record](android-release63-verification.md) and
+[candidate release notes](../../releases/v0.4.14-android-preview.1.md) for actual
+runtime results, final artifact identity and remaining acceptance gates. The
+older next-step paragraphs below describe the prebuild checkpoint only.
+
 Fresh Android preparation from this integrated source passed. Actual prepared
 resize bounds, sealed debug-marker ownership and captured depth mapping passed
 ASan/UBSan harnesses; VI/aspect callback reentrancy and unchanged viewport-policy
