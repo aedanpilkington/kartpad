@@ -5,6 +5,29 @@ current release priority. An entry here is not a shipping promise and should
 not be presented as supported until its implementation and acceptance gates
 pass.
 
+## Android D-pad and shoulder remapping
+
+**Status:** Requested in [#184](https://github.com/chrissotraidis/kartpad/issues/184),
+10September2026; source scope reviewed, not implemented or released.
+The AYN Thor Max/Odin Controller user wants a physical right bumper to produce
+game D-pad Up for tricks/wheelies. Existing Android settings remap only game
+A/B/X/Y/Z to physical A/B/X/Y/left shoulder; D-pad and right shoulder remain direct.
+No logs are needed to establish the missing setting.
+
+Start with explicit digital mappings for game D-pad directions and physical
+shoulders, preserving the existing menu/settings style and current defaults.
+Keep source-button and game-action names distinct. Migrate saved mappings without
+changing established controls. Decide conflicts explicitly so a remapped bumper
+does not silently fire both its old action and D-pad Up. Keep analog-trigger
+expansion separately scoped until its threshold/release behavior is tested.
+
+Acceptance: press/release and held input, diagonals, simultaneous buttons,
+conflicts, reset, persistence across restart, disconnect/reconnect and touch
+handoff. Validate trick/wheelie and menus in Original and Retro on the named
+controller; unaffected default mappings must continue working. Android delivery
+does not establish iOS/macOS/tvOS parity. This can be a bounded source task while
+high-priority stability work awaits hardware, not a promise of the next release.
+
 ## RetroAchievements
 
 **Status:** Researched; deferred.

@@ -48,8 +48,8 @@ by this publication pass.
 ## Source and reconstruction
 
 - Android application: `6a2dffc30f8f0d55a7eb928c614c88e054240d14`.
-- Android tag/notices packaging: `7811b038` (reviewed and merged in PR182).
-- Apple application/tag: `d3d300bb0364298b264378b13ba5561b42ca783d` (PR180–181).
+- Android tag/notices packaging: `7811b038` (reviewed and merged in PR #182).
+- Apple application/tag: `d3d300bb0364298b264378b13ba5561b42ca783d` (PR #180–181).
 - Shared source archive metadata: `47e21b2`; source descriptions and packaging
   identity are distinct from the compiled application commits.
 
@@ -94,9 +94,12 @@ Metal helper regression, and 12 actual-source UIKit report checks at standard
 and largest accessibility text sizes. No new full-game physical Apple acceptance,
 macOS game launch, external-display fix, tearing fix or Apple FPS gain is claimed.
 The new report gate is iPhone/iPad and Android; macOS/tvOS reporting parity and
-PR112's controller/keyboard work remain separate.
+PR #112's controller/keyboard work remain separate.
 
-The README and installation guides point to these verified releases. The hourly
-Android loop was updated to start from the published baseline and unresolved
-issues, with source delivery and owner acceptance marked complete. X text is a
+The README and installation guides point to these verified releases. Source
+delivery and owner Android acceptance are complete. The two local schedules were
+later deleted at the owner's request; subsequent coordination uses the
+[current runbook](../../MAINTENANCE-AUTOMATION.md) and
+[active board](../../MAINTENANCE-BOARD.md), not historical release checkpoints.
+X text is a
 [draft](../../releases/2026-09-10-x-draft.md); no X post was sent.

@@ -1,9 +1,14 @@
 # Android release candidate 63 verification
 
-Status: reviewed and merged, publicly signed candidate packaged locally. Not
-published. Physical phone remains on the owner's private local62; no phone input,
-restart or install was performed during this release integration. A safe handover
-request is pending. The support coordinator owns distribution and public replies.
+Final disposition: **published** as Android 0.4.14 preview 1/code 63 on 10September2026,
+with owner hardware acceptance and anonymous download verification recorded in
+[the final platform ledger](platform-release-verification.md). This supersedes
+the earlier unpublished/local 62/handover-pending checkpoint. Current assignments
+and issue-specific tests live in the [maintenance board](../../MAINTENANCE-BOARD.md).
+
+The sections below retain the staged candidate and later acceptance evidence.
+Intermediate package/notices identities are historical where the final ledger
+supersedes them; they are not instructions to repeat completed release work.
 
 ## Exact artifacts
 
@@ -82,7 +87,7 @@ movie. A bounded adjacent-press test reached title, retained license and main.
 Earlier stale screenshots do not establish lost native input or a controller
 fix. A report-screen scroll accidentally invoked the Android Home gesture;
 process/crash checks and successful return distinguish it from an app crash.
-The previous local62 title trial overlapped owner gameplay and remains rejected.
+The previous local 62 title trial overlapped owner gameplay and remains rejected.
 
 The historical hashing improvement is not a new public gain. Passing Pixel
 vertex probes do not resolve affected Adreno geometry. Save preservation is not
