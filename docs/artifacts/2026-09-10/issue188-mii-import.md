@@ -61,3 +61,12 @@ the name and appearance in the game's Mii picker. Existing Miis/licenses/progres
 must remain intact. The synthetic reproduction establishes the false rejection;
 the private export may still expose a separate validation or rendering problem.
 Keep #188 open until that result is known. No private Mii upload is needed.
+
+## Independent review and source integration, 11 September Japan time
+
+PR190 exact `cb4d765` cleared independent Medium source review and merged as
+`d145819`. Reviewer confirmed pinned RFL padding semantics and independently
+passed three RelWithDebInfo CTests, ASan/UBSan strict-warning Mii tests and the
+Android host JNI/identity/save/rating suites. No reporter export or device was
+tested. Shared importer source is corrected; per-platform packaging and
+AYN Thor UI/appearance/restart acceptance remain. Keep issue188 open.
