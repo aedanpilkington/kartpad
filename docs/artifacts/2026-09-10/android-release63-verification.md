@@ -25,6 +25,11 @@ request is pending. The support coordinator owns distribution and public replies
   `cc0eca11878a57c1e2664f0c778492383894a09aee06fd97c3dbc21ebe2cc80e`.
   Final APK ZIP payload differs only in `assets/kartpad-build.json`; all native
   libraries, DEX, resources and game payload are identical.
+- Final APK repeated derivation is byte-identical. The companion ZIP contains
+  28 allowlisted notices/provenance entries; SHA-256
+  `da5d5ce9eb8095f654645146ff408fade531d4c174c9df7cdf9ef789fac315c0`.
+  Both distribution files verify against `SHA256SUMS`. Packaging documentation
+  source is `37ce92d`; exact native/source/APK/AAB allowlists remain enforced.
 
 The native configuration is RelWithDebInfo with `-O2 -DNDEBUG`. Disassembly of
 the linked overlap policy is `mov w0, #1; ret`; its debug-property string is
@@ -87,8 +92,8 @@ numbers and the remaining 2.580–2.732-second menu transitions.
 
 ## Release gates and handoff
 
-Retain this APK as the next official preview candidate. Finish companion
-notices/checksums and review the documentation revision separately from compiled
+Retain this APK as the next official preview candidate. Companion notices and
+checksums are complete; review the documentation revision separately from compiled
 source. The exact release configuration still needs physical controls/audio,
 representative gameplay and restart/save acceptance after safe owner handover.
 The phone uses a private signing identity: derive a matching-signer test variant
@@ -100,6 +105,14 @@ generated/dependency Corresponding Source. Preserve the existing documented
 source-distribution obligations and resolve any missing required source before
 distribution. Public upload and the X announcement remain separate owner
 decisions after the concrete artifacts and test limits are presented.
+
+A local repository-source archive contains the 1,117 tracked files at merged
+application source, including existing documentation images. Its SHA-256 is
+`2e9c689f0b4b7aad4130c2a6f268f112d7e2bc5af663ec6224201da211db00c5`.
+Path audit excludes private/build/bootstrap paths, links, traversal and game,
+package or signing-file extensions. This is not a full content/completeness audit;
+the archive is kept outside the APK/notices distribution directory pending that
+assessment. It omits ignored generated translation and dependency checkouts.
 
 Raw captures, logs, game fixtures, private AAB and signing material remain in
 ignored local `build/release-candidate` and `build/release-final` directories.
