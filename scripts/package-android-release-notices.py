@@ -19,6 +19,7 @@ CODE = 63
 APPROVED_SOURCE = "6a2dffc30f8f0d55a7eb928c614c88e054240d14"
 APPROVED_APK = "4e27897b9bb89e7b24fbe0b2e3dc66fae4efd549edaadf2f748ca22f376d87ff"
 APPROVED_AAB = "7d49f7dd7706b1b1f89fbaa4933f7ae4ac4a79c42ab96c567023b5646238f273"
+APPROVED_SOURCE_ARCHIVE = "555b840673d06d8db0aae3e02faebc854cc7e9a37286567963bbfa1587613a9d"
 APPROVED_NATIVE = {
     "lib/arm64-v8a/libmain.so": "1502c10b591809d3117b1e057d2273b53ec81fe76bf87d06d31dd1114286cf42",
     "lib/arm64-v8a/libkartpad_discio.so": "0e5bd27501b1aee71db63364f0673682e0cca3c0234d560d4c54ac87e01c0d0b",
@@ -49,6 +50,8 @@ def main() -> None:
         parser.error("unexpected APK filename")
     if sha(args.apk.read_bytes()) != APPROVED_APK or sha(args.aab.read_bytes()) != APPROVED_AAB:
         parser.error("APK/AAB do not match the independently audited candidate")
+    if sha(args.source_archive.read_bytes()) != APPROVED_SOURCE_ARCHIVE:
+        parser.error("source archive does not match the independently reviewed delivery")
     with tarfile.open(args.source_archive, "r:gz") as source:
         members = source.getmembers()
         names = [member.name for member in members]
