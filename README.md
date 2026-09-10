@@ -54,6 +54,15 @@ with Retro rating transfer and expanded diagnostics. Offline rating transfer is
 reporter-confirmed; broader device acceptance remains open. It is not a verified
 graphics, slowdown or online-stall fix.
 
+**Next Android release candidate: 0.4.14 preview 1.** It combines a refreshed
+game chooser, reviewed-log problem reports, Retro pack-update save protection,
+and a measured rendering improvement. In local Pixel 9 Pro XL tests at 2x/Fill,
+the warm Grand Prix menu ran at about **58 FPS versus 40–50 FPS** with the change
+disabled; race gains were smaller. These are controlled local rendering-mode
+tests, not an across-device or final public-APK speedup claim. Final physical
+acceptance is pending; the download links above remain the published builds.
+See the [candidate release notes and test limits](docs/releases/v0.4.14-android-preview.1.md).
+
 **0.4.14 is the current official iPhone/iPad build.** It adds a clearer game
 chooser with setup help, an iPhone layout that fits on one screen, clearer
 problem-report attachment instructions, and Apple Metal view recovery fixes.

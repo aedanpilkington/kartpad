@@ -11,6 +11,12 @@ Follow the [preview test steps](releases/v0.4.13-android-preview.1.md); physical
 real-save and performance acceptance remain pending. It is not a verified
 fix for graphics corruption, slowdown, online stalls or cup crashes.
 
+**0.4.14 preview 1 is a release candidate, not yet a public download.** It adds
+the refreshed chooser, explicit reviewed-log reporting, Retro pack replacement
+save protection and native frame overlap. See its
+[changes, measurements and remaining acceptance checks](releases/v0.4.14-android-preview.1.md).
+Keep using the published links above until the candidate is released.
+
 ## Download and first launch
 
 1. Open the [first Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1).
@@ -105,6 +111,12 @@ Runtime, renderer-phase and bounded battery/thermal diagnostics are retained
 locally; the app does not upload those reports automatically. Shell profiling
 is enabled in the first release; the later testing builds disable shell profiling.
 Public game packages are non-debuggable.
+
+In the **0.4.14 candidate**, Report a Problem asks you to select a readable text
+log and confirm that you reviewed it, or explain why logs cannot be included.
+Exporting diagnostics does not select or approve an attachment. If you open
+GitHub, attach the reviewed file manually to the issue draft. Opening a share
+sheet does not send anything until you choose a destination and complete it.
 
 Review diagnostics before sharing; do not attach raw private archives, game
 images, extracted assets, saves, account/device identifiers or signing keys to
