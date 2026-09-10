@@ -5,6 +5,11 @@ testable builds. Reply counts, new diagnostics, commits and elapsed hours alone
 are not success measures. A run should reduce a specific uncertainty, complete
 a useful implementation/test step, or identify the exact dependency that stops it.
 
+The [coordinator runbook](MAINTENANCE-AUTOMATION.md) defines the current two-hour
+cycle, shared claim/action-receipt commands, recovery and activation checks.
+The [board](MAINTENANCE-BOARD.md) is the only tracked active queue; other guides
+link to it for current builds and next actions.
+
 ## Coordinator and engineering roles
 
 Astra Light owns triage, prioritization, public replies, work tracking and
@@ -100,7 +105,7 @@ owner/device accepted, reporter confirmed, released. A local source fix is not a
 publicly available fix. A candidate needs a concrete test purpose and exact
 source/artifact identity, platform requirements, acceptance limits and test steps.
 Batch compatible reviewed work where useful; do not build a new package on every
-hourly check. The scheduled coordinator and its workers MUST NEVER upload or
+scheduled check. The scheduled coordinator and its workers MUST NEVER upload or
 publish an IPA, including a prerelease, release asset or distribution-feed update.
 They may build and audit an IPA locally and ask Christopher to test it. Any later
 IPA publication requires a separate explicitly authorized manual release task;
@@ -113,9 +118,10 @@ For community testing, use an available, verified artifact appropriate for the
 reporter's device; do not link an inaccessible local path or announce an unbuilt
 version. Record the issue/comment, requested comparison, request date, response
 and next action. Never claim a build is “good” merely because it compiled.
-Android/macOS test distribution may follow the existing authorized release
-workflow after appropriate validation. The IPA prohibition remains absolute for
-scheduled work. Do not create automated reminder spam for pending test requests.
+During the replacement coordinator pilot, new Android/macOS publication also
+belongs to an explicitly authorized manual release task. The coordinator may
+prepare and audit candidates and link existing verified public builds. The IPA
+prohibition remains absolute for scheduled work. Do not create automated reminder spam for pending test requests.
 
 ## Progress accounting
 

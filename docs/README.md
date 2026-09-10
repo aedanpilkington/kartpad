@@ -1,5 +1,8 @@
 # KartPad documentation
 
+[Coordinator runbook and implementation plan](MAINTENANCE-AUTOMATION.md) ·
+[Canonical active queue](MAINTENANCE-BOARD.md).
+
 For downloads, start with the [project README](../README.md#downloads).
 The [expandable FAQ](../README.md#frequently-asked-questions) answers common
 setup, controls, compatibility and troubleshooting questions.

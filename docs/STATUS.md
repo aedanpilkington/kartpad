@@ -1,5 +1,8 @@
 # KartPad status
 
+[Coordinator runbook and implementation plan](MAINTENANCE-AUTOMATION.md) ·
+[Canonical active queue](MAINTENANCE-BOARD.md).
+
 Updated: 10 September 2026. This page summarizes acceptance, not a full test log.
 Use the [maintenance board](MAINTENANCE-BOARD.md) for candidate ownership and
 next actions, and [known issues](KNOWN-ISSUES.md) for current reports.

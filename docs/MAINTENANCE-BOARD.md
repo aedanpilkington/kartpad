@@ -1,61 +1,74 @@
 # Maintenance work and test board
 
-Snapshot: 10 September 2026 (Japan time). Refresh GitHub and active work before claiming a task.
-This is the tracked coordination index, not a claim that all local work is merged.
-See [workflow](MAINTENANCE.md), [known issues](KNOWN-ISSUES.md) and their evidence links.
-Private artifact paths and task identifiers belong in the local maintenance files.
-Open-issue audit: 22 open issues and two open PRs checked during the 20:28 UTC cycle on 9 September 2026 (10 September in Japan).
-Next manual Android investigation: [bounded handoff and test plan](ANDROID-PERFORMANCE-HANDOFF.md).
+Current queue: **10 September 2026**. Live audit: **23 open issues, two open PRs**,
+including new controller request #184. Refresh GitHub before claiming work.
+This is the canonical active work queue and candidate/test ledger. Historical
+investigations explain evidence; they do not assign current work. See the
+[coordinator runbook](MAINTENANCE-AUTOMATION.md), [workflow](MAINTENANCE.md),
+[known evidence](KNOWN-ISSUES.md) and [deferred features](FUTURE-FEATURES.md).
 
-The [Android technical debt work order](TECH-DEBT.md#order-of-operations)
-defines failure classification, evidence requirements and completion criteria.
-Use it to select ready follow-up work without duplicating the active build owner.
+## Published baseline
 
-## Ready work and dependencies
-
-| Workstream | State / owner role | Next action and completion condition | Platform boundary |
-| --- | --- | --- | --- |
-| #169 POCO progress loss | Awaiting reporter exit/profile and lost-data details; separate pack-replacement save defect fixed in PR173 | Candidate63 preserves existing redirected saves during validated pack activation. This does not establish or fix the reported ordinary-exit loss; physical save acceptance remains pending. Existing Android owner retains investigation; do not request destructive reproduction | Android; Apple/tvOS pack implementation not evaluated by this fix |
-| #166 HONOR graphics | New report, exact build/settings supplied | Adreno829/driver512.842.36 supplied; images reviewed by Android owner, broad corruption confirmed. Actual failing draw unresolved | Android16 preview1/build28 |
-| #167 Helio G200 FPS | New device-specific performance report | Reporter confirms1x and both4:3/16:9 unchanged; response acknowledged, no repeat tests | Android0.4.11; other-device gains not transferable |
-| #143 Android game-launch crash | Awaiting targeted exit evidence | Exact build/profile, import completion and matching exit/final console; no repeat installation | Honor X7D/Android15, hardware cause unverified |
-| #135 iPad launch crash | Build29 startup reporter-confirmed; A10X performance concern remains | [Reporter confirmation](https://github.com/chrissotraidis/kartpad/issues/135#issuecomment-5598895632): launches and loads Original/Retro. Reports about30FPS Retro and30–35FPS Original at native resolution versus Dolphin60FPS. Record performance separately; no repeat startup/crash request | A10X/iPadOS; this does not validate Android CPU or graphics behavior |
-| #105 rating companion restore | Published and reporter-confirmed for offline ratings/information transfer | [Success acknowledged](https://github.com/chrissotraidis/kartpad/issues/105#issuecomment-5594271981); new Mii database/Syncthing question answered after source review; selected missing-Mii import is a bounded next feature, live timestamp-based sync is unsafe | Android; Apple parity not implemented |
-| #123 online stalls | Alarm reschedule defect fixed in PR #141; local preview2/code29 passes bounded checks | Compare a matching-signer candidate against a controlled baseline in online menus; see [alarm evidence](artifacts/2026-09-09/issue-123-alarm-reschedule-guard.md). If stalls persist, capture the blocked execution/wakeup boundary. No more broad reporter logs requested | Android; source defect verified, reported freeze cause and hardware improvement unproven |
-| #103 and owner Pixel sustained FPS | Historical physical profiles identify FP status/context and resource-hashing costs; current-build attribution needed | Follow [targeted handoff](ANDROID-PERFORMANCE-HANDOFF.md). Manual Android owner has exclusive performance/geometry/build/device investigation. Local Debug hash optimization has scene-bounded measured gains; Release already uses O2. Public APK remains on hold. Later code51/52 physical tests verify overlap activation and substantial menu improvement; stationary Retro race gain is much smaller, with unchanged tail pacing. Cup and broad device acceptance remain pending. These valid later tests supersede the invalid code37 activation attempt. Do not equate Debug gains with a public #103 fix | Android; standard power mode and comparable thermals, separate from #123 |
-| #102/#104/#120/#137 rendering | Existing preview diagnostics verified; #137 excerpts requested | [Interpret bounded matrix/draw samples](artifacts/2026-09-09/graphics-preview28-evidence.md) before selecting actual character draw/upload/shader reproduction using supplied validation results and bounded draw diagnostics; record a discriminating result | Adreno evidence; do not infer same cause on Mali or macOS |
-| #128/#131 cup crash, #119 bars | Shared awards handlers present; awaiting exit classification | Use [awards/resource source findings](artifacts/2026-09-09/cup-transition-investigation.md) with matching exit/console excerpt; keep display/bar lifecycle separate | AYN Thor and Poco X8 Pro reports; #131 identifies Next before the awards ceremony, Original and Retro both confirmed by reporter; matching exit evidence pending |
-| PR #112 controller/keyboard work | Contributor heada332264 addresses remaining capture and physical-key cases | Independent Medium source review and exact-head native profile harness pass capture/special-key/ISO cases; actual tab delegate wiring source-verified. Integrated candidate build and actual AppKit/layout/controller/Original+Retro acceptance remain; earlier gameplay evidence stays tied to its tested source | macOS; no whole-PR or hardware acceptance from source review |
-| macOS screen tearing / V-Sync control | Owner-relayed report, queued; reproduction and settings availability not yet verified | Inspect current presentation synchronization and exposed settings before proposing a toggle. Identify affected build, display/refresh rate, window/full-screen mode and scene for a tearing comparison. Keep separate from frame pacing and PR157 viewport defects | macOS reported; Android, iPhone/iPad and tvOS not evaluated |
-| #127 two-player rendering | [Draft PR #157](https://github.com/chrissotraidis/kartpad/pull/157) reproduces cross-viewport interpolation pairing; independent Medium review cleared source scope | Independent focused rerun: seven pass, one skip, two documented baseline failures unchanged. Synthetic regression establishes a source defect; same-scene gameplay and physical two-player acceptance remain. Shared preparation means Android applicability needs separate acceptance | macOS Original; no demonstrated shared Android root cause |
-| #100 external displays | [Merged PR #156](https://github.com/chrissotraidis/kartpad/pull/156) corrects Metal-view ownership; manual owner has physical probe evidence | Native helper recreation/presentation tests pass including physical M2 iPad probe per owner; full-game surface-loss/touch and external output acceptance remain | iPhone/iPad and Android separately; wired first, then wireless |
-| Report context/provenance | Reviewed-log acknowledgment and inability path released on Android63 and iPhone/iPad34 | Manual attachment remains explicit; nothing uploads automatically. macOS/tvOS reporting parity remains separate work | Android/iOS flows have focused runtime/UI checks; no universal OS share-completion claim |
-| #142 disclosure/docs | Closed by Christopher after his follow-up; documentation cleanup and FAQ restoration merged | Preserve disclosure and restored FAQ; leave broader UI review separate from runtime investigation | Repository/support |
-| Other support/features | See known-issues index | Keep #101/#5/#92 and separately scoped DSU #91/Wiimmfi #90 with their existing owners and next evidence | Record platform applicability individually |
-
-Use one owner per task and keep ready, active, awaiting review, awaiting device,
-merged, and released distinct. New replies are not required to work on ready items.
-
-## Build and test-request ledger
-
-Update a row when a candidate is prepared, superseded, requested, tested or rejected.
-Each actual candidate record must include source SHA, version, artifact SHA-256,
-target machines, test evidence, request link/date, outcome and next action. Keep
-local artifact locations in `build/maintenance/CURRENT.md`; never imply they are
-public downloads. Link full provenance records instead of copying raw diagnostics.
-
-| Candidate / work | Current disposition | Test request / next step |
+| Platform | Exact available artifact | Acceptance boundary |
 | --- | --- | --- |
-| Android public v0.4.12-android.2 / code 23 | Published diagnostic beta, not a verified graphics/cup-crash fix | Existing issue threads hold off/on results and pending crash/bar evidence. No repetitive requests |
-| Android v0.4.13-android-preview.1 / code 28 | [Published unstable preview](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1), ARM64 Android 9+, at cecd69c504f66aa0d8a40f485406618b9b616791; APK SHA-256 `e70ff84fb64ce52294ac13608530bdbed3e22395e5fab7a8ef85799c22de0607`. PR #133 merged; broad physical performance acceptance pending | Medium rating source review cleared; 214 storage, 52 format and 66 Android contract checks reported passing; bundle-derived emulator Original rendering and 21 state files preserved. Final source, repeat signing, export/payload and public-signer emulator gates passed. PR #133 merged; anonymous downloads byte-match and downloaded APK/signature audit passes. [#105](https://github.com/chrissotraidis/kartpad/issues/105) confirmed successful ratings/offline information transfer on 8 September at 14:06 UTC; Mii and server-sync acceptance remain separate. Physical performance acceptance pending. Separate CPU context experiment excluded |
-| Local macOS 0.4.12/build 27 at 271fdc1 | Historical candidate; later PR head adds keyboard behavior | Contributor hardware results apply to exact tested commits; resolve newer review findings before declaring a replacement ready |
-| Android preview2/code29 (local candidate) | Clean fdda4c1 source, alarm guard correction; APK SHA-256 `9e7b7a0942714c7a3c9d75397e71763dc16765b9b1ada0ed8ca3e6a57dcb81ac`, 110351769 bytes; excludes unmerged scalar optimization | [Build record](artifacts/2026-09-09/android-preview2-local-candidate.md): build/lint/package/signature audits, repeat derivation and disposable-emulator chooser/seeded Original startup pass. Physical comparison and public distribution gates remain |
-| iPhone/iPad 0.4.15/build 34 | [Published reporting update](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-ios.1), source d3d300bb | Retains the accepted 0.4.14 chooser. Actual log review, unchecked acknowledgment and required inability reason; 12 UIKit checks at two text sizes, full compile/archive audits and repeated packages passed. [Release verification](artifacts/2026-09-10/platform-release-verification.md); new full-game physical acceptance not claimed |
-| Android 0.4.14-android-preview.1 / code63 | [Published owner-accepted update](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1); application source 6a2dffc, APK SHA-256 `4e27897b9bb89e7b24fbe0b2e3dc66fae4efd549edaadf2f748ca22f376d87ff` | [Verification](artifacts/2026-09-10/android-release63-verification.md), [source reconstruction](artifacts/2026-09-10/android-source-reconstruction.md) and [source delivery](artifacts/2026-09-10/android-source-delivery.md). Owner confirmed hardware checks and authorized publication; matching-private-signer payload is byte-identical. Local menu gain is not a universal public-APK speedup. Adreno/cup issues remain open |
-| macOS 0.4.15/build34 | [Published Metal ownership update](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-macos.1), source d3d300bb | Full build, native helper and archive audits pass; repeat packaging and hosted verification recorded in the [ledger](artifacts/2026-09-10/platform-release-verification.md). PR112 excluded; no tearing/external-display or new physical-gameplay claim |
-| tvOS | No new candidate declared ready here | Track applicable shared changes and experimental device acceptance separately |
+| Android | [0.4.14 preview 1 / code 63](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1), app source `6a2dffc`, APK SHA-256 `4e27897b9bb89e7b24fbe0b2e3dc66fae4efd549edaadf2f748ca22f376d87ff` | Published and owner-accepted payload. Includes PR #141 alarm ordering, frame overlap, initial GEN_MODE correction and PR #173 pack-save preservation. Adreno, cup, online and sustained-FPS reports remain unconfirmed. |
+| iPhone/iPad | [0.4.15 / build 34](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-ios.1), app source `d3d300bb`, IPA SHA-256 `48d0f0fb95ee0f8f1135cbe94f01fecf4636850adb595fe7ba4bd7ef6a16e4bc` | Published reporting update; earlier chooser/CPU corrections retained. Focused UIKit/full-build/archive checks; no new full-game device or performance acceptance. |
+| macOS | [0.4.15 / build 34](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-macos.1), app source `d3d300bb`, ZIP SHA-256 `ffaf113fa7a794824e6506e727842c08204c7f4276ccad76f33401cabffc8023` | Published Metal ownership correction. PR #112 and PR #157 excluded; tearing/external-output acceptance remains. |
+| tvOS | [Experimental 0.4.11 / build 9](releases/v0.4.11-tvos.1.md) | No new candidate; current A12/gameplay acceptance separate. |
 
-A pending request is not acceptance. When results arrive, link them and record
-whether they support the fix, reject it, or require a different experiment.
-Do not close a report solely because a candidate exists. Local tests, owner
-acceptance, reporter confirmation and public availability are separate states.
+All ten September 10 downloads were audited by the manual release task; see
+[exact release evidence](artifacts/2026-09-10/platform-release-verification.md).
+Do not repeat completed source-delivery or package audits without a changed input.
+Older public28/local 29/private-preview checkpoints remain in dated evidence and
+[the prior board](https://github.com/chrissotraidis/kartpad/blob/26d1aa2c41e75b3a2f8185d0b142c589b52df304/docs/MAINTENANCE-BOARD.md).
+They are not new build assignments or the current installed-device identity.
+
+## Ready work: select by severity and evidence
+
+Owner roles below describe the next assignment, not a claim that a worker is
+running. Private execution claims live in the shared local coordinator state.
+Check actual task/worktree/process state before taking over existing work.
+
+| Priority / work | State and next owner | Next concrete output and completion condition |
+| --- | --- | --- |
+| P0 #169 lost Retro progress | Reporter detail pending; Android worker can inspect source safely | Distinguish license/records/ratings and normal exit from pack activation. Use disposable fixtures to test flush/profile paths. PR #173 fixes pack replacement, not established ordinary-exit loss. New usable loss evidence preempts lower-impact work. |
+| P1 #123 online-menu freezes | Code63 test requested; coordinator awaits/ingests response | One code 63 Retro online-menu comparison using established scene/settings and offline control. Record freeze/audio/native-UI result. If negative, investigate blocked guest/wakeup boundary. No generic log request or duplicate candidate. |
+| P1 #104 / Adreno graphics | Code63 test requested; source investigation remains available | One code 63 same-character selection/starting-grid result. If still broken, isolate one actual draw/transform/shader/upload invariant. Keep #102 road textures and #166 broad corruption distinct until linked by mechanism. |
+| P1 #128/#131 cup/awards crash | Matching exit evidence pending; fixture reproduction may proceed | Classify Next-after-final-race termination, then exact ceremony regression. Both Original and Retro reported. Completion is ceremony/return/restart with progress, not one race or existing handler names. |
+| P1 #143 post-import game launch | Targeted build/profile/exit request already pending | Consume matching evidence or reproduce the exact boundary with owned fixture. No inference from Snapdragon name; no repeat installation. |
+| P2 PR #112 Mac controls/keyboard | Latest source/harness cleared at `a332264`; recover integration handoff | Recheck head/reviews and actual owner state, review current-main integration delta, build one candidate. Actual AppKit/layout/controller reconnect/remap/persistence and Original/Retro test card. Old physical results stay attached to their commits. |
+| P2 PR #157 / #127 split-screen | Draft `d6299b5`, source defect/regression established | Reconcile review and prepare an attributable candidate. Same two-player scene at 60/120 FPS plus single-player control. Seven targeted passes, one skip and two documented baseline failures are not game acceptance. |
+| P2 #103/#167/#169 FPS; #135 Apple FPS | Reported performance gaps; Android and Apple attribution separate | One fixed warmed driven scene with normal power mode, frame-time tails/audio/thermals. No repeat Helio1x aspect sweep or menu-gain generalization. Follow [current Android assignment](ANDROID-PERFORMANCE-HANDOFF.md). |
+| P2 #100 external output | Metal ownership correction already shipped; affected route unaccepted | Use existing Apple 34 for full-game wired connect/disconnect/resume and touch recovery. Wireless separately. Android lifecycle needs independent acceptance. |
+| P2 #119/#128/#169 bars; #101 Fill | Existing bar fix lacks all-device confirmation; projection unclassified | Match actual device/display and launch/resume for bars. Separate paired scene projection/HUD comparison for Fill. |
+| P2 macOS tearing | Owner-relayed, no precise reproduction | Establish build/display/refresh/window mode and distinguish tear lines from frame pacing before changing V-Sync controls. |
+
+## Feature queue and completed portions
+
+| Work | Current disposition / next decision |
+| --- | --- |
+| #184 Android right bumper → game D-pad Up | [Initial response](https://github.com/chrissotraidis/kartpad/issues/184#issuecomment-5613974997) posted10September. AYN Thor Max/Odin Controller request. Current remapping supports only gameA/B/X/Y/Z. [Bounded feature scope](FUTURE-FEATURES.md#android-d-pad-and-shoulder-remapping) defines press/release, migration, conflict/reset and controller/touch tests. No logs needed to establish the missing option. Ready for a small source proposal when stability work is hardware-blocked; no release promise. |
+| #105 save/rating transfer | Offline transfer reporter-confirmed. Mii database migration and deliberate folder handoff are separate proposals, not another pending restore test. |
+| #135 A10X startup | Reporter-confirmed fixed in iOS29, Original/Retro load. Remaining30–35 FPS concern stays in performance lane; no repeat crash/startup request. |
+| #5 Mii/Wii Remote; #90 Wiimmfi; #91 DSU | Preserve shipped Mii/cursor pieces and outstanding peripheral acceptance. Separate enhancements remain scoped in [future features](FUTURE-FEATURES.md), behind stability and ready candidate completion. |
+| #92 licensing clarity | PR #93 correction merged; awaiting upstream review. No recurring code assignment or unanswered-request reminder. |
+
+## Test-request ledger
+
+Each row is keyed by **symptom + exact candidate + test purpose**. A published
+artifact is not a confirmed issue fix. Update requests and outcomes in place;
+link the actual issue comment after posting. Do not repeat pending requests.
+
+| Test | Candidate / recipient | State and expected response |
+| --- | --- | --- |
+| #123 online menu | Android 63 / existing Pixel8Pro reporter | [Requested10September](https://github.com/chrissotraidis/kartpad/issues/123#issuecomment-5613975589), response pending. Familiar online-menu sequence with previous validation-off settings and offline control; outcome pass, still fails, or unavailable. Do not repeat the request. |
+| #104 character corruption | Android 63 / existing S24Ultra reporter | [Requested10September](https://github.com/chrissotraidis/kartpad/issues/104#issuecomment-5613975903), response pending. Same character/selection/grid, no repeated validation or import test. Do not repeat the request. |
+| PR #112 input integration | New local Mac candidate only after integration / named Mac tester | Build not commissioned yet. Reconcile exact source and owner before claiming a candidate. |
+| PR #157 viewport | New local Mac candidate / named two-player tester | Draft; separate first comparison from PR #112 to preserve attribution. |
+| #100 wired output | Existing Apple 34 / affected reporter or arranged owner session | Current build available; existing device/output-chain request remains pending. No repeated nudge without new useful test context. |
+
+Private state also tracks pending public actions so an uncertain post is checked
+on GitHub before retry. Keep implementation/review/merge, artifact availability,
+local/owner acceptance and reporter confirmation separate. A changed source or
+candidate supersedes its old test explicitly; failure reopens the investigation,
+not an automatic rebuild. Group routine documentation changes into one update.
