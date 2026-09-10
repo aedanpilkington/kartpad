@@ -1,26 +1,20 @@
 # Install KartPad on Android
 
-## Testing update
+## Current update
 
-[**0.4.13 preview 1 / code 28**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)
-is the latest published unstable Android preview. It adds checked Retro rating
-companion restore and expanded diagnostics, retaining profile-aware save
-transfer and checked imports. It uses the same public signer and can update
-older public APKs in place. Download the APK, notices ZIP and `SHA256SUMS`.
-Follow the [preview test steps](releases/v0.4.13-android-preview.1.md); physical,
-real-save and performance acceptance remain pending. It is not a verified
-fix for graphics corruption, slowdown, online stalls or cup crashes.
-
-**0.4.14 preview 1 is a release candidate, not yet a public download.** It adds
-the refreshed chooser, explicit reviewed-log reporting, Retro pack replacement
-save protection and native frame overlap. See its
-[changes, measurements and remaining acceptance checks](releases/v0.4.14-android-preview.1.md).
-Keep using the published links above until the candidate is released.
+[**0.4.14 preview 1 / code 63**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1)
+is the current owner-accepted Android community update. It adds the refreshed
+chooser, reviewed-log reporting, Retro pack-update save protection and native
+frame overlap. It retains checked rating transfer and the public signing identity.
+See the [measured improvements and remaining limits](releases/v0.4.14-android-preview.1.md).
+Menu transitions, graphics corruption on some GPUs, online stalls and cup crashes
+are not declared resolved. Download the APK, notices and checksums; the source
+archive is available for rebuilding and modification.
 
 ## Download and first launch
 
-1. Open the [first Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1).
-   Download `KartPad-v0.4.10-android.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1).
+   Download `KartPad-v0.4.14-android-preview.1-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -112,7 +106,7 @@ locally; the app does not upload those reports automatically. Shell profiling
 is enabled in the first release; the later testing builds disable shell profiling.
 Public game packages are non-debuggable.
 
-In the **0.4.14 candidate**, Report a Problem asks you to select a readable text
+In **0.4.14**, Report a Problem asks you to select a readable text
 log and confirm that you reviewed it, or explain why logs cannot be included.
 Exporting diagnostics does not select or approve an attachment. If you open
 GitHub, attach the reviewed file manually to the issue draft. Opening a share

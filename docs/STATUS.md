@@ -1,6 +1,6 @@
 # KartPad status
 
-Updated: 9 September 2026. This page summarizes acceptance, not a full test log.
+Updated: 10 September 2026. This page summarizes acceptance, not a full test log.
 Use the [maintenance board](MAINTENANCE-BOARD.md) for candidate ownership and
 next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
@@ -8,19 +8,18 @@ next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
 | Platform | Package | Acceptance boundary |
 | --- | --- | --- |
-| Android | [0.4.10-android.1, code 21](releases/v0.4.10-android.1.md) | Promotes the Pixel 9 Pro XL / Razer Kishi runtime with the console-serial correction; broader hardware and sustained performance remain open |
-| Android testing | [0.4.13 preview 1, code 28](releases/v0.4.13-android-preview.1.md) | Rating companion transfer and diagnostics; #105 confirms offline ratings/information transfer. Broad physical performance, Mii migration and server-sync acceptance remain open |
-| iPhone / iPad | [0.4.14, build 33](releases/v0.4.14-ios.1.md) | Current official release: clearer chooser/help, reporting instructions, touch-settings cleanup and Metal view ownership. Build-32 candidate accepted by owner on M2 iPad; build 33 updates release metadata. Wider device/external-display acceptance remains open |
-| Apple Silicon Mac | [0.4.11, build 26](releases/v0.4.11-macos.1.md) | Published native identity-fix rebuild; title-screen/normal-close smoke preserved installed state |
+| Android | [0.4.14 preview 1, code 63](releases/v0.4.14-android-preview.1.md) | Owner-accepted payload, refreshed chooser, reporting, pack-update save protection and measured local rendering improvement; broader GPU/performance and cup behavior remain open |
+| iPhone / iPad | [0.4.15, build 34](releases/v0.4.15-ios.1.md) | New log-review acknowledgment/inability flow; retains accepted chooser. Full compile/archive and focused UIKit checks passed; no new full-game physical or performance acceptance claimed |
+| Apple Silicon Mac | [0.4.15, build 34](releases/v0.4.15-macos.1.md) | Metal view-lifetime correction, complete build/archive and native helper checks; tearing and external-display reports remain open |
 | Apple TV experimental | [0.4.11, build 9](releases/v0.4.11-tvos.1.md) | Published identity-fix and compiler-hardened package; exact-build hardware acceptance remains open |
 
 [Download and install](../README.md#downloads). All listed packages include the
 issue #94 console-serial correction. Updating does not clear old server-side
 identity history or bans. Older affected packages should stay offline.
 
-Local Android preview 2/code 29 is **not a public download**. Its source,
-checksums and bounded emulator result are in the
-[candidate record](artifacts/2026-09-09/android-preview2-local-candidate.md).
+The September 10 releases include the [joint source delivery](artifacts/2026-09-10/android-source-delivery.md)
+and [verified download ledger](artifacts/2026-09-10/platform-release-verification.md).
+Historical local candidates are retained in their dated records.
 
 ## Established results and remaining limits
 

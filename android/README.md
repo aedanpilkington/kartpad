@@ -8,10 +8,12 @@ Retro WFC worldwide race play on Pixel 9 Pro XL. Read
 [installation, update safety and known limits](../docs/INSTALL_ANDROID.md).
 Sustained 60 FPS and complete device/controller coverage are not claimed.
 
-[Android 0.4.13 preview 1](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)
-is an unstable testing update for rating transfer and diagnostics. Physical
-acceptance remains pending. The commands below reproduce that tagged source;
-for current development use `main` and choose explicit candidate version metadata.
+[Android 0.4.14 preview 1](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1)
+is the current owner-accepted community update. Its refreshed chooser, reporting,
+Retro save protection and rendering changes have bounded measurements and tests
+in the release notes. The source archive and
+[reconstruction instructions](../docs/artifacts/2026-09-10/android-source-delivery.md)
+supply the dependency/runtime source and exact partition metadata for this build.
 
 ## Build the full playable app on an Apple Silicon Mac
 
@@ -23,7 +25,7 @@ private translated graph; the installed app's size is not the build-space cost.
 ```sh
 git clone https://github.com/chrissotraidis/kartpad.git
 cd kartpad
-git checkout v0.4.13-android-preview.1
+git checkout v0.4.14-android-preview.1
 ./scripts/build-user-ipa.sh bootstrap
 ./scripts/bootstrap-android-host.sh
 ./scripts/check-android-host.sh
@@ -38,17 +40,21 @@ Translate **only your own supported RMCP01 revision 0 image**. The shared
 bootstrap prepares the following pinned Retro 6.12.7 input paths:
 
 ```sh
+mkdir -p private/self-build/retro-rewind/translation/build_shards
+cp tools/android63-base-common-shards.json \
+  private/self-build/retro-rewind/translation/build_shards/base_common_shard_map.json
 ./scripts/translate-retro-rewind.sh \
   --image /absolute/path/to/your-owned-game.wbfs \
   --retro-root private/builder/retro-rewind-downloads/6.12.7-extracted/RetroRewind6 \
   --payload private/builder/retro-rewind-downloads/payload.RMCPD00.bin
 
-KARTPAD_ANDROID_VERSION_NAME=0.4.13-android-preview.1 \
-KARTPAD_ANDROID_VERSION_CODE=28 \
+KARTPAD_ANDROID_VERSION_NAME=0.4.14-android-preview.1 \
+KARTPAD_ANDROID_VERSION_CODE=63 \
 KARTPAD_ANDROID_PACKAGE_FORMAT=aab \
   ./scripts/build-android-game-app.sh private/self-build/retro-rewind/translation
 
-KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.13-android-preview.1 \
+KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.14-android-preview.1 \
+KARTPAD_ANDROID_EXPECTED_VERSION_CODE=63 \
   ./scripts/audit-android-bundle.sh android/app/build/outputs/bundle/release/app-release.aab
 ```
 
@@ -61,7 +67,7 @@ patches: the wrapper reuses an existing prepared source directory.
 For a locally installable debug-signed APK, use the same build command with
 `KARTPAD_ANDROID_PACKAGE_FORMAT=apk`; it writes
 `android/app/build/outputs/apk/debug/app-debug.apk`. Audit it with
-`KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.13-android-preview.1 ./scripts/audit-android-package.sh PATH.apk`.
+`KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.14-android-preview.1 ./scripts/audit-android-package.sh PATH.apk`.
 That debug build is for personal testing, not public distribution, and cannot
 update a differently signed public app. A source-only fixture is not the game.
 
@@ -73,12 +79,14 @@ Keep signing keys backed up securely outside Git: future in-place updates need
 the same key. The unsigned AAB stays local; this is not a Google Play release.
 
 ```sh
+KARTPAD_ANDROID_EXPECTED_VERSION_NAME=0.4.14-android-preview.1 \
+KARTPAD_ANDROID_EXPECTED_VERSION_CODE=63 \
 KARTPAD_ANDROID_KEYSTORE=/absolute/private/path/kartpad-release.p12 \
 KARTPAD_ANDROID_KEY_ALIAS=kartpad-release \
 KARTPAD_ANDROID_PASSWORD_FILE=/absolute/private/path/password.txt \
   ./scripts/derive-android-release-apk.sh \
     android/app/build/outputs/bundle/release/app-release.aab \
-    artifacts/KartPad-v0.4.13-android-preview.1-arm64.apk
+    artifacts/KartPad-v0.4.14-android-preview.1-arm64.apk
 ```
 
 The keystore and key must use the same password for this simple PKCS12 flow.
