@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import tarfile
 import zipfile
 
 TAG = "v0.4.14-android-preview.1"
@@ -38,6 +39,7 @@ def main() -> None:
     parser.add_argument("native_build", type=Path, help="Exact arm64-v8a CMake build containing _deps")
     parser.add_argument("--certificate-sha256", required=True)
     parser.add_argument("--output-dir", type=Path, help="Write notices/checksums here without changing the APK directory")
+    parser.add_argument("--source-archive", type=Path, required=True, help="Reviewed source delivery archive published beside the APK")
     args = parser.parse_args()
     if subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO, text=True).strip():
         parser.error("release packaging requires a clean source tree")
@@ -47,6 +49,22 @@ def main() -> None:
         parser.error("unexpected APK filename")
     if sha(args.apk.read_bytes()) != APPROVED_APK or sha(args.aab.read_bytes()) != APPROVED_AAB:
         parser.error("APK/AAB do not match the independently audited candidate")
+    with tarfile.open(args.source_archive, "r:gz") as source:
+        members = source.getmembers()
+        names = [member.name for member in members]
+        if len(names) != len(set(names)) or any(not member.isfile() or member.name.startswith("/")
+                                               or ".." in Path(member.name).parts for member in members):
+            parser.error("unsafe or duplicate source archive member")
+        source_manifest = json.load(source.extractfile("SOURCE-MANIFEST.json"))
+        if source_manifest["applicationSources"]["android"] != APPROVED_SOURCE or source_manifest["androidAPK_SHA256"] != APPROVED_APK:
+            parser.error("source delivery is not bound to the approved candidate")
+        expected_files = source_manifest["files"]
+        if set(names) != set(expected_files) | {"SOURCE-MANIFEST.json"}:
+            parser.error("source delivery manifest coverage mismatch")
+        for name, expected in expected_files.items():
+            content = source.extractfile(name).read()
+            if len(content) != expected["bytes"] or sha(content) != expected["sha256"]:
+                parser.error("source delivery file differs from reviewed manifest")
     env = dict(os.environ, KARTPAD_ANDROID_EXPECTED_VERSION_NAME=VERSION,
                KARTPAD_ANDROID_EXPECTED_VERSION_CODE=str(CODE), KARTPAD_ANDROID_REQUIRE_RELEASE="1")
     env["JAVA_HOME"] = str(REPO / ".android-bootstrap/jdk-17.0.20.1+1/Contents/Home")
@@ -64,6 +82,8 @@ def main() -> None:
         "INSTALL_ANDROID.md": REPO / "docs/INSTALL_ANDROID.md",
         "BUILD_ANDROID.md": REPO / "android/README.md",
         "RELEASE_NOTES.md": REPO / f"docs/releases/{TAG}.md",
+        "SOURCE_DELIVERY.md": REPO / "docs/artifacts/2026-09-10/android-source-delivery.md",
+        "SOURCE_RECONSTRUCTION.md": REPO / "docs/artifacts/2026-09-10/android-source-reconstruction.md",
         "RIGHTS_AND_LICENSES.md": REPO / "RIGHTS_AND_LICENSES.md",
         "THIRD_PARTY_NOTICES.md": REPO / "THIRD_PARTY_NOTICES.md",
         "dependencies.lock.json": REPO / "dependencies.lock.json",
@@ -115,7 +135,10 @@ def main() -> None:
     # A later release tag may include notes and this packager, not changed app code.
     changed = subprocess.check_output(["git", "diff", "--name-only", APPROVED_SOURCE, commit],
                                       cwd=REPO, text=True).splitlines()
-    if any(not name.startswith("docs/") and name not in ("README.md", "scripts/package-android-release-notices.py")
+    packaging_files = ("README.md", "android/README.md", "scripts/package-android-release-notices.py",
+                       "scripts/package-release-source.py", "scripts/restore-source-git.py",
+                       "tools/android63-base-common-shards.json")
+    if any(not name.startswith("docs/") and name not in packaging_files
            for name in changed):
         parser.error("packaging source differs from candidate beyond documentation/packager")
     provenance = {
@@ -128,7 +151,10 @@ def main() -> None:
         "containsTranslatedGameCode": True, "containsGameData": False,
         "containsPrivateSigningMaterial": False, "maintainerAuthorizedFreeCommunityRelease": True,
         "upstreamRightsConfirmed": False, "profileableByShell": False, "debuggable": False,
-        "physicalAcceptance": "Pending for this exact APK; earlier owner runs do not establish acceptance",
+        "physicalAcceptance": "Owner confirmed Android hardware checks complete and authorized release on 2026-09-10. Installed non-debuggable code63 private-signer variant has all155 ZIP payload entries byte-identical to public APK; signing block differs. This is owner acceptance, not a controlled previous-public versus final-public performance benchmark or an affected-Adreno/cup/audio-specific test claim",
+        "sourceArchive": {"filename": args.source_archive.name, "bytes": args.source_archive.stat().st_size,
+                          "sha256": sha(args.source_archive.read_bytes()),
+                          "reconstruction": "Fresh runtime877/877 and translator1105/1105 source files,29637/29637 base functions, Retro translated source and initialization match; generated shard sources match with documented path relocation and delivered partition metadata. Private game inputs are regenerated locally using delivered translator and recipes"},
         "emulatorAcceptance": "API 36 ARM64 software GPU, audio disabled: premerge release candidate with identical game payload passed public28 update preserving19 fixture files; Original and Retro race startup, acceleration/steering and Home return; Original report return and live resize; Retro fixture license reloaded after restart. Final merged-source APK update preserved25 fixture files. No completed race/cup, full import, audio, online, physical performance or affected-Adreno acceptance claimed",
         "noticesSHA256": {n: sha(b) for n, b in sorted(data.items())},
     }
@@ -150,7 +176,7 @@ def main() -> None:
             assert package.read(name) == content
     checksum_path = output_dir / "SHA256SUMS"
     with checksum_path.open("x") as checksums:
-        for artifact in (args.apk, output):
+        for artifact in (args.apk, output, args.source_archive):
             checksums.write(f"{sha(artifact.read_bytes())}  {artifact.name}\n")
     print(f"Packaged {len(data)} allowlisted notices/provenance entries; no private inputs copied.")
     print(output)

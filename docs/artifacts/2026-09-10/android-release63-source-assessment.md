@@ -1,5 +1,10 @@
 # Candidate 63 source-package assessment
 
+**Historical assessment:** the gaps below were subsequently addressed by the
+[fresh source reconstruction](android-source-reconstruction.md) and
+[actual source delivery](android-source-delivery.md). Retained here to explain
+why the initial repository-only archive was insufficient.
+
 This is a bounded technical inventory, not a complete source-distribution or
 rights certification. It does not change the APK, game settings or phone state.
 The candidate APK and its 28-entry notices package remain those recorded in

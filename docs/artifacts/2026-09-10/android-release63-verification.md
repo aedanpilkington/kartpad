@@ -90,29 +90,25 @@ an FPS change or proof that ordinary-exit progress loss is fixed. See the
 [release notes](../../releases/v0.4.14-android-preview.1.md) for scene-specific
 numbers and the remaining 2.580–2.732-second menu transitions.
 
-## Release gates and handoff
+## Release decision and source delivery
 
-Retain this APK as the next official preview candidate. Companion notices and
-checksums are complete; review the documentation revision separately from compiled
-source. The exact release configuration still needs physical controls/audio,
-representative gameplay and restart/save acceptance after safe owner handover.
-The phone uses a private signing identity: derive a matching-signer test variant
-with identical payload; never uninstall to install the public certificate.
+On 10 September 2026 the owner confirmed the Android hardware checks were
+complete and explicitly authorized publication with the Apple updates. The
+installed non-debuggable code-63 private-signer APK has all 155 ZIP payload
+entries byte-identical to the public APK; only the signing block differs.
+The in-place update retained the Android app ID and recognized both existing
+game installations. A fresh 409-file state backup was retained before updating.
+The final non-debuggable app disallows run-as, so a full post-update private-file
+hash comparison is not claimed. Owner acceptance does not invent separate
+completed-cup, audio, online or affected-Adreno results.
 
-No across-device, affected-Adreno, online or completed-cup claim is supported.
-The repository snapshot/build recipe is not a certification of complete
-generated/dependency Corresponding Source. Preserve the existing documented
-source-distribution obligations and resolve any missing required source before
-distribution. Public upload and the X announcement remain separate owner
-decisions after the concrete artifacts and test limits are presented.
-
-A local repository-source archive contains the 1,117 tracked files at merged
-application source, including existing documentation images. Its SHA-256 is
-`2e9c689f0b4b7aad4130c2a6f268f112d7e2bc5af663ec6224201da211db00c5`.
-Path audit excludes private/build/bootstrap paths, links, traversal and game,
-package or signing-file extensions. This is not a full content/completeness audit;
-the archive is kept outside the APK/notices distribution directory pending that
-assessment. It omits ignored generated translation and dependency checkouts.
+The earlier repository-only archive has been superseded by actual upstream,
+dependency, translator and modified-runtime source delivery. Fresh replay
+reproduces the candidate's Original/Retro generated software and source graph;
+see [reconstruction](android-source-reconstruction.md) and
+[source delivery](android-source-delivery.md). No unexplained handwritten
+translation changes remain. Packaging and hosted download verification are
+recorded separately from the compiled application source.
 
 Raw captures, logs, game fixtures, private AAB and signing material remain in
 ignored local `build/release-candidate` and `build/release-final` directories.
