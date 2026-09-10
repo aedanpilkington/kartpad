@@ -21,6 +21,11 @@ Normal users should follow [installation](INSTALL_ANDROID.md) or
    the persistent private release key. The key and password stay outside Git;
    maintain a secure independent backup. Never rotate the key merely to make a
    local build work. A signing change prevents ordinary update-in-place.
+   Set both `KARTPAD_ANDROID_EXPECTED_VERSION_NAME` and
+   `KARTPAD_ANDROID_EXPECTED_VERSION_CODE` explicitly for derivation and audits;
+   the script's historical defaults identify a different build. For candidate
+   63 these are `0.4.14-android-preview.1` and `63`. Do not change audit defaults
+   or disable a version check to make a newer candidate pass.
 5. Verify the single certificate's SHA-256 against the approved release identity,
    verify APK metadata and alignment, and repeat derivation to check identical
    bytes. Use a disposable emulator for fresh public-signature install/chooser/
@@ -46,6 +51,10 @@ Normal users should follow [installation](INSTALL_ANDROID.md) or
    and checksums beside the APK, not raw logs, generated source or the AAB.
    Inspect `PROVENANCE.json` and every ZIP member before upload. The public
    certificate above is not a private key; never put key material here.
+   A repository-only source archive is not a complete source package by itself.
+   Record its exact tracked-file coverage and identify omitted generated and
+   dependency sources against the actual compiled inputs. See the
+   [candidate 63 source assessment](artifacts/2026-09-10/android-release63-source-assessment.md).
 7. Publish only the APK, companion notices ZIP and `SHA256SUMS` at the exact
    audited source tag, with its matching versioned file under `docs/releases/` as release notes.
    Publish unaccepted testing builds as prereleases with `--latest=false`. This Android-only release must not replace the Apple downloads.
