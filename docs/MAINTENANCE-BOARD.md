@@ -1,6 +1,6 @@
 # Maintenance work and test board
 
-Current queue: **10 September 2026**. Live audit: **23 open issues, two open PRs**,
+Current queue: **10 September 2026**. Live audit: **24 open issues, two open PRs**,
 including new controller request #184. Refresh GitHub before claiming work.
 This is the canonical active work queue and candidate/test ledger. Historical
 investigations explain evidence; they do not assign current work. See the
@@ -36,6 +36,8 @@ Check actual task/worktree/process state before taking over existing work.
 | P1 #104 / Adreno graphics | Code63 test requested; source investigation remains available | One code 63 same-character selection/starting-grid result. If still broken, isolate one actual draw/transform/shader/upload invariant. Keep #102 road textures and #166 broad corruption distinct until linked by mechanism. |
 | P1 #128/#131 cup/awards crash | Matching exit evidence pending; fixture reproduction may proceed | Classify Next-after-final-race termination, then exact ceremony regression. Both Original and Retro reported. Completion is ceremony/return/restart with progress, not one race or existing handler names. |
 | P1 #143 post-import game launch | Targeted build/profile/exit request already pending | Consume matching evidence or reproduce the exact boundary with owned fixture. No inference from Snapdragon name; no repeat installation. |
+| P2 #188 Mii import | New reproducible rejection report, Android63 / AYN Thor Android13 | 74-byte .mii from rfl_mii_extractor and WheelWizard both rejected. Compare importer validation with exporter format using synthetic fixture; [exact error requested](https://github.com/chrissotraidis/kartpad/issues/188#issuecomment-5620170161), no private database needed. Ready next allocation, no fix claimed. |
+| #166 additional OnePlus 15 report | Device-only corroboration, build/profile unknown | [Version/Android/profile requested](https://github.com/chrissotraidis/kartpad/issues/166#issuecomment-5620170532). No GPU/driver or shared cause inferred; preserve separately from prior HONOR/Adreno reports. |
 | P2 PR #112 Mac controls/keyboard | Current-main integration independently reviewed at `0194d5c`; full candidate build next | [Integration evidence/test card](artifacts/2026-09-10/pr112-current-integration.md): zero conflicts; focused native profiles/keyboard, assignment, settings, 200 trigger cases and three shell compilations pass. One release-version contract fails identically on baseline. Assign one owned full build; no current integrated app or physical acceptance yet. PR remains open. |
 | P2 PR #157 / #127 split-screen | Draft `d6299b5`, source defect/regression established | Reconcile review and prepare an attributable candidate. Same two-player scene at 60/120 FPS plus single-player control. Seven targeted passes, one skip and two documented baseline failures are not game acceptance. |
 | P2 #103/#167/#169 FPS; #135 Apple FPS | Reported performance gaps; Android and Apple attribution separate | One fixed warmed driven scene with normal power mode, frame-time tails/audio/thermals. No repeat Helio1x aspect sweep or menu-gain generalization. Follow [current Android assignment](ANDROID-PERFORMANCE-HANDOFF.md). |
