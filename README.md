@@ -44,33 +44,29 @@ chooser, game-data management, packaging, and release workflows.
 
 | Platform | Download | Setup |
 | --- | --- | --- |
-| Android ARM64 | [0.4.10-android.1 · code 21](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad | [0.4.14 · build 33](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
-| Apple Silicon Mac | [0.4.11 · build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
+| Android ARM64 | [0.4.14 preview 1 · code 63](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
+| iPhone / iPad | [0.4.15 · build 34](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.4.15 · build 34](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-Android also has an **[unstable 0.4.13 preview · code 28](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)**
-with Retro rating transfer and expanded diagnostics. Offline rating transfer is
-reporter-confirmed; broader device acceptance remains open. It is not a verified
-graphics, slowdown or online-stall fix.
+**Android 0.4.14 is now available.** It adds the refreshed game chooser,
+reviewed-log reporting, Retro pack-update save protection and native rendering
+improvements. Local Pixel 9 Pro XL tests at 2x/Fill measured about **58 FPS versus
+40–50 FPS** in the warm Grand Prix menu with the change enabled versus disabled;
+race gains were smaller. The owner accepted the final payload on hardware.
+These local mode comparisons are not an across-device or old-public-versus-new-public
+benchmark. Menu delays and device-specific graphics issues remain open. See the
+[measurements and release notes](docs/releases/v0.4.14-android-preview.1.md).
 
-**Next Android release candidate: 0.4.14 preview 1.** It combines a refreshed
-game chooser, reviewed-log problem reports, Retro pack-update save protection,
-and a measured rendering improvement. In local Pixel 9 Pro XL tests at 2x/Fill,
-the warm Grand Prix menu ran at about **58 FPS versus 40–50 FPS** with the change
-disabled; race gains were smaller. These are controlled local rendering-mode
-tests, not an across-device or final public-APK speedup claim. Final physical
-acceptance is pending; the download links above remain the published builds.
-See the [candidate release notes and test limits](docs/releases/v0.4.14-android-preview.1.md).
+**iPhone/iPad 0.4.15** adds an actual log-review screen, an unchecked acknowledgment
+and an explanation when logs cannot be attached. It retains the newer chooser
+and setup help. **macOS 0.4.15** brings the Metal view-lifetime correction to Mac;
+it does not establish a tearing or performance fix. See the
+[iPhone/iPad](docs/releases/v0.4.15-ios.1.md) and
+[macOS](docs/releases/v0.4.15-macos.1.md) notes.
 
-**0.4.14 is the current official iPhone/iPad build.** It adds a clearer game
-chooser with setup help, an iPhone layout that fits on one screen, clearer
-problem-report attachment instructions, and Apple Metal view recovery fixes.
-The owner accepted the build-32 candidate on iPad; build 33 publishes those
-changes with updated release metadata. See the
-[release notes](docs/releases/v0.4.14-ios.1.md).
-
-Download the checksums and accompanying notices with each package. **Update in
+Download the checksums and accompanying notices with each package. The releases
+also include the [source bundle and rebuild instructions](docs/artifacts/2026-09-10/android-source-delivery.md). **Update in
 place using the same signing identity; do not uninstall or clear app data.**
 Private Android previews use a different signer and need a backed-up migration.
 

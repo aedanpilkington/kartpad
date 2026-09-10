@@ -1,11 +1,12 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.14-ios.1` (0.4.14, build 33) is the current official unsigned
-ARM64 IPA for iPhone and iPad. It is a free community release, not an App Store
-or TestFlight build. Re-sign it with your existing Apple identity or compatible
-personal sideloading tool before installing. The owner accepted the build-32
-candidate on iPad; build 33 publishes the same app changes with release metadata.
-See the [release notes](releases/v0.4.14-ios.1.md).
+KartPad `v0.4.15-ios.1` (0.4.15, build 34) is the current unsigned ARM64 IPA
+for iPhone and iPad. It is a free community release, not an App Store or
+TestFlight build. Re-sign it with your existing Apple identity or compatible
+personal sideloading tool before installing. It adds reviewed-log acknowledgment
+and an inability explanation while retaining the newer chooser and help. See the
+[release notes](releases/v0.4.15-ios.1.md). Focused UIKit and package checks passed;
+new full-game physical Apple acceptance is not claimed for this reporting update.
 
 The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
 The generic ARM64 startup correction is retained. The A10X reporter confirmed
@@ -19,9 +20,11 @@ Older IPAs should remain offline. This does not erase incorrect serial history
 already held by a server or clear bans; affected accounts may need service-admin
 help. Never reset identities or delete saves as a workaround.
 
-1. Download `KartPad-v0.4.14-ios.1-unsigned.ipa` and `SHA256SUMS` from the
-   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-ios.1).
-2. Verify the IPA with `shasum -a 256 -c SHA256SUMS` on a Mac.
+1. Download `KartPad-v0.4.15-ios.1-unsigned.ipa` and `SHA256SUMS` from the
+   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-ios.1).
+2. Run `shasum -a 256 KartPad-v0.4.15-ios.1-unsigned.ipa` on a Mac and
+   compare it with the IPA row in `SHA256SUMS`. The notices and shared source
+   have separate rows; the source download is optional for normal installation.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary
    unsigned IPA files.
