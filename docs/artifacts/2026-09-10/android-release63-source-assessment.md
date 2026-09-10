@@ -34,7 +34,7 @@ or a complete inventory of headers, generated includes and linked libraries.
 | CMake dependency source | 267 | Dependency checkouts omitted |
 | Bootstrapped dependency source | 127 | Dependency checkouts omitted |
 | Private translation/game-derived generated input | 237 | Generated graph omitted |
-| Other generated/dependency source | 17 | Requires individual mapping |
+| Generated compilation wrappers | 17 | Origins mapped below; transitive inputs and source delivery remain separate |
 
 The embedded build provenance separately fingerprints 877 prepared-runtime
 files and 30,030 translation-input files. A pin or fingerprint identifies an
@@ -44,9 +44,38 @@ this main-library compilation database. The normal build guide reconstructs
 inputs using the pinned bootstrap and an owner's supported game image; that
 recipe has not been independently reproduced from this source archive alone.
 
+## Generated wrapper origins
+
+The Android owner and an independent Astra Medium reviewer completed a read-only
+classification of all 17 wrappers, checking their hashes and one compilation
+entry per wrapper. No builds, device actions or binary payload reads were needed.
+
+- Four CMake precompiled-header wrappers use forced sibling headers that lead to
+  `mkw_pch.h`.
+- Eleven unity wrappers follow the pinned runtime's `cmake/PublicProducts.cmake`
+  grouping recipe. Their 73 distinct source includes comprise 41 byte-identical
+  upstream files, 30 modified files with corresponding tracked patch headers,
+  and two private generated inputs. Matching patch headers do not establish a
+  fresh successful patch replay.
+- Two assembly wrappers exactly match the Android section-name rewrite of their
+  generated originals. Their 13 binary-include paths exist locally; this review
+  did not read or hash those binary contents.
+
+The upstream revision is `1912292c804ff9b1b79938de89369ec4496f9fff`.
+Preparation uses `scripts/prepare-ios-game-runtime.sh` and
+`scripts/prepare-android-game-runtime.sh`; translator preparation and generation
+use `scripts/prepare-patched-translator.sh`, `scripts/translate-retro-rewind.sh`
+and `scripts/generate-g8-full-title.sh`. The two private unity inputs are
+`guest_symbol_table.cpp` and `data_sections_init.cpp`.
+
+This resolves the 17-wrapper classification. Wrapper identities bind reference
+text, not all historical transitive build inputs. Exact dependency/prebuilt
+provenance, source delivery and independent reconstruction remain open. Do not
+repeat this classification or upload private generated inputs to close those gaps.
+
 ## Concrete remaining work
 
-1. Map the remaining generated inputs and every linked dependency to retained
+1. Bind transitive generated inputs and every linked dependency to retained
    source, tracked modifications and the exact build recipe. Do not substitute
    an upstream version merely because its name matches.
 2. Determine the complete source delivery required for this binary, then supply
