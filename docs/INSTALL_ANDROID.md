@@ -2,19 +2,20 @@
 
 ## Current update
 
-[**0.4.14 preview 1 / code 63**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1)
-is the current owner-accepted Android community update. It adds the refreshed
-chooser, reviewed-log reporting, Retro pack-update save protection and native
-frame overlap. It retains checked rating transfer and the public signing identity.
-See the [measured improvements and remaining limits](releases/v0.4.14-android-preview.1.md).
+[**0.4.16 Android 2 / code 65**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2)
+is the current owner-accepted Android community update. It refreshes the
+translated Retro Rewind 6.12.8 graph and retains the numeric console-serial
+correction. Physical Pixel 9 Pro XL testing confirmed launch, touch controls,
+Retro WFC login and worldwide lobby entry. See the
+[release notes](releases/v0.4.16-android.2.md).
 Menu transitions, graphics corruption on some GPUs, online stalls and cup crashes
 are not declared resolved. Download the APK, notices and checksums; the source
 archive is available for rebuilding and modification.
 
 ## Download and first launch
 
-1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-android-preview.1).
-   Download `KartPad-v0.4.14-android-preview.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2).
+   Download `KartPad-v0.4.16-android.2-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -31,7 +32,7 @@ archive is available for rebuilding and modification.
    not sufficient: the exact profile's identity checks must pass. Keep the
    original image backed up; neither the APK nor this repository supplies it.
 5. Choose Retro Rewind to download, verify and install the separately hosted
-   official **6.12.7** pack. Use matching current content; if KartPad reports a
+   official **6.12.8** pack. Use matching current content; if KartPad reports a
    newer incompatible profile, wait for a matching KartPad update. Never bypass
    the checks or replace executable files manually.
 
@@ -52,7 +53,8 @@ Never uninstall or clear storage as an update step.
 debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
-The first public package is code 21; the testing preview is code 28.
+The first public package was code 21; the testing preview was code 28. The
+current public package is code 65.
 Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
@@ -81,8 +83,9 @@ performance permits. Original 4:3 is the conservative aspect setting; widescreen
 and Fill Screen remain experimental. Pixel play at 3x was accepted, but the
 initial pipeline-compilation queue can cause pronounced hitches, and warm or
 track-dependent slowdown remains. This release does not promise sustained 60 FPS.
-Retro WFC login, worldwide matchmaking and live race play were owner-reported;
-complete results, reconnect and network-transition coverage remain open.
+Retro WFC login and worldwide lobby entry were accepted on the exact tested
+device. Complete results, reconnect and network-transition coverage remain open;
+frame drops and stutter remain known performance issues.
 
 ## Save location and PC transfer
 
