@@ -35,6 +35,14 @@ reverse existing service bans. Affected histories require service-admin review,
 not save deletion or identity regeneration. See the
 [backport evidence](iterations/issue94-csnum-hotfix.md).
 
+The 6.12.8 Android candidate was also checked against the recovered production
+service. A preserved profile first authenticated with the last working legacy
+serial behavior on the same network; the corrected numeric build then logged in
+and reached the worldwide lobby without clearing app data. This validates the
+profile migration path, not every historical account: a 22005 response still
+indicates a server-side CSNum/profile mismatch and may require service-admin
+reconciliation. The tested device continued to show frame drops and stutter.
+
 ## Historical production Retro WFC boundary on 6 September 2026
 
 Retro WFC's public health endpoint and room feed are reachable again and report

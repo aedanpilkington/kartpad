@@ -65,6 +65,12 @@ if [[ ! -d "$runtime_source" ]]; then
   "$repo_root/scripts/prepare-android-game-runtime.sh" \
     "$translation_root" "$runtime_source" "$runtime_build" "$runtime_product"
 fi
+if [[ ! -f "$runtime_source/include/sc_serial_contract.h" ||
+      ! -f "$runtime_source/src/hle/sc.cpp" ]] ||
+   ! grep -Fq 'RuntimeScSerial::Write' "$runtime_source/src/hle/sc.cpp"; then
+  echo "ERROR: prepared runtime is missing the numeric console-serial ABI guard; use a fresh runtime source" >&2
+  exit 1
+fi
 if [[ ! -f "$(dirname "$runtime_source")/generated/data_sections_init.cpp" ]]; then
   echo "ERROR: prepared runtime is not paired with its ignored generated graph" >&2
   exit 1
