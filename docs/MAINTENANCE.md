@@ -37,7 +37,7 @@ useful acceptance gate. The current family map is:
 | Family | Representative reports | Closure question |
 | --- | --- | --- |
 | Android launch/exit | #143, #200, #205, #208–210 | Does the selected profile reach and remain in gameplay on the affected Android build, with an identified exit class if it does not? |
-| Android online session | #123, #206 | Can the current matching pack enter a real lobby, race, results and reconnect sequence on the affected target? |
+| Android online session | #206 (with #123 historical evidence) | Can the current matching pack enter a real lobby, race, results and reconnect sequence on the affected target? Closed issue state is not technical acceptance. |
 | Retro installation/version | #192, #194 | Does the exact supported pack import and launch on the identified Android or Mac build? Updater design is separate. |
 | Android cup transition | #128, #131 | Does the classified final-race/awards boundary survive on the affected target? |
 | Android renderer/geometry | #102, #104, #120, #137, #166, #193, #211 | Does the affected scene render correctly on the affected GPU with a correlated draw/shader explanation? |

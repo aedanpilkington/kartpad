@@ -732,6 +732,12 @@ class PriorityExecutionTests(unittest.TestCase):
         work = MAINTENANCE_LOOP.load_priorities(MAINTENANCE_LOOP.DEFAULT_PRIORITIES)
         self.assertTrue(work)
 
+    def test_closed_issue123_is_not_active_priority_work(self):
+        work = MAINTENANCE_LOOP.load_priorities(MAINTENANCE_LOOP.DEFAULT_PRIORITIES)
+        online = next(item for item in work if item["id"] == "android-online")
+        self.assertEqual(online["issues"], [206])
+        self.assertNotIn(123, online["issues"])
+
     def work(self, identity, priority, number, state="ready-local"):
         return {"id": identity, "priority": priority, "issues": [number], "state": state,
                 "next_action": "Deliver the retained candidate", "acceptance": "Matched affected-device result",
