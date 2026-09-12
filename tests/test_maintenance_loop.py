@@ -721,6 +721,13 @@ class MaintenanceLoopTests(unittest.TestCase):
 
 
 class PriorityExecutionTests(unittest.TestCase):
+    def test_issue123_does_not_repeat_obsolete_receive_window_plan(self):
+        plan, purpose = MAINTENANCE_LOOP.test_plan(123)
+
+        self.assertIsNone(plan)
+        self.assertIn("fresh-source", purpose)
+        self.assertIn("physical Retro VS disconnect", purpose)
+
     def test_committed_priority_queue_has_resolvable_checkpoints(self):
         work = MAINTENANCE_LOOP.load_priorities(MAINTENANCE_LOOP.DEFAULT_PRIORITIES)
         self.assertTrue(work)
