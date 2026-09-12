@@ -50,7 +50,7 @@
       "issues": [
         196
       ],
-      "state": "awaiting-owner",
+      "state": "awaiting-reporter",
       "next_action": "Release/signing operator must regenerate translation and prepare a fresh runtime from a clean immutable source containing the REL report build-integrity correction. The old private aggregate lost its initial section-count check and must not be promoted; see docs/artifacts/2026-09-12/issue196-rel-report-build-integrity.md. Verify guarded compiled control flow, use a unique signed build, then have the matching iPhone 17 Pro Max/iOS 27 tester perform in-place data-preserving Original and Retro launch/race/relaunch checks. Do not rebuild from the dirty checkout or treat historical simulator passes as acceptance of the new candidate.",
       "dependency": {
         "owner": "release/signing operator and matching iOS 27 tester",
@@ -66,11 +66,11 @@
       "issues": [
         206
       ],
-      "state": "awaiting-owner",
+      "state": "awaiting-reporter",
       "next_action": "Await #206's already requested reporter confirmation that Wi-Fi stays connected beyond the prior four/five-race window. The mobile-data-versus-Wi-Fi comparison was acknowledged at https://github.com/chrissotraidis/kartpad/issues/206#issuecomment-5642834780; it narrows a network-dependent subcase without proving a carrier/NAT or shared runtime cause. Do not repeat the acknowledgement, known build/device questions or generic log request. Issue #123 is closed upstream and retained only as historical evidence; its closure is not a technical online acceptance claim.",
       "dependency": {
-        "owner": "Android Pixel test owner",
-        "needs": "The attached Pixel, preserved app data and an authorized bounded Retro WFC VS attempt using a fresh-source trace candidate"
+        "owner": "#206 reporter",
+        "needs": "The already requested Wi-Fi endurance confirmation beyond the prior four/five-race window; no reinstall, data clear or generic log request"
       },
       "acceptance": "Exact candidate passes login, matching, race, results, repeat and reconnect; a #206 endurance result must exceed its reported 4-5-race failure window. Dashboard entry alone does not pass.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
