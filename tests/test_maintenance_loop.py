@@ -737,6 +737,8 @@ class PriorityExecutionTests(unittest.TestCase):
         online = next(item for item in work if item["id"] == "android-online")
         self.assertEqual(online["issues"], [206])
         self.assertNotIn(123, online["issues"])
+        self.assertEqual(online["state"], "awaiting-reporter")
+        self.assertEqual(online["dependency"]["owner"], "#206 reporter")
 
     def work(self, identity, priority, number, state="ready-local"):
         return {"id": identity, "priority": priority, "issues": [number], "state": state,
