@@ -66,7 +66,7 @@
         206
       ],
       "state": "awaiting-owner",
-      "next_action": "Pixel test owner must run one fresh trace candidate with the budget reserved/reset at Retro WFC session entry, then capture the VS lobby-to-race transition and re-entry. Correlate peer/session, EOF/error/close, guest deadline and deferred completion before any timeout or source change. Separately, respond to #206's new mobile-data-versus-Wi-Fi result; it narrows a network-dependent subcase without proving a carrier/NAT or shared #123 cause. Confirm Wi-Fi endurance beyond the prior four/five-race window using the existing build/device details.",
+      "next_action": "Pixel test owner must run one fresh trace candidate with the budget reserved/reset at Retro WFC session entry, then capture the VS lobby-to-race transition and re-entry. Correlate peer/session, EOF/error/close, guest deadline and deferred completion before any timeout or source change. Separately, await #206's reporter confirmation that Wi-Fi stays connected beyond the prior four/five-race window. The mobile-data-versus-Wi-Fi comparison was acknowledged at https://github.com/chrissotraidis/kartpad/issues/206#issuecomment-5642834780; it narrows a network-dependent subcase without proving a carrier/NAT or shared #123 cause. Do not repeat the acknowledgement, known build/device questions or generic log request.",
       "dependency": {
         "owner": "Android Pixel test owner",
         "needs": "The attached Pixel, preserved app data and an authorized bounded Retro WFC VS attempt using a fresh-source trace candidate"
