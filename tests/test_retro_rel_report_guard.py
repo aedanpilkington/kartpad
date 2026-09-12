@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import re
 import shutil
@@ -126,6 +127,35 @@ class RelReportGuardTests(unittest.TestCase):
             translate(profile, REPO, self.root, self.root, 1, None)
         GUARD.inject(compiled)
         translate(profile, REPO, self.root, self.root, 1, None)
+
+    def test_pinned_6128_builder_accepts_current_mod_count_and_rejects_stale_count(self):
+        data = json.loads((REPO / 'builder/profiles/mkwii-rmcp01-rev0.json').read_text())
+        self.assertEqual(data['retroRewind']['version'], '6.12.8')
+        # Keep the real mod-count pin; one guarded fixture stands in for the base graph.
+        data['translation']['expectedGeneratedFunctions'] = 1
+        data['translation']['expectedBaseFunctions'] = 1
+        profile = Profile(Path('fixture.json'), data)
+        functions = self.root / 'functions'
+        functions.mkdir()
+        standalone = functions / 'func_8000A440.cpp'
+        standalone.write_text(FUNCTION)
+        GUARD.inject(standalone)
+        shards = self.root / 'build_shards'
+        shards.mkdir()
+        compiled = shards / 'shard.cpp'
+        compiled.write_text(standalone.read_text())
+        write_graph(shards, [compiled])
+        graph = shards / 'shards.cmake'
+        template = graph.read_text()
+        for count in (4188, 4094, 4095, 4096):
+            with self.subTest(mod_functions=count):
+                graph.write_text(template.replace('MKW_RETRO_REWIND_FUNCTION_COUNT 1)',
+                                                  f'MKW_RETRO_REWIND_FUNCTION_COUNT {count})'))
+                if count == 4095:
+                    translate(profile, REPO, self.root, self.root, 1, None)
+                else:
+                    with self.assertRaisesRegex(BuildError, 'cached translation failed profile validation'):
+                        translate(profile, REPO, self.root, self.root, 1, None)
 
     def test_fresh_builder_guards_cached_bundle_output_after_emission(self):
         profile = Profile(Path('synthetic.json'), {'game': {'region': 'P'}, 'translation': {
