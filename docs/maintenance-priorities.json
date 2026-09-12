@@ -30,10 +30,12 @@
         210,
         128,
         131,
-        207
+        207,
+        215,
+        216
       ],
       "state": "awaiting-reporter",
-      "next_action": "Use one matching OS exit or final transition excerpt per distinct launch/cup/race failure. Keep #208 canonical for #209/#210; no speculative common-runtime patch or repeated diagnostics request.",
+      "next_action": "Use one matching OS exit or final transition excerpt per distinct launch/cup/race failure. Keep #208 canonical for #209/#210; no speculative common-runtime patch or repeated diagnostics request. For #215 and #216, await the already requested chooser-versus-Android-home destination, selected profile/import completion and one short redacted exit result; keep the two devices as separate subcases.",
       "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
       "dependency": {
         "owner": "the named reporters in each linked issue",

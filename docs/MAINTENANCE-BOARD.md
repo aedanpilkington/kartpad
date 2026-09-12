@@ -1,6 +1,6 @@
 # Maintenance work and test board
 
-Snapshot: 12 September 2026. Current GitHub refresh: 42 open issues. Start at the
+Snapshot: 12 September 2026. Current GitHub refresh: 44 open issues. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
@@ -19,7 +19,7 @@ the next actions below supersede those dated assignments.
 | Priority / card | Issues / authors | Current decision and next actor |
 | --- | --- | --- |
 | 0 / `retro-save-loss` | #169 / 1 | `awaiting-reporter`: classify lost progress and ordinary exit versus pack replacement from the existing request. Do not deliberately lose more data. |
-| 1 / `android-exits` | #143, #200, #205, #208–210, #128, #131, #207 / 7 | `awaiting-reporter`: one matching exit classification per distinct launch/cup/race subcase. #208 is canonical for #209/#210; similar wording does not establish a common runtime defect. |
+| 1 / `android-exits` | #143, #200, #205, #208–210, #128, #131, #207, #215, #216 / 9 | `awaiting-reporter`: one matching exit classification per distinct launch/cup/race subcase. #208 is canonical for #209/#210; similar wording does not establish a common runtime defect. |
 | 1 / `ios27-startup` | #196 / 1 | `awaiting-owner`: signing/release operator prepares a clean, uniquely versioned corrected candidate; matching iPhone 17 Pro Max/iOS 27 tester accepts launch, race and relaunch in both profiles. Reuse completed simulator results. |
 | 2 / `android-online` | #123, #206 / 2 | `awaiting-owner`: Pixel owner captures the session-entry-reserved trace through VS lobby-to-race and re-entry. Separate #206's four/five-race endurance failure; no timeout patch from an ambiguous trace. |
 | 3 / `adreno-geometry` | #102, #104, #120, #137, #166, #193, #211 / 7 | `awaiting-owner`: release operator and affected-device tester establish compatible signing/delivery for the retained dynamic/literal/dynamic character-draw comparison. No GPU-wide cause or correction is established. |
@@ -45,7 +45,13 @@ when creating/updating a handoff. A request is not evidence that a test started.
 | [#166 additional device request](https://github.com/chrissotraidis/kartpad/issues/166#issuecomment-5628217442) | `requested`: exact device/build/profile and available renderer lines for the added report. Existing synthetic checks do not clear the failing gameplay draw. No duplicate probe/request. |
 | [#198 willingness](https://github.com/chrissotraidis/kartpad/issues/198#issuecomment-5640922655) | `preparing`: existing warmed evidence justifies a bounded function profile. Signer compatibility/data preservation and private delivery are maintainer dependencies. Do not re-ask willingness, attach the APK publicly or represent installation/testing as started. |
 | [#167 completed comparison](https://github.com/chrissotraidis/kartpad/issues/167#issuecomment-5608282606) | Supplied Infinix Hot 60 Pro / Android 16 / KartPad 0.4.11 / Original details and unchanged 1x aspect comparison are sufficient to stop that settings sweep. A selected warmed profile is a different decision; don't ask for the same device/build again. |
+| [#215 launch/exit reply](https://github.com/chrissotraidis/kartpad/issues/215#issuecomment-5643185926) | `awaiting-reporter`: Xiaomi 25057RN09G (shortened to 25057RN09 in the reply), Android 15/API 35, 0.4.16-android.2/build 65. Both Original and Retro repeatedly exit around the reported “about to play” step. Reply is posted; await only chooser-versus-Android-home destination, selected profile/import completion and one short redacted exit result. No shared runtime cause is established. |
+| [#216 black-surface/exit reply](https://github.com/chrissotraidis/kartpad/issues/216#issuecomment-5643186097) | `awaiting-reporter`: Galaxy Tab A (8.4-inch, 2020), One UI 3.1, Android 11/API 30, reported 0.4.16 Android; exact build unconfirmed. Both Original and Retro show a black game surface with touch controls, then exit. Reply is posted; await only chooser-versus-Android-home destination, selected profile/import completion and one short redacted exit result. Keep separate from #215 and renderer hypotheses. |
 | [#208 canonical launch report](https://github.com/chrissotraidis/kartpad/issues/208) | `requested`: chooser versus Android home, profile/import state and matching exit result; #209/#210 do not justify new requests or three engineering assignments. |
+
+For #215/#216, use the existing requests; do not ask for another reinstall, data
+clear, ROM or save. The reports establish repeated symptoms, not a classified
+OS exit or a common runtime defect.
 
 Private artifact identities, symbols and handoff process references remain in the
 ignored local maintenance checkpoint. Before delivering or installing, recheck the
