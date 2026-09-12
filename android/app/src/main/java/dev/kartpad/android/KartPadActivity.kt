@@ -946,7 +946,7 @@ class KartPadActivity : SDLActivity() {
         content.addView(settingsLabel(if (controllers.isEmpty()) {
             "No extended controller is connected. You can review or reset the saved mapping; connect a controller to test it."
         } else {
-            "Connected: ${controllers.joinToString()}. Only A, B, X, Y, and Z are remapped. Analog triggers, sticks, D-pad, Start, and the right shoulder stay direct."
+            "Connected: ${controllers.joinToString()}. A, B, X, Y, Z, R, and D-pad Up can be remapped. Analog triggers, sticks, D-pad Down/Left/Right, and Start stay direct."
         }))
         lateinit var dialog: AlertDialog
         KartPadControllerMapping.gameButtonNames.forEachIndexed { game, gameName ->
