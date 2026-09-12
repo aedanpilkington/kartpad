@@ -84,6 +84,12 @@ def read_state(directory):
 
 def write_state(directory, state):
     validate(state)
+    write_json(directory / 'state.json', state)
+
+
+def write_json(path, state):
+    """Atomically write a JSON checkpoint while the caller holds its lock."""
+    directory = path.parent
     fd, name = tempfile.mkstemp(prefix='.state-', suffix='.json', dir=directory)
     try:
         with os.fdopen(fd, 'w', encoding='utf-8') as stream:
@@ -91,7 +97,7 @@ def write_state(directory, state):
             stream.write('\n')
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(name, directory / 'state.json')
+        os.replace(name, path)
         directory_fd = os.open(directory, os.O_RDONLY)
         try:
             os.fsync(directory_fd)
