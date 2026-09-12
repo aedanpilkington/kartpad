@@ -11,12 +11,13 @@ Those documents must link to the board for current ownership/build/test state.
 
 ## Operating plan
 
-- One local hourly cron for this project. Secondary Luna Medium
-  (`secondary/gpt-5.6-luna`, medium reasoning) handles intake, classification,
-  public replies, prioritization and records. Its explicit automation
-  configuration is authoritative; a run-start check must stop work if the
-  actual route is not secondary Luna at medium/high. It does not substitute
-  for engineering.
+- One hourly heartbeat attached to the continuing coordinator task, preserving
+  its goal, context and ownership. Do not create a fresh project task each wake.
+  Secondary Luna Medium (`secondary/gpt-5.6-luna`, medium reasoning) handles
+  intake, classification, public replies, prioritization and records. Set the
+  target task's model explicitly: the heartbeat inherits it. A run-start check
+  must stop work if the actual route is not secondary Luna at medium/high.
+  Scheduling and model routing remain separate checks.
 - When fresh support evidence exists, one secondary Luna Medium intake worker
   (secondary Sol Medium if Luna is not callable) reconciles it and drafts replies.
   Otherwise no intake worker. The coordinator reviews/posts using shared receipts
@@ -42,7 +43,9 @@ Those documents must link to the board for current ownership/build/test state.
   as #184 may proceed while stability work is externally blocked; keep a clear
   scope and do not displace a ready high-severity regression.
 
-The former schedules were replaced by the single explicit secondary-Luna cron on 12 September.
+On 12 September the single hourly schedule was attached to the existing
+coordinator as a heartbeat. Secondary Luna Medium is set on the target task;
+the scheduler resumes that task rather than starting standalone coordinator runs.
 The replacement uses this versioned runbook and tested local action receipts;
 creating another independent hardware/reply loop would duplicate ownership.
 Activation and the first run are recorded in the dated

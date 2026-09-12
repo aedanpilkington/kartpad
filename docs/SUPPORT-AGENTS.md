@@ -24,6 +24,10 @@ evidence; they do not replace current issue comments or assign recurring work.
 
 ## Work each wake
 
+The hourly heartbeat resumes the same coordinator task and its goal. Keep its
+model set to secondary Luna Medium and verify the execution route at wakeup;
+do not start another coordinator or discard an unfinished goal.
+
 1. Check the existing coordinator claim, workers, worktrees and actual processes.
    Retain live owners. Read the hub and current priorities, then run the selector:
 

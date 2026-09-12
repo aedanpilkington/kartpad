@@ -198,10 +198,14 @@ reasoning by default; high is reserved for unusually ambiguous issue intake.
 Luna owns GitHub replies, family assignment, prioritization, documentation and
 loop state.
 
-The active `kartpad-coordinated-maintenance` automation is a local hourly cron
-with explicit `model = secondary/gpt-5.6-luna`, `reasoning_effort = medium`,
-and the KartPad project target. It is not a heartbeat with implicit model
-inheritance. A run-start identity check remains required as an execution guard.
+The active `kartpad-coordinated-maintenance` automation is an hourly heartbeat
+attached to the continuing KartPad coordinator task. Each wake resumes that task's
+goal, context and ownership; do not replace it with standalone project runs.
+The heartbeat inherits the target task's model, so keep that task on
+`secondary/gpt-5.6-luna` with medium reasoning. The heartbeat configuration alone
+does not prove model routing; verify the actual execution identity at every wake.
+Retain an unfinished goal and continue its next executable gate. A dependency
+checkpoint is not completion of a goal to fix the affected product path.
 
 At the start of every scheduled run, record the actual model, reasoning level
 and account route in the local cycle artifact. If the run is not actually on
