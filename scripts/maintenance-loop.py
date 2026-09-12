@@ -418,10 +418,13 @@ def score(issue: dict[str, Any], now: dt.datetime) -> tuple[int, list[str]]:
 
 def test_plan(issue_number: int) -> tuple[list[str] | None, str]:
     if issue_number == 123:
-        return (
-            ["scripts/test-android-network-receive-window.sh"],
-            "Android blocking-receive contract for the Pixel online-menu stall candidate; physical WFC race/reconnect acceptance remains required",
-        )
+        # The Android-only 500 ms receive-window candidate reached the WFC
+        # dashboard but still disconnected before a Retro VS race.  Re-running
+        # its host contract cannot change that evidence and made the hourly
+        # selector spend cycles on an externally blocked issue.  Keep #123 in
+        # the queue for the required fresh-source trace and physical session,
+        # but do not present obsolete local work as an executable plan.
+        return None, EXTERNAL_NEXT_ACTIONS[123]
     if issue_number == 200:
         return (
             [
