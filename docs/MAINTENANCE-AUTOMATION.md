@@ -1,31 +1,39 @@
 # Maintenance coordinator
 
-Use one continuing coordinator for intake, engineering handoffs and test results.
+Start at [SUPPORT-AGENTS.md](SUPPORT-AGENTS.md). Use one continuing coordinator
+for intake, engineering handoffs and test results.
 The [maintenance board](MAINTENANCE-BOARD.md) is the **only tracked active queue**.
+[maintenance-priorities.json](maintenance-priorities.json) supplies its executable
+priority order, readiness and next gate; do not create a separate order in prose.
 [Known issues](KNOWN-ISSUES.md) preserves report evidence, [technical debt](TECH-DEBT.md)
 explains engineering gaps, and [future features](FUTURE-FEATURES.md) holds proposals.
 Those documents must link to the board for current ownership/build/test state.
 
 ## Operating plan
 
-- One two-hour heartbeat in the existing coordinator task. Astra Light
-  (`primary/gpt-6-astra`, low reasoning) handles intake, classification, public
-  replies, prioritization and records. It does not substitute for engineering.
-- At most two temporary Astra Medium workers (`primary/gpt-6-astra`, medium
-  reasoning), normally one investigator and one independent reviewer/tester.
-  A second independent Apple task can use an otherwise idle slot. Self-contained
-  assignments, no nested delegation, and collect each result before more dispatch.
+- One local hourly cron for this project. Secondary Luna Medium
+  (`secondary/gpt-5.6-luna`, medium reasoning) handles intake, classification,
+  public replies, prioritization and records. Its explicit automation
+  configuration is authoritative; a run-start check must stop work if the
+  actual route is not secondary Luna at medium/high. It does not substitute
+  for engineering.
+- When fresh support evidence exists, one secondary Luna Medium intake worker
+  (secondary Sol Medium if Luna is not callable) reconciles it and drafts replies.
+  Otherwise no intake worker. The coordinator reviews/posts using shared receipts
+  and alone edits priorities/state. At most one secondary Astra Medium worker
+  tackles a bounded hard engineering question concurrently. No primary Astra,
+  nested delegation or duplicate audit. If no allowed intake model is callable,
+  the coordinator performs intake directly.
 - One heavy native build or device session at a time on this host. Check existing
   manual work and real processes before assigning either. A failed task does not
   prove its build has stopped; an old owner label does not reserve work forever.
 - Keep one primary investigation through its next distinguishing result. Use a
   roughly 60–90 minute bounded assignment; retain a safe checkpoint/process handle
   for longer work. This is a planning limit, not a scheduler-enforced timeout.
-- Pilot capacity: at most two new engineering blocks per Japan calendar day,
-  normally 60–90 minutes each. Record the date and dispatched work references in
-  the local checkpoint before dispatch; intake and collecting finished results
-  continue after that allocation. This is coordinator policy, not a hard helper
-  timeout. A build already running keeps its owner and process handle.
+- Continue useful steps within each wake while capacity and safe ownership allow.
+  There is no two-block daily quota or one-action hourly limit. Keep individual
+  investigations bounded and checkpoint real execution/resource limits. A build
+  already running keeps its owner and process handle.
 - Test already published relevant changes before producing a replacement.
   A new candidate needs reviewed source or a justified diagnostic, an exact
   configuration and an identified tester or executable fixture.
@@ -34,7 +42,7 @@ Those documents must link to the board for current ownership/build/test state.
   as #184 may proceed while stability work is externally blocked; keep a clear
   scope and do not displace a ready high-severity regression.
 
-The two former schedules were deleted at Christopher's request on 10September.
+The former schedules were replaced by the single explicit secondary-Luna cron on 12 September.
 The replacement uses this versioned runbook and tested local action receipts;
 creating another independent hardware/reply loop would duplicate ownership.
 Activation and the first run are recorded in the dated
@@ -45,7 +53,8 @@ Activation and the first run are recorded in the dated
 1. Acquire the shared coordinator claim. Inspect existing owners, ongoing
    processes, worker results, PR heads/reviews/checks and release/test handoffs.
    Recover a failed owner only after checking its task, worktree and processes.
-2. Refresh all open issues and relevant recent comments, including unlabeled
+2. Run normal selection to print the entire living priority context. Refresh all
+   open issues and relevant recent comments, including unlabeled
    Android reports and edited bodies. Classify symptom, platform/build,
    reproduction milestone, supplied diagnostics, severity and evidence gaps.
    Keep one record per reporter/device/candidate/symptom when a thread has several.
@@ -57,21 +66,35 @@ Activation and the first run are recorded in the dated
    test handoff; a response records pass/still-fails/unavailable. A failed comparison
    returns to a specific experiment, not an automatic rebuild. Prefer this gate
    over opening another investigation that duplicates finished source work.
-5. Delegate the highest-value ready next step. Name the exact source, failing
+5. Continue the active objective selected by `scripts/maintenance-loop.py` from
+   the priority list. The normal command does not execute tests. Support review
+   is separate; a new comment cannot reopen an unchanged host contract. Complete
+   candidate identity, signing-feasibility and delivery instructions locally
+   before declaring an external blocker. Name the exact source, failing
    operation, available evidence, competing hypothesis, predicted distinguishing
    observation, output and acceptance gate. Assign source-only work if hardware
    is unavailable and it can answer a new question. Otherwise park that item.
 6. Independently review substantive changes and relevant tests before integration
    through a reviewable PR. Record candidate/source/review/device states separately.
    Group routine documentation changes rather than one PR per status sentence.
-7. Persist receipts and update the board/checkpoint in place. Release the run claim
+7. Incorporate intake results, update priority reasons and evidence counts, and
+   reload the full context after each meaningful result, priority edit or compaction.
+   Continue the next useful step within this wake; one selector call is not a
+   completed maintenance session. The generated local `PRIORITIES.md` is a view
+   of the JSON source, never a second editable queue. Counts are distinct issue
+   authors/cases, not total affected users; duplicate reports and overlapping
+   families must not inflate priority. Classify unassigned incoming reports.
+   If all cards are externally blocked, check the existing board for genuinely
+   ready known work once and add its bounded action; otherwise wait for evidence.
+8. Persist receipts and update the board/checkpoint in place. Release the run claim
    only after workers and owned processes are finished or explicitly handed over.
    Quiet unchanged runs need no notification. Report meaningful results, failed
    execution or one concrete owner action; say when no reported bug was verified fixed.
 
-After two non-informative experiments, use independent review to change the
-experiment or identify the missing dependency. Re-reading old recordings and
-rerunning passing probes do not reset this counter. Preserve negative evidence.
+After two non-informative experiments or two hourly wake windows without advancing the active
+gate, change the experiment or record its exact external owner/action. Do not
+commission another broad audit. Re-reading old recordings, rerunning passing
+probes and editing status prose do not constitute a new result.
 
 ## Local ownership and action receipts
 
@@ -150,13 +173,24 @@ verified releases can be linked in useful support replies. No X/social posts are
 automatically sent. Substantive changes need independent review and appropriate
 checks before merge; unresolved regressions/acceptance requirements stay visible.
 
+## Keeping the queue in main
+
+After meaningful evidence or priority changes, update the JSON, board and affected
+matrix rows together. Group reviewed public documentation/process changes in a
+small PR from current main, run the maintenance checks, review the exact diff and
+merge when checks pass. Preserve unrelated dirty work and all private local
+receipts/artifacts. Do not make an empty commit or PR for a quiet wake. The
+[hub](SUPPORT-AGENTS.md#keep-the-hub-and-queue-current) owns the update procedure.
+
 ## First assignments and one-week review
 
-The board defines the current ordering. Initial handoffs are Android 63 for #123
-and #104; safe #169 save-path investigation; recover PR #112's exact candidate gate;
-then PR #157's same-scene two-player comparison. #128/#131 and #143 advance when a
-fixture or supplied exit evidence identifies the next operation. #184 is separately
-scoped so it can be estimated without asking for unrelated diagnostics.
+The executable priority list defines current work: actionable data loss,
+corrected iOS startup and classified Android exits, online race/session stability,
+affected Adreno geometry, then warmed performance. Track Original and Retro and
+each platform's actual online acceptance separately. Park genuinely external
+steps and finish the next ready handoff. Features and general process audits stay
+behind this work. A further process change is justified only by a concrete
+failure blocking the selected objective, and must return to that objective.
 
 Before activation, exercise competing claims, stale tokens, pending survival,
 completed-action deduplication, explicit negative-outcome retry and corrupt-state

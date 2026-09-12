@@ -239,6 +239,9 @@ No. Check [current platform acceptance](docs/STATUS.md), [known issues](docs/KNO
 
 ## Build and contribute
 
+Maintainers and automated support agents: start at the [support-agent hub](docs/SUPPORT-AGENTS.md)
+for priorities, replies, diagnostics and build-test handoffs.
+
 WiiCompiled translates PowerPC game code ahead of time; KartPad compiles it for
 ARM64 and renders through Vulkan on Android or Metal on Apple platforms.
 

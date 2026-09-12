@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "objective": "Stable gameplay and supported online play across Android and Apple builds, with Original and Retro tracked separately. Resolve launch/data-loss blockers first, then online session failures, real-game geometry and measured performance. Count completed affected-device outcomes, not diagnostics.",
+  "work": [
+    {
+      "id": "retro-save-loss",
+      "priority": 0,
+      "issues": [
+        169
+      ],
+      "state": "awaiting-reporter",
+      "next_action": "Classify which Retro progress is lost and whether normal exit or pack replacement triggers it; use the existing request and do not deliberately lose more data.",
+      "acceptance": "The identified state survives the exact exit/relaunch or replacement boundary on the affected build, with a data-preserving regression comparison.",
+      "dependency": {
+        "owner": "issue-169 reporter",
+        "needs": "The already requested lost-state and exit-path details; https://github.com/chrissotraidis/kartpad/issues/169"
+      },
+      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "priority_reason": "Preserve user progress; actionable data loss overrides other work."
+    },
+    {
+      "id": "android-exits",
+      "priority": 1,
+      "issues": [
+        143,
+        200,
+        205,
+        208,
+        209,
+        210,
+        128,
+        131,
+        207
+      ],
+      "state": "awaiting-reporter",
+      "next_action": "Use one matching OS exit or final transition excerpt per distinct launch/cup/race failure. Keep #208 canonical for #209/#210; no speculative common-runtime patch or repeated diagnostics request.",
+      "acceptance": "Each classified failure passes its affected import/start, cup-awards or race boundary on the exact target. Similar exits are not assumed to share a cause.",
+      "dependency": {
+        "owner": "the named reporters in each linked issue",
+        "needs": "Already requested process-exit classification and exact profile/transition; preserve separate subcases."
+      },
+      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "priority_reason": "Classified crashes block stable play; distinct exits require separate evidence."
+    },
+    {
+      "id": "ios27-startup",
+      "priority": 1,
+      "issues": [
+        196
+      ],
+      "state": "awaiting-owner",
+      "next_action": "Release/signing operator must create a clean uniquely versioned signed candidate from an immutable source boundary, then matching iPhone 17 Pro Max/iOS 27 tester must perform an in-place data-preserving Original and Retro launch/race/relaunch check. Do not rebuild or repeat simulator races from the current dirty checkout.",
+      "dependency": {
+        "owner": "release/signing operator and matching iOS 27 tester",
+        "needs": "A provisioning-capable signed candidate from a clean immutable source boundary and an attached/matched iPhone 17 Pro Max running iOS 27"
+      },
+      "acceptance": "The same corrected candidate preserves existing data and passes both Original and Retro launch, race and relaunch on the matching iPhone 17 Pro Max/iOS 27 target. Package/reporter/release acceptance remain separate.",
+      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "priority_reason": "A game that cannot launch cannot meet offline or online acceptance."
+    },
+    {
+      "id": "android-online",
+      "priority": 2,
+      "issues": [
+        123,
+        206
+      ],
+      "state": "awaiting-owner",
+      "next_action": "Pixel test owner must run one fresh trace candidate with the budget reserved/reset at Retro WFC session entry, then capture the VS lobby-to-race transition and re-entry. Correlate peer/session, EOF/error/close, guest deadline and deferred completion before any timeout or source change. Separately, respond to #206's new mobile-data-versus-Wi-Fi result; it narrows a network-dependent subcase without proving a carrier/NAT or shared #123 cause. Confirm Wi-Fi endurance beyond the prior four/five-race window using the existing build/device details.",
+      "dependency": {
+        "owner": "Android Pixel test owner",
+        "needs": "The attached Pixel, preserved app data and an authorized bounded Retro WFC VS attempt using a fresh-source trace candidate"
+      },
+      "acceptance": "Exact candidate passes login, matching, race, results, repeat and reconnect; a #206 endurance result must exceed its reported 4-5-race failure window. Dashboard entry alone does not pass.",
+      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "priority_reason": "Stable supported online play is the primary product objective after launch/data prerequisites."
+    },
+    {
+      "id": "adreno-geometry",
+      "priority": 3,
+      "issues": [
+        102,
+        104,
+        120,
+        137,
+        166,
+        193,
+        211
+      ],
+      "state": "awaiting-owner",
+      "next_action": "Android release/signing operator and an affected-device reporter must confirm a matching signer and tester handoff. Then build exactly the retained merge-guard source, audit the APK, and run dynamic-to-literal-to-dynamic on one failing character draw without clearing data; never reuse the overwritten .5 or scratch startup APK.",
+      "dependency": {
+        "owner": "Android release/signing operator and affected-device reporter",
+        "needs": "A matching-signer private handoff with confirmed S24/Adreno or Adreno 8xx target, current build/profile and permission to run the bounded three-phase comparison"
+      },
+      "acceptance": "A correlated actual bad draw discriminates the hypothesis; a subsequent narrow correction removes the reported corruption on the affected GPU with a matched baseline and no relevant regression.",
+      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "priority_reason": "Multiple independent reports show real-game corruption; complete a controlled affected-draw experiment."
+    },
+    {
+      "id": "warmed-performance",
+      "priority": 4,
+      "issues": [
+        198,
+        167,
+        103,
+        169,
+        195,
+        204,
+        207,
+        135
+      ],
+      "state": "awaiting-owner",
+      "next_action": "The #198 profileable APK, symbols and capture instructions are prepared, but its Android Debug signer differs from the public Community Release signer. The release operator must establish a compatible signed candidate or an explicitly approved data-preserving test route and an approved private transfer channel before the already willing reporter captures the documented approximately 20-second 99-Hz warmed Helio G85 profile. Do not claim the retained APK upgrades the public app in place, publish it, rebuild speculatively, uninstall, clear data or ask willingness again.",
+      "acceptance": "A matched warmed affected-device comparison shows a useful frame-time improvement with guest semantics and stability preserved. No FPS claim from a host microbenchmark.",
+      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "priority_reason": "Measure a slow warmed scene before optimizing; do not generalize one device to all GPUs.",
+      "dependency": {
+        "owner": "Christopher/release operator for private transfer; then issue-198 reporter for capture",
+        "needs": "A compatible signed candidate or approved data-preserving test route, plus an approved private transfer channel, followed by the matched warmed-scene profile."
+      }
+    }
+  ],
+  "priority_review": {
+    "date": "2026-09-12",
+    "reason": "User made stable online play across builds the central objective; startup/data loss remain prerequisites. New report volume alone does not override evidence or a feasible acceptance gate.",
+    "evidence": "docs/MAINTENANCE-BOARD.md"
+  }
+}
