@@ -34,6 +34,48 @@ def issue(number, title, body="", comments=None):
 
 
 class MaintenanceLoopTests(unittest.TestCase):
+    def test_intake_reads_more_than_100_issues_and_comment_pages(self):
+        def page(nodes, more=False, cursor=None):
+            return {"nodes": nodes, "pageInfo": {"hasNextPage": more, "endCursor": cursor}}
+
+        def report(number):
+            item = issue(number, "reported failure")
+            item["labels"] = {"nodes": item["labels"]}
+            item["comments"] = page([], more=number == 101, cursor="comments-first")
+            return item
+
+        first = [report(number) for number in range(1, 101)]
+        second = [report(101)]
+        comment1 = {"id": "older", "body": "edited old evidence", "author": None}
+        comment2 = {"id": "newer", "body": "still fails", "author": {"login": "reporter"}}
+        replies = [
+            {"data": {"repository": {"issues": page(first, True, "issues-next")}}},
+            {"data": {"repository": {"issues": page(second)}}},
+            {"data": {"repository": {"issue": {"comments": page([comment1], True, "comments-next")}}}},
+            {"data": {"repository": {"issue": {"comments": page([comment2])}}}},
+        ]
+        with patch.object(MAINTENANCE_LOOP, "command", side_effect=[json.dumps(r) for r in replies]) as command:
+            reports = MAINTENANCE_LOOP.load_open_issues()
+        self.assertEqual(len(reports), 101)
+        self.assertEqual([c["id"] for c in reports[-1]["comments"]], ["older", "newer"])
+        self.assertEqual(reports[-1]["comments"][0]["author"], {})
+        self.assertIn("cursor=issues-next", command.call_args_list[1].args)
+        self.assertIn("number=101", command.call_args_list[2].args)
+        self.assertNotIn("cursor=issues-next", command.call_args_list[2].args)
+        self.assertIn("cursor=comments-next", command.call_args_list[3].args)
+
+    def test_incomplete_github_response_does_not_return_partial_intake(self):
+        with patch.object(MAINTENANCE_LOOP, "command", return_value=json.dumps({"errors": [{"message": "query failed"}]})):
+            with self.assertRaisesRegex(RuntimeError, "incomplete"):
+                MAINTENANCE_LOOP.load_open_issues()
+
+    def test_stuck_pagination_does_not_spin_or_accept_partial_intake(self):
+        response = {"data": {"repository": {"issues": {"nodes": [], "pageInfo": {"hasNextPage": True, "endCursor": "stuck"}}}}}
+        with patch.object(MAINTENANCE_LOOP, "command", return_value=json.dumps(response)) as command:
+            with self.assertRaisesRegex(RuntimeError, "pagination did not advance"):
+                MAINTENANCE_LOOP.load_open_issues()
+        self.assertEqual(command.call_count, 2)
+
     def test_answered_blocker_does_not_starve_ready_renderer_work(self):
         answered_crash = issue(
             196,

@@ -143,19 +143,75 @@ def command(*args: str) -> str:
     return result.stdout
 
 
+def github_connection(query: str, connection: str, **variables: Any):
+    """Read every GraphQL page; errors cannot masquerade as a complete inbox."""
+    cursor = None
+    while True:
+        args = ["gh", "api", "graphql", "-f", f"query={query}"]
+        for name, value in variables.items():
+            args.extend(["-F" if isinstance(value, int) else "-f", f"{name}={value}"])
+        if cursor is not None:
+            args.extend(["-f", f"cursor={cursor}"])
+        response = json.loads(command(*args))
+        if response.get("errors"):
+            raise RuntimeError("GitHub returned incomplete issue/comment evidence")
+        page = response["data"]["repository"]
+        for part in connection.split("."):
+            page = page[part]
+        yield from page["nodes"]
+        if not page["pageInfo"]["hasNextPage"]:
+            return
+        next_cursor = page["pageInfo"]["endCursor"]
+        if not next_cursor or next_cursor == cursor:
+            raise RuntimeError("GitHub pagination did not advance; inbox is incomplete")
+        cursor = next_cursor
+
+
 def load_open_issues() -> list[dict[str, Any]]:
-    raw = command(
-        "gh",
-        "issue",
-        "list",
-        "--state",
-        "open",
-        "--limit",
-        "100",
-        "--json",
-        "number,title,body,labels,updatedAt,comments,url,author,createdAt",
-    )
-    return json.loads(raw)
+    comment_fields = "id body createdAt url author { login }"
+    issue_query = """
+      query($cursor: String) {
+        repository(owner: "chrissotraidis", name: "kartpad") {
+          issues(states: OPEN, first: 100, after: $cursor) {
+            nodes {
+              number title body url createdAt updatedAt author { login }
+              labels(first: 100) { nodes { name } }
+              comments(first: 100) {
+                nodes { COMMENT_FIELDS }
+                pageInfo { hasNextPage endCursor }
+              }
+            }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }
+    """.replace("COMMENT_FIELDS", comment_fields)
+    comment_query = """
+      query($number: Int!, $cursor: String) {
+        repository(owner: "chrissotraidis", name: "kartpad") {
+          issue(number: $number) {
+            comments(first: 100, after: $cursor) {
+              nodes { COMMENT_FIELDS }
+              pageInfo { hasNextPage endCursor }
+            }
+          }
+        }
+      }
+    """.replace("COMMENT_FIELDS", comment_fields)
+    issues = list(github_connection(issue_query, "issues"))
+    for issue in issues:
+        issue["author"] = issue.get("author") or {}
+        issue["labels"] = issue["labels"]["nodes"]
+        comments = issue["comments"]
+        # Re-read long threads through their own cursor so nested pagination
+        # cannot advance the outer issue connection or omit older edits.
+        issue["comments"] = (
+            list(github_connection(comment_query, "issue.comments", number=issue["number"]))
+            if comments["pageInfo"]["hasNextPage"] else comments["nodes"]
+        )
+        for comment in issue["comments"]:
+            comment["author"] = comment.get("author") or {}
+    return issues
 
 
 def parse_time(value: str) -> dt.datetime:
