@@ -51,13 +51,13 @@
         196
       ],
       "state": "awaiting-owner",
-      "next_action": "Release/signing operator must create a clean uniquely versioned signed candidate from an immutable source boundary, then matching iPhone 17 Pro Max/iOS 27 tester must perform an in-place data-preserving Original and Retro launch/race/relaunch check. Do not rebuild or repeat simulator races from the current dirty checkout.",
+      "next_action": "Release/signing operator must regenerate translation and prepare a fresh runtime from a clean immutable source containing the REL report build-integrity correction. The old private aggregate lost its initial section-count check and must not be promoted; see docs/artifacts/2026-09-12/issue196-rel-report-build-integrity.md. Verify guarded compiled control flow, use a unique signed build, then have the matching iPhone 17 Pro Max/iOS 27 tester perform in-place data-preserving Original and Retro launch/race/relaunch checks. Do not rebuild from the dirty checkout or treat historical simulator passes as acceptance of the new candidate.",
       "dependency": {
         "owner": "release/signing operator and matching iOS 27 tester",
         "needs": "A provisioning-capable signed candidate from a clean immutable source boundary and an attached/matched iPhone 17 Pro Max running iOS 27"
       },
       "acceptance": "The same corrected candidate preserves existing data and passes both Original and Retro launch, race and relaunch on the matching iPhone 17 Pro Max/iOS 27 target. Package/reporter/release acceptance remain separate.",
-      "checkpoint": "docs/MAINTENANCE-BOARD.md",
+      "checkpoint": "docs/artifacts/2026-09-12/issue196-rel-report-build-integrity.md",
       "priority_reason": "A game that cannot launch cannot meet offline or online acceptance."
     },
     {

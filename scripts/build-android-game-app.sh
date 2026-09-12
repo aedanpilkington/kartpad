@@ -43,6 +43,11 @@ runtime_source="$(absolute_from_repo "${2:-build/android-game-runtime-source}")"
 runtime_build="$(absolute_from_repo "${3:-build/android-game-runtime-build}")"
 discio_jni_root="${KARTPAD_DISCIO_JNI_ROOT:-$repo_root/build/dolphin-android-discio-jni}"
 
+python3 "$repo_root/scripts/inject-retro-rel-report-guard.py" --verify \
+  "$translation_root/functions/func_8000A440.cpp"
+python3 "$repo_root/scripts/inject-retro-rel-report-guard.py" --verify-shards \
+  "$translation_root/build_shards"
+
 native_target="WiiCompiled"
 runtime_product="base"
 if grep -Eq '^set\(MKW_HAVE_RETRO_REWIND_SHARDS ON\)' \

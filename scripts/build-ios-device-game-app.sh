@@ -42,6 +42,10 @@ if [[ ! -f "${translation_root}/build_shards/shards.cmake" ]]; then
   echo "ERROR: missing real-title translation: ${translation_root}" >&2
   exit 66
 fi
+python3 "${repo_root}/scripts/inject-retro-rel-report-guard.py" --verify \
+  "${translation_root}/functions/func_8000A440.cpp"
+python3 "${repo_root}/scripts/inject-retro-rel-report-guard.py" --verify-shards \
+  "${translation_root}/build_shards"
 if [[ ! -f "${dawn_archive}" ]] ||
    [[ "$(shasum -a 256 "${dawn_archive}" | awk '{print $1}')" != "${dawn_sha256}" ]]; then
   echo "ERROR: missing or mismatched pinned physical-iOS Dawn archive" >&2
