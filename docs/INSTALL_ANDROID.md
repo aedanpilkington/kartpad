@@ -71,6 +71,17 @@ and local reporting tools. Touch controls are movable, resizable and hideable;
 the floating movement stick follows your initial thumb position within its
 pickup area. Existing custom layouts are preserved.
 
+The next 0.4.17 update adds **Display → FPS Counter Size… → Small / Medium /
+Large**. This changes the counter text only; the separate **Show FPS Counter**
+toggle controls visibility. It also keeps the touch editor's **Back** and
+**Show/Hide** actions on screen in narrow landscape layouts. These additions
+are in the current device candidate and are not in public code 65.
+
+The same candidate adds **R** and **D-pad Up** under Controller Button Mapping.
+Assigning Right Shoulder to D-pad Up swaps its former R assignment to avoid
+triggering both actions. Existing valid custom mappings are retained; the
+affected Thor/Odin controller still needs its own trial.
+
 The maintainer accepted Original Grand Prix gameplay using Razer Kishi, with
 touch controls hiding automatically when connected. The default mapping is
 A/B/X/Y directly, left stick to steer, Start to pause, left shoulder to Z,

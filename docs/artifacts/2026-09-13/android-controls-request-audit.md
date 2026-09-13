@@ -51,3 +51,11 @@ entry, correlating visible frame gaps with receive-wait durations. Preserve
 licenses and saves and do not log network payloads. Only if multi-second waits
 correlate should a narrow lower-wait candidate be compared, including slow-login
 success; keep networking changes separate from HUD sizing.
+
+The next networking candidate also needs stronger host coverage: immediate and
+partial data, delayed data on both sides of the proposed wait, timeout/EAGAIN,
+EOF, readiness followed by error, and preservation of nonblocking/UDP behavior.
+The current blocking-stream tests cover the policy constant and flag combinations
+only. Any deferred receive experiment additionally needs cancellation, descriptor
+generation/reuse and exactly-once completion checks before hardware comparison.
+A shorter timeout that rejects a slow valid response is not a latency fix.
