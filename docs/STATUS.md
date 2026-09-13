@@ -31,6 +31,15 @@ The owner accepted the bounded iPhone 14 trial of **0.4.17/build 39** on
 in-place upgrade. The unsigned IPA delivers that executable with the original compilation
 manifest retained. This does not close the iPhone 17 Pro Max/iOS 27 report. See the [candidate handoff](artifacts/2026-09-13/platform-candidate-handoff.md).
 
+The owner also considers iPad and Mac good to release. That is owner acceptance;
+this pass's recorded physical Apple trial was on iPhone 14. Android code 78
+passed the owner's random Retro single-player race and touch-settings trial.
+A later candidate adds FPS text sizing and a responsive touch editor, which
+need their own UI checks. Two Android licenses are being preserved as requested;
+their presence does not prove that an update created an identity. Possible
+Retro WFC menu slowdown remains under investigation. See the
+[controls and acceptance audit](artifacts/2026-09-13/android-controls-request-audit.md).
+
 ## Established results and remaining limits
 
 - **Android:** the owner accepted Original Grand Prix with Kishi and automatic

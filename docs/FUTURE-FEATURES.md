@@ -7,26 +7,21 @@ pass.
 
 ## Android D-pad and shoulder remapping
 
-**Status:** Requested in [#184](https://github.com/chrissotraidis/kartpad/issues/184),
-10September2026; source scope reviewed, not implemented or released.
-The AYN Thor Max/Odin Controller user wants a physical right bumper to produce
-game D-pad Up for tricks/wheelies. Existing Android settings remap only game
-A/B/X/Y/Z to physical A/B/X/Y/left shoulder; D-pad and right shoulder remain direct.
-No logs are needed to establish the missing setting.
+**Status:** Implemented in [PR #219](https://github.com/chrissotraidis/kartpad/pull/219)
+and included in the current device candidate; public delivery and the affected
+AYN Thor/Odin controller trial remain separate gates.
 
-Start with explicit digital mappings for game D-pad directions and physical
-shoulders, preserving the existing menu/settings style and current defaults.
-Keep source-button and game-action names distinct. Migrate saved mappings without
-changing established controls. Decide conflicts explicitly so a remapped bumper
-does not silently fire both its old action and D-pad Up. Keep analog-trigger
-expansion separately scoped until its threshold/release behavior is tested.
+R and D-pad Up are configurable in Android Controller Button Mapping. Assigning
+Right Shoulder to D-pad Up swaps the old R assignment so actions remain distinct.
+Existing valid custom mappings migrate without a reset. Native mapping and
+Kotlin migration tests passed. Analog-trigger expansion remains separately scoped.
 
 Acceptance: press/release and held input, diagonals, simultaneous buttons,
 conflicts, reset, persistence across restart, disconnect/reconnect and touch
 handoff. Validate trick/wheelie and menus in Original and Retro on the named
 controller; unaffected default mappings must continue working. Android delivery
-does not establish iOS/macOS/tvOS parity. This can be a bounded source task while
-high-priority stability work awaits hardware, not a promise of the next release.
+does not establish iOS/macOS/tvOS parity. The next step is exact-candidate
+controller acceptance, not another implementation of the same mapping.
 
 ## RetroAchievements
 
