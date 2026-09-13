@@ -1,12 +1,13 @@
 # Install the KartPad unsigned IPA
 
-KartPad `v0.4.15-ios.1` (0.4.15, build 34) is the current unsigned ARM64 IPA
-for iPhone and iPad. It is a free community release, not an App Store or
-TestFlight build. Re-sign it with your existing Apple identity or compatible
-personal sideloading tool before installing. It adds reviewed-log acknowledgment
-and an inability explanation while retaining the newer chooser and help. See the
-[release notes](releases/v0.4.15-ios.1.md). Focused UIKit and package checks passed;
-new full-game physical Apple acceptance is not claimed for this reporting update.
+KartPad `v0.4.17-ios.1` (0.4.17, build 39) is the current unsigned ARM64 IPA
+for iPhone and iPad, with the official Retro Rewind 6.12.8 profile. Re-sign it
+with your existing compatible Apple identity and update in place.
+
+This build includes the corrected compiled REL-report guard. The owner accepted
+the bounded iPhone 14 race-and-relaunch trial, with saves and configuration
+preserved. The separate iPhone 17 Pro Max/iOS 27 report still needs matching
+hardware confirmation. See the [release notes](releases/v0.4.17-ios.1.md).
 
 The IPA declares **iOS/iPadOS 16 or newer** and an ARM64 device with Metal.
 The generic ARM64 startup correction is retained. The A10X reporter confirmed
@@ -20,11 +21,10 @@ Older IPAs should remain offline. This does not erase incorrect serial history
 already held by a server or clear bans; affected accounts may need service-admin
 help. Never reset identities or delete saves as a workaround.
 
-1. Download `KartPad-v0.4.15-ios.1-unsigned.ipa` and `SHA256SUMS` from the
-   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-ios.1).
-2. Run `shasum -a 256 KartPad-v0.4.15-ios.1-unsigned.ipa` on a Mac and
-   compare it with the IPA row in `SHA256SUMS`. The notices and shared source
-   have separate rows; the source download is optional for normal installation.
+1. Download `KartPad-v0.4.17-ios.1-unsigned.ipa` and `SHA256SUMS-ios` from the
+   [official iPhone/iPad release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1).
+2. Run `shasum -a 256 KartPad-v0.4.17-ios.1-unsigned.ipa` on a Mac and
+   compare it with the IPA row in `SHA256SUMS-ios`. The source download is optional for normal installation.
 3. Re-sign and install it with AltStore Classic plus AltServer or another
    compatible IPA-signing workflow. AltStore PAL cannot import arbitrary
    unsigned IPA files.
@@ -33,7 +33,7 @@ help. Never reset identities or delete saves as a workaround.
    DATA folder also works; convert RVZ before importing.
 5. Choose **Mario Kart Wii** for the original game or **Retro Rewind** for the
    optional expanded game. KartPad can download, verify, and install the
-   official version-locked Retro Rewind 6.12.7 full pack.
+   official version-locked Retro Rewind 6.12.8 full pack.
 
 Choose **Help** on the game chooser for the two-step setup instructions and
 GitHub guides. The normal landscape iPhone chooser fits without scrolling;

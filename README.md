@@ -45,8 +45,8 @@ chooser, game-data management, packaging, and release workflows.
 | Platform | Download | Setup |
 | --- | --- | --- |
 | Android ARM64 | [0.4.16 Android 2 · code 65](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad | [0.4.15 · build 34](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
-| Apple Silicon Mac | [0.4.15 · build 34](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.15-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
+| iPhone / iPad | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
 **Android 0.4.16 Android 2 is now available.** It refreshes the translated
@@ -63,12 +63,15 @@ These local mode comparisons are not an across-device or old-public-versus-new-p
 benchmark. Menu delays and device-specific graphics issues remain open. See the
 [measurements and release notes](docs/releases/v0.4.16-android.2.md).
 
-**iPhone/iPad 0.4.15** adds an actual log-review screen, an unchecked acknowledgment
-and an explanation when logs cannot be attached. It retains the newer chooser
-and setup help. **macOS 0.4.15** brings the Metal view-lifetime correction to Mac;
-it does not establish a tearing or performance fix. See the
-[iPhone/iPad](docs/releases/v0.4.15-ios.1.md) and
-[macOS](docs/releases/v0.4.15-macos.1.md) notes.
+**iPhone/iPad 0.4.17** supports Retro Rewind 6.12.8 and includes the corrected
+compiled REL-report guard. The owner accepted the bounded iPhone 14 trial;
+saves and configuration survived the in-place update. The affected iPhone 17
+Pro Max/iOS 27 test remains pending. See the
+[iPhone/iPad notes](docs/releases/v0.4.17-ios.1.md).
+**macOS 0.4.17** includes the viewport interpolation correction and compiled
+REL-report guard for Retro Rewind 6.12.8. Local Original/Retro rendering, audio
+and keyboard smoke checks passed; the reported two-player scene remains a
+separate test. See the [Mac notes](docs/releases/v0.4.17-macos.1.md).
 
 Download the checksums and accompanying notices with each package. The releases
 also include the [source bundle and rebuild instructions](docs/artifacts/2026-09-10/android-source-delivery.md). **Update in
@@ -109,7 +112,7 @@ known issues. Android's suggested starting point is **1x Native**. Sustained
 <details>
 <summary>Can I download an IPA or playable app?</summary>
 
-Yes—use the [platform downloads above](#downloads). The current official iPhone/iPad build is **0.4.14 build 33**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
+Yes—use the [platform downloads above](#downloads). The current public iPhone/iPad build is **0.4.17 build 39**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
 
 </details>
 
