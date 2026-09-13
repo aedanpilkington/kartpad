@@ -26,8 +26,6 @@
         200,
         205,
         208,
-        209,
-        210,
         128,
         131,
         207,
@@ -51,13 +49,13 @@
         196
       ],
       "state": "awaiting-reporter",
-      "next_action": "Release/signing operator must regenerate translation and prepare a fresh runtime from a clean immutable source containing the REL report build-integrity correction. The old private aggregate lost its initial section-count check and must not be promoted; see docs/artifacts/2026-09-12/issue196-rel-report-build-integrity.md. Verify guarded compiled control flow, use a unique signed build, then have the matching iPhone 17 Pro Max/iOS 27 tester perform in-place data-preserving Original and Retro launch/race/relaunch checks. Do not rebuild from the dirty checkout or treat historical simulator passes as acceptance of the new candidate.",
+      "next_action": "The corrected 0.4.17/build39 IPA is published and owner-accepted on iPhone14. Await the already requested in-place Original/Retro launch/race/relaunch result on the affected iPhone17 Pro Max/iOS27. Use https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5649940869; do not regenerate or repeat simulator checks without new source/evidence.",
       "dependency": {
-        "owner": "release/signing operator and matching iOS 27 tester",
-        "needs": "A provisioning-capable signed candidate from a clean immutable source boundary and an attached/matched iPhone 17 Pro Max running iOS 27"
+        "owner": "issue-196 affected-device reporter",
+        "needs": "Install the published unsigned IPA with the existing compatible identity and return the requested matching-device result; no uninstall or reset."
       },
       "acceptance": "The same corrected candidate preserves existing data and passes both Original and Retro launch, race and relaunch on the matching iPhone 17 Pro Max/iOS 27 target. Package/reporter/release acceptance remain separate.",
-      "checkpoint": "docs/artifacts/2026-09-12/issue196-rel-report-build-integrity.md",
+      "checkpoint": "docs/artifacts/2026-09-13/platform-candidate-handoff.md",
       "priority_reason": "A game that cannot launch cannot meet offline or online acceptance."
     },
     {
@@ -89,7 +87,7 @@
         211
       ],
       "state": "awaiting-owner",
-      "next_action": "Android release/signing operator and an affected-device reporter must confirm a matching signer and tester handoff. Then build exactly the retained merge-guard source, audit the APK, and run dynamic-to-literal-to-dynamic on one failing character draw without clearing data; never reuse the overwritten .5 or scratch startup APK.",
+      "next_action": "The established Community Release key is available and its certificate matches. Prepare and audit the retained diagnostic candidate for a compatible signed private handoff, then run the affected-device dynamic-to-literal-to-dynamic comparison. Do not treat ordinary code78 race acceptance as an Adreno graphics fix or reuse overwritten/scratch candidates.",
       "dependency": {
         "owner": "Android release/signing operator and affected-device reporter",
         "needs": "A matching-signer private handoff with confirmed S24/Adreno or Adreno 8xx target, current build/profile and permission to run the bounded three-phase comparison"
@@ -112,7 +110,7 @@
         135
       ],
       "state": "awaiting-owner",
-      "next_action": "The #198 profileable APK, symbols and capture instructions are prepared, but its Android Debug signer differs from the public Community Release signer. The release operator must establish a compatible signed candidate or an explicitly approved data-preserving test route and an approved private transfer channel before the already willing reporter captures the documented approximately 20-second 99-Hz warmed Helio G85 profile. Do not claim the retained APK upgrades the public app in place, publish it, rebuild speculatively, uninstall, clear data or ask willingness again.",
+      "next_action": "The established Community Release key is available and verified. Derive an audited compatible-signer profiler candidate and arrange the approved private handoff before the already willing #198 reporter performs the documented warmed Helio G85 capture. The retained debug APK itself is not a public-app update; no uninstall, data clear or repeated willingness request.",
       "acceptance": "A matched warmed affected-device comparison shows a useful frame-time improvement with guest semantics and stability preserved. No FPS claim from a host microbenchmark.",
       "checkpoint": "docs/MAINTENANCE-BOARD.md",
       "priority_reason": "Measure a slow warmed scene before optimizing; do not generalize one device to all GPUs.",
@@ -123,8 +121,8 @@
     }
   ],
   "priority_review": {
-    "date": "2026-09-12",
-    "reason": "User made stable online play across builds the central objective; startup/data loss remain prerequisites. New report volume alone does not override evidence or a feasible acceptance gate.",
+    "date": "2026-09-13",
+    "reason": "Reflect published corrected Apple builds, restored Android signing capability and closed duplicates. Owner code78 offline acceptance does not resolve online latency, other GPU reports or affected iOS27 acceptance.",
     "evidence": "docs/MAINTENANCE-BOARD.md"
   }
 }
