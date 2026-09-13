@@ -3,7 +3,7 @@
 [Coordinator runbook and implementation plan](MAINTENANCE-AUTOMATION.md) ·
 [Canonical active queue](MAINTENANCE-BOARD.md).
 
-Updated: 10 September 2026. This page summarizes acceptance, not a full test log.
+Updated: 13 September 2026. This page summarizes acceptance, not a full test log.
 Use the [maintenance board](MAINTENANCE-BOARD.md) for candidate ownership and
 next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
@@ -11,9 +11,9 @@ next actions, and [known issues](KNOWN-ISSUES.md) for current reports.
 
 | Platform | Package | Acceptance boundary |
 | --- | --- | --- |
-| Android | [0.4.14 preview 1, code 63](releases/v0.4.14-android-preview.1.md) | Owner-accepted payload, refreshed chooser, reporting, pack-update save protection and measured local rendering improvement; broader GPU/performance and cup behavior remain open |
-| iPhone / iPad | [0.4.15, build 34](releases/v0.4.15-ios.1.md) | New log-review acknowledgment/inability flow; retains accepted chooser. Full compile/archive and focused UIKit checks passed; no new full-game physical or performance acceptance claimed |
-| Apple Silicon Mac | [0.4.15, build 34](releases/v0.4.15-macos.1.md) | Metal view-lifetime correction, complete build/archive and native helper checks; tearing and external-display reports remain open |
+| Android | [0.4.16 Android 2, code 65](releases/v0.4.16-android.2.md) | Physical Pixel launch, touch, Retro WFC login and worldwide lobby entry; complete race/results/reconnect, broader GPU/performance and cup behavior remain open |
+| iPhone / iPad | [0.4.17, build 39](releases/v0.4.17-ios.1.md) | Corrected compiled REL guard, owner-accepted bounded iPhone 14 trial and preserved saves/configuration; iPhone 17 Pro Max/iOS 27 and online acceptance remain open |
+| Apple Silicon Mac | [0.4.17, build 39](releases/v0.4.17-macos.1.md) | Fresh build, viewport/REL checks and isolated Original/Retro rendering, audio and keyboard smoke; exact reporter two-player scene, full races and controller overhaul remain unaccepted |
 | Apple TV experimental | [0.4.11, build 9](releases/v0.4.11-tvos.1.md) | Published identity-fix and compiler-hardened package; exact-build hardware acceptance remains open |
 
 [Download and install](../README.md#downloads). All listed packages include the
@@ -23,6 +23,13 @@ identity history or bans. Older affected packages should stay offline.
 The September 10 releases include the [joint source delivery](artifacts/2026-09-10/android-source-delivery.md)
 and [verified download ledger](artifacts/2026-09-10/platform-release-verification.md).
 Historical local candidates are retained in their dated records.
+
+## Current device acceptance
+
+The owner accepted the bounded iPhone 14 trial of **0.4.17/build 39** on
+13 September. Saves, identity and configuration were preserved during the
+in-place upgrade. The unsigned IPA delivers that executable with the original compilation
+manifest retained. This does not close the iPhone 17 Pro Max/iOS 27 report. See the [candidate handoff](artifacts/2026-09-13/platform-candidate-handoff.md).
 
 ## Established results and remaining limits
 
