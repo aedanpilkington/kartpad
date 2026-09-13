@@ -256,6 +256,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('editorVisibility.text == "Show"', activity)
         self.assertIn('editorVisibility.text == "Hide"', activity)
         self.assertIn("editorBack.performClick()", activity)
+        self.assertIn("editorVisibility.right <= editorBar.width", activity)
         self.assertIn("touchSettingsDialog?.isShowing == true", activity)
         self.assertIn("resetTouchLayoutButton.performClick()", activity)
         self.assertIn("resetDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()", activity)
@@ -310,6 +311,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         for title in (
             '"KartPad"', '"Return to KartPad Menu"', '"Multiplayer…"',
             '"Show FPS Counter"', '"Controls"', '"Display"',
+            '"FPS Counter Size…"', '"Small"', '"Medium"', '"Large"',
             '"Game Data & Saves"', '"Controller Player Setup…"',
             '"Controller Button Mapping…"',
             '"Touch Control Settings…"', '"Motion Steering…"',
@@ -371,6 +373,26 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("ConsumeDisplaySettings", runtime_patch)
         self.assertIn("ConfigureMkwMobileAspectMode", runtime_patch)
         self.assertIn("VISetFrameBufferScale", runtime_patch)
+        settings = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadTouchSettings.kt").read_text()
+        self.assertIn("fps_size = 0", (REPO / "runtime/include/kartpad/android/runtime_settings.hpp").read_text())
+        self.assertIn("getInt(FPS_SIZE, 0).coerceIn(0, 2)", settings)
+        self.assertIn("putInt(FPS_SIZE, value.coerceIn(0, 2))", settings)
+        self.assertIn("KartPadTouchSettings.fpsSize(this)", activity)
+        self.assertIn("ImGui::SetWindowFontScale(g_androidFpsOverlayScale)",
+                      (REPO / "patches/wiicompiled-present-telemetry.patch").read_text())
+        telemetry_patch = (REPO / "patches/wiicompiled-present-telemetry.patch").read_text()
+        self.assertIn('ImGui::Text("Frame ms: p50 %.1f  p95 %.1f"', telemetry_patch)
+        self.assertIn('ImGui::Text("p99 %.1f  worst %.1f"', telemetry_patch)
+        self.assertIn("constexpr float kFpsScales[]{1.0f, 1.5f, 2.0f}", runtime_patch)
+
+    def test_touch_editor_actions_fit_the_available_landscape_width(self) -> None:
+        activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
+        editor = activity.split("private fun addLayoutEditorBar()", 1)[1].split(
+            "private fun beginLayoutEditing()", 1,
+        )[0]
+        self.assertIn("RelativeLayout.LayoutParams.MATCH_PARENT", editor)
+        self.assertIn("LinearLayout.LayoutParams(dp(88), dp(52))", editor)
+        self.assertEqual(editor.count("LinearLayout.LayoutParams(0, dp(52)"), 2)
 
     def test_display_choice_labels_match_ios_and_mark_experiments(self) -> None:
         android = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
@@ -482,10 +504,10 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("TEST_MENU", runner)
         self.assertNotIn("shell pm clear dev.kartpad.android", runner)
         self.assertIn("expected_fps_value", runner)
-        self.assertIn("top=8 controls=5 display=2 data=6 actions=16", runner)
+        self.assertIn("top=8 controls=5 display=3 data=6 actions=17", runner)
         self.assertIn("assert_icon_count 7", runner)
         self.assertIn("assert_icon_count 5", runner)
-        self.assertIn("assert_icon_count 2", runner)
+        self.assertIn("assert_icon_count 3", runner)
         self.assertIn("assert_icon_count 6", runner)
         for icon in ("hand", "gyroscope", "antenna", "refresh", "trash", "mii"):
             self.assertIn(f"R.drawable.ic_kartpad_{icon}", activity)
@@ -493,6 +515,8 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('open_top_action "Report a Problem…"', runner)
         self.assertIn('open_submenu_action "Controls" "Touch Control Settings…"', runner)
         self.assertIn('open_submenu_action "Display" "Aspect Ratio…"', runner)
+        self.assertIn('open_submenu_action "Display" "FPS Counter Size…"', runner)
+        self.assertIn('name="fps_size" value="2"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Manage Saves…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Player Identity…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Import or Reimport Wii Disc Image…"', runner)
