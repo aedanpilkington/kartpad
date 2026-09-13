@@ -1,6 +1,6 @@
 # Maintenance work and test board
 
-Snapshot: 12 September 2026. Current GitHub refresh: 43 open issues. Start at the
+Snapshot: 13 September 2026. Current GitHub refresh: 45 open issues. Start at the
 [support-agent hub](SUPPORT-AGENTS.md). The [priority source](maintenance-priorities.json)
 owns ordering, readiness, exact next actions and acceptance; this board records
 support decisions and evidence. Refresh GitHub and local ownership before acting.
@@ -20,7 +20,7 @@ the next actions below supersede those dated assignments.
 | --- | --- | --- |
 | 0 / `retro-save-loss` | #169 / 1 | `awaiting-reporter`: classify lost progress and ordinary exit versus pack replacement from the existing request. Do not deliberately lose more data. |
 | 1 / `android-exits` | #143, #200, #205, #208–210, #128, #131, #207, #215, #216 / 9 | `awaiting-reporter`: one matching exit classification per distinct launch/cup/race subcase. #208 is canonical for #209/#210; similar wording does not establish a common runtime defect. |
-| 1 / `ios27-startup` | #196 / 1 | `awaiting-owner`: signing/release operator prepares a clean, uniquely versioned corrected candidate; matching iPhone 17 Pro Max/iOS 27 tester accepts launch, race and relaunch in both profiles. Regenerate from the [guard/control-flow correction](artifacts/2026-09-12/issue196-rel-report-build-integrity.md); the old private aggregate must not be promoted. |
+| 1 / `ios27-startup` | #196 / 1 | `awaiting-reporter`: corrected [0.4.17/build39 IPA](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) published and owner-accepted on iPhone14; matching iPhone17 Pro Max/iOS27 Original/Retro race/relaunch result remains. Do not repeat completed build/simulator work. |
 | 2 / `android-online` | #206 / 1 | `awaiting-reporter`: await #206's already requested Wi-Fi endurance confirmation beyond the prior four/five-race window. #123 is closed upstream and remains historical evidence only; closure is not technical online acceptance. |
 | 3 / `adreno-geometry` | #102, #104, #120, #137, #166, #193, #211 / 7 | `awaiting-owner`: release operator and affected-device tester establish compatible signing/delivery for the retained dynamic/literal/dynamic character-draw comparison. No GPU-wide cause or correction is established. |
 | 4 / `warmed-performance` | #198, #167, #103, #169, #195, #204, #207, #135 / 8 | `awaiting-owner`: #198 tester is willing. The prepared profiler needs compatible signing or an approved data-preserving route **and** private delivery before capture. Retained Debug-signed APK is not a public-app in-place upgrade. |
@@ -38,7 +38,7 @@ when creating/updating a handoff. A request is not evidence that a test started.
 
 | Request / evidence | Disposition and next gate |
 | --- | --- |
-| [#196 published build audit](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5642179928) and [simulator result](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5640549937) | Public v0.4.16-ios.2/build 36 still contains the reported aggregate-shard load. Historical simulator passes do not accept the new correction: a [host regression](artifacts/2026-09-12/issue196-rel-report-build-integrity.md) exposed missing loop initialization/count-check code in that private aggregate. Regenerate a new signed candidate; matching hardware acceptance remains unperformed. |
+| [#196 corrected release handoff](https://github.com/chrissotraidis/kartpad/issues/196#issuecomment-5649940869) | Build36 retains the historical fault; published0.4.17/build39 contains the corrected compiled guard. Clean simulator checks, iPhone14 owner trial and public package audits completed. Matching iPhone17/iOS27 acceptance remains pending. |
 | [#123 closed upstream](https://github.com/chrissotraidis/kartpad/issues/123) and [last maintainer response](https://github.com/chrissotraidis/kartpad/issues/123#issuecomment-5644306282) | GitHub records `CLOSED` / `COMPLETED` at 2026-09-12T07:41:52Z. The final comment separates a music workaround for menu lag from reported online-race frame drops. This is a support-state reconciliation, not a technical fix or race/results/reconnect acceptance; do not assign more #123 work unless it is reopened with new evidence. |
 | [#206 cellular/Wi-Fi comparison](https://github.com/chrissotraidis/kartpad/issues/206#issuecomment-5642749400) | `awaiting-reporter`: [acknowledgement posted](https://github.com/chrissotraidis/kartpad/issues/206#issuecomment-5642834780). On Samsung SM-S921W / Android 14 / build 65, mobile data worked once while Wi-Fi reportedly works normally. This is sufficient to isolate a network-dependent subcase; it does not prove a NAT, carrier or guest-runtime cause. Await the already requested confirmation that Wi-Fi passes beyond the prior four/five-race window before claiming a stable workaround; do not repeat the acknowledgement, known build/device questions or generic log request. |
 | [#211 Retro screenshot response](https://github.com/chrissotraidis/kartpad/issues/211#issuecomment-5642589742) | `needs-one-detail`: Galaxy S24 Ultra and corruption in both profiles are supplied. Current in-app build and official pack version remain requested. Do not ask the handset again or infer GPU/driver. |
@@ -67,7 +67,7 @@ current comments and the linked source scope before promoting one into active wo
 | Retro installation/version | #192 download/import and #194 updater design. Verify current app/official pack and last completed step; separate executable compatibility from a request for automatic updates. |
 | Input/system UI | #119 bars, #184 mapping, #197 menu input, #202 aspect/display. Match physical/touch and chooser/gameplay paths; no renderer patch for an unclassified button/inset report. #184 has a bounded feature scope in [future features](FUTURE-FEATURES.md#android-d-pad-and-shoulder-remapping). |
 | External display | #100 and #199. Match local-only, wired and AirPlay transitions/recovery separately. Existing Metal/source checks are not affected-display acceptance. |
-| Apple controls/projection/multiplayer | #5, #91, #101, #127; open PRs [#112](https://github.com/chrissotraidis/kartpad/pull/112) and [#157](https://github.com/chrissotraidis/kartpad/pull/157). Reconcile current heads, candidate ownership and exact controller/split-screen scene before another build. |
+| Apple controls/projection/multiplayer | #5, #91, #101, #127; open PR [#112](https://github.com/chrissotraidis/kartpad/pull/112); [#157](https://github.com/chrissotraidis/kartpad/pull/157) shipped in Mac0.4.17. Reconcile current heads, candidate ownership and exact controller/split-screen scene before another build. |
 | Apple performance | #135. A10X startup is already accepted; remaining frame-rate concern needs its own affected-device comparison, separate from Android CPU/GPU hypotheses. |
 | Save/rating lifecycle | #105 manual transfer is accepted; automatic two-way sync and Mii scope remain distinct. #169 lost progress must be classified separately from performance and system bars. |
 | Feature/compatibility | #90 Original Wiimmfi, #91 controller/DSU, #203 disc revision/NAND/cheats. Define requested behavior, supported input and implementation boundary; do not request generic logs for missing features. |
@@ -86,3 +86,16 @@ current comments and the linked source scope before promoting one into active wo
 For every update, distinguish source corrected, candidate, host/simulator,
 physical/reporter acceptance and release. Commit reviewed public queue changes
 in the maintenance loop; no status-page edit establishes that a build is stable.
+
+## September 13 delivery and controls update
+
+The Community Release signing key has been located and its certificate verified.
+Earlier missing-key preflight conclusions were incorrect; private credentials
+remain outside this record. This removes the signing-location dependency, not
+the requirement to derive and audit each diagnostic/public candidate.
+
+Apple0.4.17 downloads are published. Android code78 passed the owner's bounded
+Retro race/touch trial; possible Retro WFC menu lag remains uncertain. Two
+licenses are accepted by the owner and must not be merged/reset. FPS-size and
+responsive-editor work (#238) is in progress; see the
+[controls audit](artifacts/2026-09-13/android-controls-request-audit.md).
