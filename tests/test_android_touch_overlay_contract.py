@@ -32,7 +32,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         source = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadLaunchActivity.kt").read_text()
         self.assertIn('if (pendingProfile == null) {', source)
         self.assertIn('requestedProfileFile().readText()', source)
-        self.assertIn('"Resume Mario Kart Wii"', source)
+        self.assertIn('current == profile -> "Resume Game"', source)
         self.assertIn('"Switch on Next Launch"', source)
         paused = source[source.index('private fun selectMode'):source.index('private fun continueSelectedMode')]
         self.assertIn('finish()', paused)
@@ -256,6 +256,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('editorVisibility.text == "Show"', activity)
         self.assertIn('editorVisibility.text == "Hide"', activity)
         self.assertIn("editorBack.performClick()", activity)
+        self.assertIn("editorVisibility.right <= editorBar.width", activity)
         self.assertIn("touchSettingsDialog?.isShowing == true", activity)
         self.assertIn("resetTouchLayoutButton.performClick()", activity)
         self.assertIn("resetDialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick()", activity)
@@ -310,6 +311,7 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         for title in (
             '"KartPad"', '"Return to KartPad Menu"', '"Multiplayer…"',
             '"Show FPS Counter"', '"Controls"', '"Display"',
+            '"FPS Counter Size…"', '"Small"', '"Medium"', '"Large"',
             '"Game Data & Saves"', '"Controller Player Setup…"',
             '"Controller Button Mapping…"',
             '"Touch Control Settings…"', '"Motion Steering…"',
@@ -328,11 +330,14 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("kotlin.system.exitProcess(0)", activity)
         manifest = (REPO / "android/app/src/main/AndroidManifest.xml").read_text()
         self.assertIn('android:process=":launcher"', manifest)
-        self.assertIn('hint = "What went wrong?"', activity)
-        self.assertIn('hint = "Area and what you were doing (optional)"', activity)
-        self.assertIn('hint = "Every time, sometimes, once, or not sure?"', activity)
-        self.assertIn('appendQueryParameter("report-id", id)', activity)
-        self.assertIn('appendQueryParameter("summary", problem.text.toString().trim())', activity)
+        report = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadProblemReportActivity.kt").read_text()
+        self.assertIn("KartPadProblemReportActivity::class.java", activity)
+        self.assertIn('android:name=".KartPadProblemReportActivity"', manifest)
+        self.assertIn('field("What went wrong?"', report)
+        self.assertIn('field("Area and what you were doing"', report)
+        self.assertIn('field("Every time, sometimes, once, or not sure?"', report)
+        self.assertIn('appendQueryParameter("report-id", reportId)', report)
+        self.assertIn('appendQueryParameter("summary", problem.text.toString().trim())', report)
         self.assertIn("PopupWindow(card, dp(320)", activity)
         self.assertIn("showAtLocation(mLayout, Gravity.TOP or Gravity.END", activity)
         self.assertIn("getInsetsIgnoringVisibility", activity)
@@ -368,6 +373,26 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("ConsumeDisplaySettings", runtime_patch)
         self.assertIn("ConfigureMkwMobileAspectMode", runtime_patch)
         self.assertIn("VISetFrameBufferScale", runtime_patch)
+        settings = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadTouchSettings.kt").read_text()
+        self.assertIn("fps_size = 0", (REPO / "runtime/include/kartpad/android/runtime_settings.hpp").read_text())
+        self.assertIn("getInt(FPS_SIZE, 0).coerceIn(0, 2)", settings)
+        self.assertIn("putInt(FPS_SIZE, value.coerceIn(0, 2))", settings)
+        self.assertIn("KartPadTouchSettings.fpsSize(this)", activity)
+        self.assertIn("ImGui::SetWindowFontScale(g_androidFpsOverlayScale)",
+                      (REPO / "patches/wiicompiled-present-telemetry.patch").read_text())
+        telemetry_patch = (REPO / "patches/wiicompiled-present-telemetry.patch").read_text()
+        self.assertIn('ImGui::Text("Frame ms: p50 %.1f  p95 %.1f"', telemetry_patch)
+        self.assertIn('ImGui::Text("p99 %.1f  worst %.1f"', telemetry_patch)
+        self.assertIn("constexpr float kFpsScales[]{1.0f, 1.5f, 2.0f}", runtime_patch)
+
+    def test_touch_editor_actions_fit_the_available_landscape_width(self) -> None:
+        activity = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
+        editor = activity.split("private fun addLayoutEditorBar()", 1)[1].split(
+            "private fun beginLayoutEditing()", 1,
+        )[0]
+        self.assertIn("RelativeLayout.LayoutParams.MATCH_PARENT", editor)
+        self.assertIn("LinearLayout.LayoutParams(dp(88), dp(52))", editor)
+        self.assertEqual(editor.count("LinearLayout.LayoutParams(0, dp(52)"), 2)
 
     def test_display_choice_labels_match_ios_and_mark_experiments(self) -> None:
         android = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadActivity.kt").read_text()
@@ -444,12 +469,12 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertNotIn('"Manage Game Data…",', verifier)
         self.assertNotIn("translationY = -dp(18).toFloat()", activity)
         self.assertIn("Gravity.TOP or Gravity.CENTER_HORIZONTAL", activity)
-        self.assertIn("setPadding(dp(28), dp(24), dp(28), dp(24))", activity)
-        self.assertIn("bottomMargin = dp(12)", activity)
-        self.assertIn('17f,\n                Color.argb(158', activity)
-        self.assertIn("private class ModeButton", activity)
-        self.assertIn("gravity = Gravity.CENTER", activity)
-        self.assertIn("setIcon(icon, dp(20), dp(12))", activity)
+        self.assertIn('"Help"', activity)
+        self.assertIn('openGuide("INSTALL_ANDROID.md")', activity)
+        self.assertIn('openGuide("SUPPORT.md")', activity)
+        self.assertIn('config.fontScale >= 1.3f', activity)
+        self.assertIn('config.screenHeightDp < 500 && !largeText', activity)
+        self.assertIn('private class ModeButton', activity)
         self.assertIn("Button::class.java.name", activity)
 
     def test_consolidated_menu_has_real_emulator_hierarchy_gate(self) -> None:
@@ -479,10 +504,10 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("TEST_MENU", runner)
         self.assertNotIn("shell pm clear dev.kartpad.android", runner)
         self.assertIn("expected_fps_value", runner)
-        self.assertIn("top=8 controls=5 display=2 data=6 actions=16", runner)
+        self.assertIn("top=8 controls=5 display=3 data=6 actions=17", runner)
         self.assertIn("assert_icon_count 7", runner)
         self.assertIn("assert_icon_count 5", runner)
-        self.assertIn("assert_icon_count 2", runner)
+        self.assertIn("assert_icon_count 3", runner)
         self.assertIn("assert_icon_count 6", runner)
         for icon in ("hand", "gyroscope", "antenna", "refresh", "trash", "mii"):
             self.assertIn(f"R.drawable.ic_kartpad_{icon}", activity)
@@ -490,6 +515,8 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn('open_top_action "Report a Problem…"', runner)
         self.assertIn('open_submenu_action "Controls" "Touch Control Settings…"', runner)
         self.assertIn('open_submenu_action "Display" "Aspect Ratio…"', runner)
+        self.assertIn('open_submenu_action "Display" "FPS Counter Size…"', runner)
+        self.assertIn('name="fps_size" value="2"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Manage Saves…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Player Identity…"', runner)
         self.assertIn('open_submenu_action "Game Data & Saves" "Import or Reimport Wii Disc Image…"', runner)
@@ -533,8 +560,10 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         store = (REPO / "android/app/src/main/java/dev/kartpad/android/KartPadControllerMapping.kt").read_text()
         native = (REPO / "runtime/include/kartpad/android/controller_mapping.hpp").read_text()
         patch = (REPO / "patches/wiicompiled-android-controller-mapping.patch").read_text()
-        self.assertIn('arrayOf("A", "B", "X", "Y", "Z")', store)
-        self.assertIn('"Left Shoulder"', store)
+        self.assertIn('arrayOf("A", "B", "X", "Y", "Z", "R", "D-pad Up")', store)
+        self.assertIn('"Right Shoulder"', store)
+        self.assertIn('"D-pad Up"', store)
+        self.assertIn('kartpad_controller_mapping_v2', store)
         self.assertIn("mapping.indexOf(physical)", store)
         self.assertIn("mapping[other] = previous", store)
         self.assertIn("showControllerMappingChoices(game)", activity)
@@ -542,6 +571,8 @@ class AndroidTouchOverlayContractTests(unittest.TestCase):
         self.assertIn("nativeApplyControllerMapping", activity)
         self.assertIn("IsValidControllerButtonMapping", native)
         self.assertIn("ApplyControllerButtonMapping", patch)
+        self.assertIn("kGamepadRightShoulder", native)
+        self.assertIn("kGamepadDpadUp", native)
         gamepad = (REPO / "runtime/include/kartpad/android/gamepad_contract.h").read_text()
         fixture = (REPO / "android/app/src/main/cpp/fixture_main.cpp").read_text()
         self.assertIn("map(kGamepadLeftShoulder, kClassicZr)", gamepad)

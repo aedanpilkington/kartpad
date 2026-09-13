@@ -17,7 +17,7 @@ chooser, game-data management, packaging, and release workflows.
   <img alt="Ahead-of-time static recompilation" src="https://img.shields.io/badge/PowerPC-static%20recompilation-FF9F0A">
   <img alt="macOS development target" src="https://img.shields.io/badge/macOS%20target-14%2B-0A84FF">
   <img alt="iPhone and iPad 0.4.14" src="https://img.shields.io/badge/iPhone%20%2F%20iPad-0.4.14-0A84FF">
-  <img alt="Retro Rewind supported" src="https://img.shields.io/badge/Retro%20Rewind-6.12.7-FF375F">
+  <img alt="Retro Rewind supported" src="https://img.shields.io/badge/Retro%20Rewind-6.12.8-FF375F">
   <img alt="Game data not included" src="https://img.shields.io/badge/game%20data-not%20included-FF453A">
 </p>
 
@@ -44,24 +44,37 @@ chooser, game-data management, packaging, and release workflows.
 
 | Platform | Download | Setup |
 | --- | --- | --- |
-| Android ARM64 | [0.4.10-android.1 · code 21](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
-| iPhone / iPad | [0.4.14 · build 33](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.14-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
-| Apple Silicon Mac | [0.4.11 · build 26](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
+| Android ARM64 | [0.4.16 Android 2 · code 65](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2) | [Android 9+ with Vulkan](docs/INSTALL_ANDROID.md) |
+| iPhone / iPad | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-ios.1) | [iOS/iPadOS 16+; re-sign the IPA](docs/INSTALL_IPA.md) |
+| Apple Silicon Mac | [0.4.17 · build 39](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.17-macos.1) | [macOS 14+](docs/INSTALL_MACOS.md) |
 | Apple TV experimental preview | [0.4.11 · build 9](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.11-tvos.1) | [tvOS 17+; re-sign the IPA](docs/INSTALL_TVOS.md) |
 
-Android also has an **[unstable 0.4.13 preview · code 28](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)**
-with Retro rating transfer and expanded diagnostics. Offline rating transfer is
-reporter-confirmed; broader device acceptance remains open. It is not a verified
-graphics, slowdown or online-stall fix.
+**Android 0.4.16 Android 2 is now available.** It refreshes the translated
+Retro Rewind 6.12.8 graph and retains the console-serial correction required by
+Retro WFC profiles. Physical Pixel 9 Pro XL acceptance confirmed launch,
+touch controls, Retro WFC login and worldwide lobby entry. Frame drops and
+stutter during online connection and gameplay remain known issues; sustained
+60 FPS is not claimed. It adds the refreshed game chooser,
+reviewed-log reporting, Retro pack-update save protection and native rendering
+improvements. Local Pixel 9 Pro XL tests at 2x/Fill measured about **58 FPS versus
+40–50 FPS** in the warm Grand Prix menu with the change enabled versus disabled;
+race gains were smaller. The owner accepted the final payload on hardware.
+These local mode comparisons are not an across-device or old-public-versus-new-public
+benchmark. Menu delays and device-specific graphics issues remain open. See the
+[measurements and release notes](docs/releases/v0.4.16-android.2.md).
 
-**0.4.14 is the current official iPhone/iPad build.** It adds a clearer game
-chooser with setup help, an iPhone layout that fits on one screen, clearer
-problem-report attachment instructions, and Apple Metal view recovery fixes.
-The owner accepted the build-32 candidate on iPad; build 33 publishes those
-changes with updated release metadata. See the
-[release notes](docs/releases/v0.4.14-ios.1.md).
+**iPhone/iPad 0.4.17** supports Retro Rewind 6.12.8 and includes the corrected
+compiled REL-report guard. The owner accepted the bounded iPhone 14 trial;
+saves and configuration survived the in-place update. The affected iPhone 17
+Pro Max/iOS 27 test remains pending. See the
+[iPhone/iPad notes](docs/releases/v0.4.17-ios.1.md).
+**macOS 0.4.17** includes the viewport interpolation correction and compiled
+REL-report guard for Retro Rewind 6.12.8. Local Original/Retro rendering, audio
+and keyboard smoke checks passed; the reported two-player scene remains a
+separate test. See the [Mac notes](docs/releases/v0.4.17-macos.1.md).
 
-Download the checksums and accompanying notices with each package. **Update in
+Download the checksums and accompanying notices with each package. The releases
+also include the [source bundle and rebuild instructions](docs/artifacts/2026-09-10/android-source-delivery.md). **Update in
 place using the same signing identity; do not uninstall or clear app data.**
 Private Android previews use a different signer and need a backed-up migration.
 
@@ -70,7 +83,7 @@ Private Android previews use a different signer and need a backed-up migration.
 [Frequently asked questions](#frequently-asked-questions) · [Controls](docs/MULTIPLAYER.md) · [Save transfer and troubleshooting](docs/SUPPORT.md)
 
 - Choose **Mario Kart Wii** or **Retro Rewind** when KartPad opens. Retro
-  Rewind 6.12.7 content installs separately; KartPad requires a matching native
+  Rewind 6.12.8 content installs separately; KartPad requires a matching native
   profile when the mod updates. Follow your platform's setup guide above.
 - Touch controls, motion steering and controllers are available on mobile;
   Mac also supports keyboard input. Touch layouts can be moved, resized and
@@ -82,7 +95,9 @@ Private Android previews use a different signer and need a backed-up migration.
   [support guide](docs/SUPPORT.md) and [known issues](docs/KNOWN-ISSUES.md).
 
 Android Original gameplay with a Razer Kishi was accepted on Pixel 9 Pro XL;
-Retro WFC login, worldwide matchmaking and live racing were owner-reported.
+the current Android release adds owner-confirmed Retro WFC login and worldwide
+lobby entry on that device. Frame drops, stutter, complete results and reconnect
+remain open.
 The iPad release candidate has owner-accepted controller gameplay and menu
 checks. These results do not establish every device, complete online results or
 reconnect behavior. Native private-room hosting and Wiimmfi support for
@@ -97,7 +112,7 @@ known issues. Android's suggested starting point is **1x Native**. Sustained
 <details>
 <summary>Can I download an IPA or playable app?</summary>
 
-Yes—use the [platform downloads above](#downloads). The current official iPhone/iPad build is **0.4.14 build 33**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
+Yes—use the [platform downloads above](#downloads). The current public iPhone/iPad build is **0.4.17 build 39**; Mac and Apple TV have separate packages. Apple IPAs need re-signing. Every package requires your own supported game data. A [Personal IPA Builder](docs/BUILDER.md) is also available.
 
 </details>
 
@@ -111,14 +126,19 @@ Android has a playable ARM64/Vulkan APK for Android 9+, plus an explicitly unsta
 <details>
 <summary>Does online multiplayer work?</summary>
 
-The owner reported Retro WFC login, matchmaking and live racing on Android. Separate isolated-server tests covered race results and lobby return. Those results do not establish complete production online behavior on every platform or preview. Native room hosting and Original Wiimmfi compatibility remain unfinished; entering a server address does not implement them. See [online status](docs/ONLINE.md) and [friend-room guidance](docs/MULTIPLAYER.md#private-friend-rooms).
+The owner confirmed Retro WFC login and worldwide lobby entry on the current
+Android build. Separate isolated-server tests covered race results and lobby
+return, but complete production online behavior, reconnect and every device are
+not established. Native room hosting and Original Wiimmfi compatibility remain
+unfinished; entering a server address does not implement them. See [online
+status](docs/ONLINE.md) and [friend-room guidance](docs/MULTIPLAYER.md#private-friend-rooms).
 
 </details>
 
 <details>
 <summary>Does KartPad support Retro Rewind, and what if it updates?</summary>
 
-Yes, with the separately installed **6.12.7** content and matching compiled profile. A newer Retro pack can require a new KartPad build; replacing files alone does not update translated game code. Apple checks the version before launch; Android checks the official version during installation and validates installed content at launch. Follow your [platform setup guide](#downloads) if a compatibility update is requested.
+Yes, with the separately installed **6.12.8** content and matching compiled profile. A newer Retro pack can require a new KartPad build; replacing files alone does not update translated game code. Apple checks the version before launch; Android checks the official version during installation and validates installed content at launch. Follow your [platform setup guide](#downloads) if a compatibility update is requested.
 
 </details>
 
@@ -221,6 +241,9 @@ No. Check [current platform acceptance](docs/STATUS.md), [known issues](docs/KNO
 </details>
 
 ## Build and contribute
+
+Maintainers and automated support agents: start at the [support-agent hub](docs/SUPPORT-AGENTS.md)
+for priorities, replies, diagnostics and build-test handoffs.
 
 WiiCompiled translates PowerPC game code ahead of time; KartPad compiles it for
 ARM64 and renders through Vulkan on Android or Metal on Apple platforms.

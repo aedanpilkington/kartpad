@@ -32,6 +32,10 @@ if [[ ! -f "${translation_root}/build_shards/shards.cmake" ]]; then
   echo "ERROR: missing real-title translation: ${translation_root}" >&2
   exit 1
 fi
+python3 "${repo_root}/scripts/inject-retro-rel-report-guard.py" --verify \
+  "${translation_root}/functions/func_8000A440.cpp"
+python3 "${repo_root}/scripts/inject-retro-rel-report-guard.py" --verify-shards \
+  "${translation_root}/build_shards"
 if [[ ! -f "${dawn_archive}" ]]; then
   echo "ERROR: missing pinned Dawn archive: ${dawn_archive}" >&2
   exit 1
@@ -64,6 +68,7 @@ patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-macos-trigger-bindings.patch"
 patch --batch -p1 -d "${runtime_source}/aurora-main" < \
   "${repo_root}/patches/aurora-macos-trigger-axis-isolation.patch"
+  "${repo_root}/patches/aurora-viewport-interpolation.patch"
 patch -p1 -d "${runtime_source}" < "${repo_root}/patches/wiicompiled-apple-runtime.patch"
 patch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-rfl-alarm-context.patch"
@@ -102,6 +107,9 @@ patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-macos-unified-settings.patch"
 patch --batch -p1 -d "${runtime_source}" < \
   "${repo_root}/patches/wiicompiled-macos-settings-shortcut.patch"
+# Guard the translated REL diagnostic path on every product sharing this runtime.
+patch --batch --fuzz=0 -p2 -d "${runtime_source}" < \
+  "${repo_root}/patches/wiicompiled-retro-rel-report-guard.patch"
 
 # Backport upstream e0e362b: SCGetProductSN returns a guest u32 for DWC csnum.
 patch --batch -p1 -d "${runtime_source}" < \

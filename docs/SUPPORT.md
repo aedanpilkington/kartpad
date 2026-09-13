@@ -1,5 +1,8 @@
 # KartPad support
 
+Maintainers and automated support agents: start at the [support-agent hub](SUPPORT-AGENTS.md)
+for priorities, replies, diagnostics and build-test handoffs.
+
 Use the [platform downloads](../README.md#downloads) and include the
 exact app version/build in a report. Update over the existing installation;
 do not uninstall or clear storage to troubleshoot. Follow the platform's

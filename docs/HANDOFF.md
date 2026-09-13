@@ -1,5 +1,8 @@
 # KartPad handoff
 
+[Coordinator runbook and implementation plan](MAINTENANCE-AUTOMATION.md) ·
+[Canonical active queue](MAINTENANCE-BOARD.md).
+
 Use the [maintenance board](MAINTENANCE-BOARD.md) for current ownership,
 candidates and next actions. [STATUS.md](STATUS.md) summarizes published
 packages and acceptance; [KNOWN-ISSUES.md](KNOWN-ISSUES.md) links investigations.

@@ -5,6 +5,24 @@ current release priority. An entry here is not a shipping promise and should
 not be presented as supported until its implementation and acceptance gates
 pass.
 
+## Android D-pad and shoulder remapping
+
+**Status:** Implemented in [PR #219](https://github.com/chrissotraidis/kartpad/pull/219)
+and included in the current device candidate; public delivery and the affected
+AYN Thor/Odin controller trial remain separate gates.
+
+R and D-pad Up are configurable in Android Controller Button Mapping. Assigning
+Right Shoulder to D-pad Up swaps the old R assignment so actions remain distinct.
+Existing valid custom mappings migrate without a reset. Native mapping and
+Kotlin migration tests passed. Analog-trigger expansion remains separately scoped.
+
+Acceptance: press/release and held input, diagonals, simultaneous buttons,
+conflicts, reset, persistence across restart, disconnect/reconnect and touch
+handoff. Validate trick/wheelie and menus in Original and Retro on the named
+controller; unaffected default mappings must continue working. Android delivery
+does not establish iOS/macOS/tvOS parity. The next step is exact-candidate
+controller acceptance, not another implementation of the same mapping.
+
 ## RetroAchievements
 
 **Status:** Researched; deferred.

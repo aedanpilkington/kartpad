@@ -8,7 +8,7 @@ gates are stated explicitly below.
 
 ## Current priorities across platforms
 
-Reviewed 9 September 2026 against [known issues](KNOWN-ISSUES.md), the
+Reviewed 10 September 2026 against [known issues](KNOWN-ISSUES.md), the
 [maintenance board](MAINTENANCE-BOARD.md) and their dated evidence. This document
 records engineering gaps and what would demonstrate progress; the board owns
 assignments and candidate status. The [Android investigation handoff](ANDROID-PERFORMANCE-HANDOFF.md)
@@ -17,14 +17,22 @@ bug. The tvOS experiments below remain useful, but are not the whole debt queue.
 
 ### Android stability and performance
 
-Android is the main current stability priority. Public preview 1/code 28 adds
-rating restore and diagnostics, with offline rating transfer now reporter-confirmed.
-It is **not** a verified graphics, freeze or crash fix. Preview 2/code 29 is a local candidate, not a published download.
+Android is the main current stability priority. The [maintenance board](MAINTENANCE-BOARD.md)
+owns current candidates, priorities and test requests; do not assign work from
+historical device-build rows below. Public Android **code 63 is published** with
+alarm ordering, frame overlap, initial graphics-state correction and pack-update
+save preservation. Issue-specific Adreno, freeze, cup and sustained-FPS acceptance
+remains open. Offline rating transfer is reporter-confirmed.
+
+New [#184](https://github.com/chrissotraidis/kartpad/issues/184) requests Android
+right-bumper to game D-pad Up mapping. This is a bounded
+[feature proposal](FUTURE-FEATURES.md#android-d-pad-and-shoulder-remapping),
+not a driver defect or a report blocked on logs.
 
 | Work / reports | Established evidence and remaining gap | Next discriminating check / acceptance |
 | --- | --- | --- |
 | Character/geometry corruption: [#102](https://github.com/chrissotraidis/kartpad/issues/102), [#104](https://github.com/chrissotraidis/kartpad/issues/104), [#120](https://github.com/chrissotraidis/kartpad/issues/120), [#137](https://github.com/chrissotraidis/kartpad/issues/137) | Multiple Adreno devices pass synthetic renderer probes while actual characters remain corrupted. Validation on/off has not resolved reported corruption; road textures may be a separate symptom. No verified rendering correction. | Reproduce a failing game draw and trace its transform/upload/shader inputs; verify a correction on affected hardware and a non-affected GPU. Avoid repeating already-completed synthetic or settings tests. [Draw evidence](artifacts/2026-09-09/graphics-preview28-evidence.md). |
-| Online-menu stalls: [#123](https://github.com/chrissotraidis/kartpad/issues/123) | A matched build-28 log shows a 2.222-second presentation gap with thermal status 0. Recorded receive waits lie outside that gap. A separate actual-HLE probe reproduced alarm rescheduling under a recursive pump guard; its Android correction is merged, but reporter causality is unproven. | Compare the exact corrected candidate on the affected gameplay path; correlate guest progress, callbacks and presentation. Require real freeze/audio behavior to improve before calling it a fix. [Timing review](artifacts/2026-09-09/pixel-online-log-review.md), [local candidate](artifacts/2026-09-09/android-preview2-local-candidate.md). |
+| Online-menu stalls: [#123](https://github.com/chrissotraidis/kartpad/issues/123) | A matched build-28 log shows a 2.222-second presentation gap with thermal status 0. Recorded receive waits lie outside that gap. A separate actual-HLE probe reproduced alarm rescheduling under a recursive pump guard; its Android correction is merged, but reporter causality is unproven. | Compare the exact corrected candidate on the affected gameplay path; correlate guest progress, callbacks and presentation. Require real freeze/audio behavior to improve before calling it a fix. [Timing review](artifacts/2026-09-09/pixel-online-log-review.md), [published candidate and test ledger](MAINTENANCE-BOARD.md#test-request-ledger). |
 | Slowdown, frame pacing and heat: [#103](https://github.com/chrissotraidis/kartpad/issues/103) | Performance varies with device power mode, scene, compilation and heat. An independently reviewed scalar-context optimization remains separate from released builds; a synthetic multiply improvement is not a game FPS gain. | Matched cold/warm runs at the same resolution, track and power mode, measuring frame-time tails, audio and thermal state. Benchmark the optimization in-game before integration or performance claims. [Review boundary](artifacts/2026-09-09/maintenance-source-reviews.md), [performance guide](PERF.md). |
 | End-of-cup crashes: [#128](https://github.com/chrissotraidis/kartpad/issues/128), [#131](https://github.com/chrissotraidis/kartpad/issues/131) | Reported after Next at the final race, before awards, with Original and Retro both reported affected. Shared awards/resource paths are identified; the matching termination cause is not. | Use the requested exit/console evidence to classify the failure, then exercise the affected awards transition. Do not infer a Retro-only bug or require destructive reimports. [Investigation](artifacts/2026-09-09/cup-transition-investigation.md). |
 | Game-launch crash: [#143](https://github.com/chrissotraidis/kartpad/issues/143) | Honor X7D / Snapdragon 685 report after import and Launch. Exact build/profile and matching termination evidence are still needed. | Separate importer completion from native launch and identify the failing boundary before choosing a CPU/GPU correction. Do not infer incompatibility from the chipset name alone. |
@@ -37,22 +45,24 @@ It is **not** a verified graphics, freeze or crash fix. Preview 2/code 29 is a l
   generic ARM64/RCpc-disabled correction. The final binary and initializer were
   audited. The reporter has now supplied original crash text for **0.4.0/build 15**;
   correlate it with that exact old binary, rather than the inspected 0.4.11.
-  Do not request the same report again. Build 29 physical A10X launch remains
-  pending. This is
-  distinct from the tvOS A12 gate below. [Build evidence](artifacts/2026-09-09/ios-preview-build29.md).
+  Do not request the same report again. The reporter confirmed build 29 startup
+  and Original/Retro loading on 9September; the remaining30–35 FPS concern is
+  separately tracked in the board. This is distinct from the tvOS A12 gate below. [Build evidence](artifacts/2026-09-09/ios-preview-build29.md).
 - **External displays (#100):** source review found that surface recovery can
   replace the SDL Metal view and detach its controls. A real mirroring trigger
-  is not established. Correct ownership with a forced-recovery regression,
-  then test wired/wireless connect, disconnect and resume on each platform.
+  is not established. PR #156 corrected ownership with native helper regression
+  evidence; the change is in current Apple releases. Test full-game wired/wireless
+  connect, disconnect and resume on each platform.
   [Source evidence](artifacts/2026-09-09/external-display-surface-ownership.md),
   [display plan](EXTERNAL-DISPLAYS.md).
-- **Mac input and two-player rendering:** PR #112 still needs capture-cancel
-  and physical-scancode corrections plus hardware acceptance. #127's character
-  offsets need a same-scene main/PR comparison; controller success does not
-  establish rendering correctness. [Current boundaries](KNOWN-ISSUES.md).
-- **Diagnostics:** richer context/provenance is published on Android preview 1
-  and iPhone/iPad build 29. Physical report export/share still needs acceptance
-  on the exact Apple package. Use existing targeted logs first; bounded samples
+- **Mac input and two-player rendering:** PR #112 head `a332264` clears the
+  focused source/native-harness corrections; integrated AppKit/layout/controller
+  and Original/Retro acceptance remains. PR #157 reproduces a split-screen
+  interpolation defect but needs exact-candidate same-scene gameplay. Neither
+  establishes Android geometry correctness. [Current assignments](MAINTENANCE-BOARD.md).
+- **Diagnostics:** reviewed-log acknowledgment/inability handling is published
+  on Android 63 and iPhone/iPad34. Focused runtime/UIKit checks passed;
+  full-game export/share and macOS/tvOS parity retain separate acceptance. Use existing targeted logs first; bounded samples
   can miss a failing draw or an indefinitely blocked call. More logging without
   a discriminating experiment is not itself a stability fix.
 - **Retro version compatibility and online behavior:** keep compiled profiles,
@@ -453,7 +463,8 @@ sufficient with the tested Apple Clang toolchain: it can still emit RCpc loads
 that fault on the A12 Apple TV. Physical iOS also uses a generic/RCpc-disabled
 baseline in
 [0.4.13 build 29](releases/v0.4.13-ios.1.md); macOS and Simulator tuning are
-separate. A10X iPad acceptance remains pending.
+separate. The A10X reporter has confirmed build 29 startup and game loading;
+this does not accept A12 tvOS or sustained A10X performance.
 
 Completed integration evidence:
 

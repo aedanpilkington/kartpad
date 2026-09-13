@@ -37,7 +37,6 @@ import java.io.FileOutputStream
 import java.nio.file.Files
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-import java.util.UUID
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 import org.libsdl.app.SDLActivity
@@ -575,6 +574,9 @@ class KartPadActivity : SDLActivity() {
     private fun showDisplayMenu() = showKartPadMenuPage(
         "Display",
         listOf(
+            MenuRow("FPS Counter Size…", R.drawable.ic_kartpad_speedometer) {
+                closeKartPadMenu(::showFpsSizeSettings)
+            },
             MenuRow("Aspect Ratio…", R.drawable.ic_kartpad_display) {
                 closeKartPadMenu(::showAspectRatioSettings)
             },
@@ -747,6 +749,19 @@ class KartPadActivity : SDLActivity() {
         applyDisplaySettings()
     }
 
+    private fun showFpsSizeSettings() {
+        val labels = arrayOf("Small", "Medium", "Large")
+        AlertDialog.Builder(this)
+            .setTitle("FPS Counter Size")
+            .setSingleChoiceItems(labels, KartPadTouchSettings.fpsSize(this)) { dialog, which ->
+                KartPadTouchSettings.setFpsSize(this, which)
+                applyDisplaySettings()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Back") { _, _ -> showDisplayMenu() }
+            .show()
+    }
+
     private fun confirmSwitchGameVersion() {
         AlertDialog.Builder(this)
             .setTitle("Switch Game Version")
@@ -778,6 +793,7 @@ class KartPadActivity : SDLActivity() {
     private fun applyDisplaySettings() {
         nativeApplyDisplaySettings(
             KartPadTouchSettings.showFps(this),
+            KartPadTouchSettings.fpsSize(this),
             KartPadTouchSettings.aspectMode(this),
             KartPadTouchSettings.resolutionScale(this),
         )
@@ -947,7 +963,7 @@ class KartPadActivity : SDLActivity() {
         content.addView(settingsLabel(if (controllers.isEmpty()) {
             "No extended controller is connected. You can review or reset the saved mapping; connect a controller to test it."
         } else {
-            "Connected: ${controllers.joinToString()}. Only A, B, X, Y, and Z are remapped. Analog triggers, sticks, D-pad, Start, and the right shoulder stay direct."
+            "Connected: ${controllers.joinToString()}. A, B, X, Y, Z, R, and D-pad Up can be remapped. Analog triggers, sticks, D-pad Down/Left/Right, and Start stay direct."
         }))
         lateinit var dialog: AlertDialog
         KartPadControllerMapping.gameButtonNames.forEachIndexed { game, gameName ->
@@ -1557,101 +1573,32 @@ class KartPadActivity : SDLActivity() {
         }
 
     private fun showReportProblem() {
-        val fields = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(24), dp(4), dp(24), 0)
+        val aspect = when (KartPadTouchSettings.aspectMode(this)) {
+            0 -> "Original 4:3"
+            1 -> "16:9 (Experimental)"
+            2 -> "Fill Screen (Experimental)"
+            else -> "Unknown"
         }
-        val problem = EditText(this).apply {
-            hint = "What went wrong?"
-            contentDescription = "What went wrong"
-            isSingleLine = false
-            minLines = 2
-            maxLines = 4
-        }
-        val area = EditText(this).apply {
-            hint = "Area and what you were doing (optional)"
-            contentDescription = "Area and what you were doing"
-            isSingleLine = true
-        }
-        val frequency = EditText(this).apply {
-            hint = "Every time, sometimes, once, or not sure?"
-            contentDescription = "How often the problem happens"
-            isSingleLine = true
-        }
-        fields.addView(problem)
-        fields.addView(area)
-        fields.addView(frequency)
-
-        fun reportId() = "KP-${UUID.randomUUID().toString().take(8).uppercase()}"
-        fun performanceReport() = buildString {
-            val aspect = when (KartPadTouchSettings.aspectMode(this@KartPadActivity)) {
-                0 -> "Original 4:3"
-                1 -> "16:9 (Experimental)"
-                2 -> "Fill Screen (Experimental)"
-                else -> "Unknown"
-            }
+        val performance = buildString {
             appendLine("Configured render resolution: ${KartPadTouchSettings.resolutionScale(this@KartPadActivity)}x")
             appendLine("Configured aspect: $aspect")
             append("Active renderer validation: ${if (KartPadRendererDiagnostics.active) "On" else "Off"}")
         }
-        fun diagnosticReport(id: String) = buildString {
-            appendLine("KartPad Android diagnostic report")
-            appendLine("Report ID: $id")
+        val technical = buildString {
             appendLine("Version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
-            appendLine("Android: ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
-            appendLine("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
+            appendLine("Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
+            appendLine("Device: ${Build.MANUFACTURER} ${Build.MODEL}")
             appendLine("Runtime profile: $runtimeProfile")
             appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
-            appendLine(performanceReport())
+            appendLine(performance)
             appendLine("Technical context:")
             appendLine(KartPadReportContext.snapshot(this@KartPadActivity, runtimeProfile, KartPadRendererDiagnostics.active).toString(2))
-            appendLine()
-            appendLine("What went wrong:")
-            appendLine(problem.text.toString().trim().ifBlank { "Not provided" })
-            appendLine()
-            appendLine("Area and what you were doing:")
-            appendLine(area.text.toString().trim().ifBlank { "Not provided" })
-            appendLine()
-            appendLine("Frequency:")
-            appendLine(frequency.text.toString().trim().ifBlank { "Not provided" })
         }
-        AlertDialog.Builder(this)
-            .setTitle("Report a Problem")
-            .setMessage("Answer briefly and KartPad will add a bounded technical summary. It excludes game data, saves, credentials, controller inputs, and local file paths. GitHub reports are public.")
-            .setView(fields)
-            .setPositiveButton("Share Report…") { _, _ ->
-                val id = reportId()
-                startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, "KartPad Android problem $id")
-                    putExtra(Intent.EXTRA_TEXT, diagnosticReport(id))
-                }, "Share KartPad report"))
-            }
-            .setNeutralButton("Report on GitHub") { _, _ ->
-                val id = reportId()
-                val summary = problem.text.toString().trim().ifBlank { "KartPad problem" }
-                val url = Uri.parse("https://github.com/chrissotraidis/kartpad/issues/new")
-                    .buildUpon()
-                    .appendQueryParameter("template", "bug_report.yml")
-                    .appendQueryParameter("title", "[Bug]: ${summary.take(100)}")
-                    .appendQueryParameter("report-id", id)
-                    .appendQueryParameter(
-                        "revision", "${BuildConfig.VERSION_NAME} (build ${BuildConfig.VERSION_CODE})",
-                    )
-                    .appendQueryParameter("platform", "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}; Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
-                    .appendQueryParameter("performance-profile", performanceReport())
-                    .appendQueryParameter("summary", problem.text.toString().trim())
-                    .appendQueryParameter("context", buildString {
-                        appendLine("Runtime profile: $runtimeProfile")
-                        if (runtimeProfile == "retro_rewind") appendLine("Retro Rewind release: ${RetroRewindRelease.VERSION}")
-                        append(area.text.toString().trim())
-                    })
-                    .appendQueryParameter("frequency", frequency.text.toString().trim())
-                    .build()
-                startActivity(Intent(Intent.ACTION_VIEW, url))
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        startActivity(Intent(this, KartPadProblemReportActivity::class.java).apply {
+            putExtra(KartPadProblemReportActivity.TECHNICAL_CONTEXT, technical)
+            putExtra(KartPadProblemReportActivity.PERFORMANCE, performance)
+            putExtra(KartPadProblemReportActivity.PROFILE, runtimeProfile)
+        })
     }
 
     private fun showParityBoundary(title: String, message: String) {
@@ -1827,7 +1774,7 @@ class KartPadActivity : SDLActivity() {
                                     "size=$savedSize hide=$savedHide modern=$savedModern"
                             }
                             check(nativeDebugDisplaySettings() ==
-                                "fps=true aspect=0 scale=1.0"
+                                "fps=true size=0 aspect=0 scale=1.0"
                             ) { "touch settings changed the display resolution" }
                             Log.i(
                                 TAG,
@@ -1863,6 +1810,9 @@ class KartPadActivity : SDLActivity() {
                     check(editorLabel.text == "A size" && editorSize.isEnabled &&
                         editorVisibility.isEnabled && editorVisibility.text == "Hide"
                     ) { "editor did not expose selected A controls" }
+                    check(editorBack.isShown && editorVisibility.isShown &&
+                        editorBack.left >= 0 && editorVisibility.right <= editorBar.width
+                    ) { "editor actions were clipped outside ${editorBar.width}px" }
                     check(editorVisibility.performClick()) { "Hide did not accept click" }
                     check(KartPadTouchSettings.isHidden(this, "A") &&
                         editorVisibility.text == "Show"
@@ -1945,13 +1895,13 @@ class KartPadActivity : SDLActivity() {
                 setStroke(dp(2), Color.rgb(255, 199, 51))
             }
             visibility = View.GONE
-            addView(editorBack, LinearLayout.LayoutParams(dp(100), dp(52)))
-            addView(editorLabel, LinearLayout.LayoutParams(dp(250), dp(52)))
-            addView(editorSize, LinearLayout.LayoutParams(dp(340), dp(52)))
-            addView(editorVisibility, LinearLayout.LayoutParams(dp(110), dp(52)))
+            addView(editorBack, LinearLayout.LayoutParams(dp(88), dp(52)))
+            addView(editorLabel, LinearLayout.LayoutParams(0, dp(52), 0.8f))
+            addView(editorSize, LinearLayout.LayoutParams(0, dp(52), 1.2f))
+            addView(editorVisibility, LinearLayout.LayoutParams(dp(88), dp(52)))
         }
         val params = RelativeLayout.LayoutParams(
-            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT,
         ).apply {
             addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
@@ -2208,7 +2158,7 @@ class KartPadActivity : SDLActivity() {
     }
 
     private external fun nativeApplyDisplaySettings(
-        showFps: Boolean, aspectMode: Int, resolutionScale: Float,
+        showFps: Boolean, fpsSize: Int, aspectMode: Int, resolutionScale: Float,
     )
 
     private external fun nativeEnableActivityRecreation()

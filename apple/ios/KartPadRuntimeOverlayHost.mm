@@ -1618,6 +1618,119 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
 
 @end
 
+// The acknowledgment is deliberately local to one report and starts unchecked.
+@interface KartPadReportReviewController : UIViewController
+@property(nonatomic, strong) NSURL *reportURL;
+@property(nonatomic, copy) void (^continueReport)(NSString *evidence);
+@property(nonatomic, strong) UIButton *reviewButton;
+@property(nonatomic, strong) UIButton *continueButton;
+@end
+
+@implementation KartPadReportReviewController
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  self.title = @"Review Diagnostic Log";
+  self.view.backgroundColor = UIColor.systemBackgroundColor;
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel)];
+  UILabel *instructions = [[UILabel alloc] init];
+  instructions.text = @"Review this log before posting publicly. GitHub needs you to attach the file manually. Add a screenshot for visual issues.";
+  instructions.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  instructions.adjustsFontForContentSizeCategory = YES;
+  instructions.numberOfLines = 0;
+  UITextView *log = [[UITextView alloc] init];
+  log.editable = NO;
+  log.font = [UIFont monospacedSystemFontOfSize:12 weight:UIFontWeightRegular];
+  NSError *readError = nil;
+  NSString *logText = self.reportURL ? [NSString stringWithContentsOfURL:self.reportURL encoding:NSUTF8StringEncoding error:&readError] : nil;
+  const BOOL readable = logText != nil;
+  log.text = logText;
+  if (!readable) log.text = @"The saved log could not be read. You can explain the problem using ‘I can’t attach the log’.";
+  log.accessibilityLabel = @"Diagnostic log";
+  self.reviewButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  self.reviewButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
+  self.reviewButton.titleLabel.numberOfLines = 0;
+  [self.reviewButton setTitle:@"☐ I reviewed this log for private information" forState:UIControlStateNormal];
+  [self.reviewButton setTitle:@"☑ I reviewed this log for private information" forState:UIControlStateSelected];
+  self.reviewButton.enabled = readable;
+  self.reviewButton.accessibilityValue = @"Unchecked";
+  [self.reviewButton addTarget:self action:@selector(toggleReview) forControlEvents:UIControlEventTouchUpInside];
+  UIButton *share = [UIButton buttonWithType:UIButtonTypeSystem];
+  [share setTitle:@"Save or Share Log…" forState:UIControlStateNormal];
+  share.enabled = self.reportURL != nil;
+  [share addTarget:self action:@selector(shareLog:) forControlEvents:UIControlEventTouchUpInside];
+  self.continueButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [self.continueButton setTitle:@"Open GitHub — I’ll Attach the Log" forState:UIControlStateNormal];
+  self.continueButton.titleLabel.numberOfLines = 0;
+  self.continueButton.enabled = NO;
+  [self.continueButton addTarget:self action:@selector(continueWithLog) forControlEvents:UIControlEventTouchUpInside];
+  UIButton *unable = [UIButton buttonWithType:UIButtonTypeSystem];
+  [unable setTitle:@"I can’t attach the log…" forState:UIControlStateNormal];
+  [unable addTarget:self action:@selector(explainMissingLog) forControlEvents:UIControlEventTouchUpInside];
+  UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[instructions, log, self.reviewButton, share, self.continueButton, unable]];
+  stack.axis = UILayoutConstraintAxisVertical;
+  stack.spacing = 12;
+  stack.translatesAutoresizingMaskIntoConstraints = NO;
+  UIScrollView *scroll = [[UIScrollView alloc] init];
+  scroll.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:scroll];
+  [scroll addSubview:stack];
+  UILayoutGuide *safe = self.view.safeAreaLayoutGuide;
+  [NSLayoutConstraint activateConstraints:@[
+    [scroll.leadingAnchor constraintEqualToAnchor:safe.leadingAnchor],
+    [scroll.trailingAnchor constraintEqualToAnchor:safe.trailingAnchor],
+    [scroll.topAnchor constraintEqualToAnchor:safe.topAnchor],
+    [scroll.bottomAnchor constraintEqualToAnchor:safe.bottomAnchor],
+    [stack.leadingAnchor constraintEqualToAnchor:scroll.contentLayoutGuide.leadingAnchor constant:16],
+    [stack.trailingAnchor constraintEqualToAnchor:scroll.contentLayoutGuide.trailingAnchor constant:-16],
+    [stack.topAnchor constraintEqualToAnchor:scroll.contentLayoutGuide.topAnchor constant:12],
+    [stack.bottomAnchor constraintEqualToAnchor:scroll.contentLayoutGuide.bottomAnchor constant:-12],
+    [stack.widthAnchor constraintEqualToAnchor:scroll.frameLayoutGuide.widthAnchor constant:-32],
+    [log.heightAnchor constraintGreaterThanOrEqualToConstant:180],
+  ]];
+}
+- (void)cancel { [self dismissViewControllerAnimated:YES completion:nil]; }
+- (void)toggleReview {
+  self.reviewButton.selected = !self.reviewButton.selected;
+  self.reviewButton.accessibilityValue = self.reviewButton.selected ? @"Checked" : @"Unchecked";
+  self.continueButton.enabled = self.reviewButton.selected;
+}
+- (void)shareLog:(UIButton *)sender {
+  UIActivityViewController *share = [[UIActivityViewController alloc] initWithActivityItems:@[self.reportURL] applicationActivities:nil];
+  share.popoverPresentationController.sourceView = sender;
+  share.popoverPresentationController.sourceRect = sender.bounds;
+  [self presentViewController:share animated:YES completion:nil];
+}
+- (void)finishWithEvidence:(NSString *)evidence {
+  void (^continuation)(NSString *) = self.continueReport;
+  [self dismissViewControllerAnimated:YES completion:^{ if (continuation) continuation(evidence); }];
+}
+- (void)continueWithLog {
+  if (!self.reviewButton.selected) return;
+  [self finishWithEvidence:[NSString stringWithFormat:@"I reviewed the diagnostic log for private information. I will attach %@ manually below; it has not been uploaded by KartPad. Add a screenshot for visual issues.", self.reportURL.lastPathComponent]];
+}
+- (void)explainMissingLog {
+  UIAlertController *prompt = [UIAlertController alertControllerWithTitle:@"Why can’t you attach the log?" message:@"Explain what prevents you from attaching it. This explanation is included in the GitHub draft; no log is uploaded." preferredStyle:UIAlertControllerStyleAlert];
+  [prompt addTextFieldWithConfigurationHandler:^(UITextField *field) { field.placeholder = @"Reason (required)"; }];
+  [prompt addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  __weak KartPadReportReviewController *weakSelf = self;
+  __weak UIAlertController *weakPrompt = prompt;
+  UIAlertAction *continueAction = [UIAlertAction actionWithTitle:@"Continue" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    NSString *reason = [weakPrompt.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    if (reason.length == 0) return;
+    [weakSelf finishWithEvidence:[NSString stringWithFormat:@"Diagnostic log not attached. Reason: %@\nNo log was uploaded by KartPad.", reason]];
+  }];
+  continueAction.enabled = NO;
+  [prompt addAction:continueAction];
+  __weak UIAlertAction *weakContinue = continueAction;
+  [prompt.textFields.firstObject addAction:[UIAction actionWithHandler:^(__kindof UIAction *action) {
+    NSString *reason = [weakPrompt.textFields.firstObject.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
+    weakContinue.enabled = reason.length > 0;
+  }] forControlEvents:UIControlEventEditingChanged];
+  [self presentViewController:prompt animated:YES completion:nil];
+}
+@end
+
 @implementation KartPadGameOverlay
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -2232,7 +2345,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   NSURL *reportURL = SunPadDiagnosticsReportURL(
       reportID, answers, technicalContext, &error);
   UIViewController *presenter = KartPadVisibleViewController(self.window);
-  if (reportURL == nil) {
+  if (reportURL == nil && !openGitHub) {
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:@"Diagnostic Report Unavailable"
                                             message:error.localizedDescription
@@ -2244,9 +2357,9 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     return;
   }
 
-  NSString *report = [NSString stringWithContentsOfURL:reportURL
+  NSString *report = reportURL ? [NSString stringWithContentsOfURL:reportURL
                                                encoding:NSUTF8StringEncoding
-                                                  error:nil];
+                                                  error:nil] : nil;
   if (report != nil) {
     report = [report stringByReplacingOccurrencesOfString:
         @"SunPad Diagnostic Report v2" withString:@"KartPad Diagnostic Report v2"];
@@ -2259,26 +2372,17 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
   }
 
   if (openGitHub) {
-    NSString *localDevice = self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad
-        ? @"On My iPad" : @"On My iPhone";
-    NSString *steps = [NSString stringWithFormat:
-        @"Your diagnostic log is saved.\n\n"
-         "1. Review the prefilled GitHub report.\n\n"
-         "2. Attach %@ from Files → %@ → KartPad → Diagnostics.\n\n"
-         "3. Add a screenshot for visual issues.\n\n"
-         "The log is not uploaded automatically. Game files, saves, signing material and controller inputs are excluded.",
-        reportURL.lastPathComponent, localDevice];
-    UIAlertController *attachmentHelp = [UIAlertController
-        alertControllerWithTitle:@"Attach Your Diagnostic Log"
-                         message:steps preferredStyle:UIAlertControllerStyleAlert];
-    [attachmentHelp addAction:[UIAlertAction actionWithTitle:@"Cancel"
-        style:UIAlertActionStyleCancel handler:nil]];
+    KartPadReportReviewController *review = [[KartPadReportReviewController alloc] init];
+    review.reportURL = reportURL;
     __weak KartPadGameOverlay *weakSelf = self;
-    [attachmentHelp addAction:[UIAlertAction actionWithTitle:@"Open GitHub"
-        style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      [weakSelf openGitHubReportWithID:reportID answers:answers];
-    }]];
-    [presenter presentViewController:attachmentHelp animated:YES completion:nil];
+    review.continueReport = ^(NSString *evidence) {
+      NSMutableDictionary *reviewedAnswers = [answers mutableCopy];
+      reviewedAnswers[@"diagnostics"] = evidence;
+      [weakSelf openGitHubReportWithID:reportID answers:reviewedAnswers];
+    };
+    UINavigationController *navigation = [[UINavigationController alloc] initWithRootViewController:review];
+    navigation.modalPresentationStyle = UIModalPresentationFormSheet;
+    [presenter presentViewController:navigation animated:YES completion:nil];
     return;
   }
 
@@ -2322,10 +2426,7 @@ NSError *KartPadPerformGameDataImport(NSURL *url,
     [NSURLQueryItem queryItemWithName:@"summary" value:answers[@"problem"]],
     [NSURLQueryItem queryItemWithName:@"context" value:answers[@"context"]],
     [NSURLQueryItem queryItemWithName:@"frequency" value:answers[@"frequency"]],
-    [NSURLQueryItem queryItemWithName:@"diagnostics" value:
-        @"Attach the diagnostic .log file from Files → KartPad → Diagnostics here. "
-         "Review it before posting and add a screenshot for visual issues. "
-         "The report ID above does not upload the log."],
+    [NSURLQueryItem queryItemWithName:@"diagnostics" value:answers[@"diagnostics"] ?: @"Diagnostic log not attached."],
   ];
   NSURL *url = components.URL;
   if (url == nil) return;

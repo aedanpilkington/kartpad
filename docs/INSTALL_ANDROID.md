@@ -1,20 +1,21 @@
 # Install KartPad on Android
 
-## Testing update
+## Current update
 
-[**0.4.13 preview 1 / code 28**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.13-android-preview.1)
-is the latest published unstable Android preview. It adds checked Retro rating
-companion restore and expanded diagnostics, retaining profile-aware save
-transfer and checked imports. It uses the same public signer and can update
-older public APKs in place. Download the APK, notices ZIP and `SHA256SUMS`.
-Follow the [preview test steps](releases/v0.4.13-android-preview.1.md); physical,
-real-save and performance acceptance remain pending. It is not a verified
-fix for graphics corruption, slowdown, online stalls or cup crashes.
+[**0.4.16 Android 2 / code 65**](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2)
+is the current owner-accepted Android community update. It refreshes the
+translated Retro Rewind 6.12.8 graph and retains the numeric console-serial
+correction. Physical Pixel 9 Pro XL testing confirmed launch, touch controls,
+Retro WFC login and worldwide lobby entry. See the
+[release notes](releases/v0.4.16-android.2.md).
+Menu transitions, graphics corruption on some GPUs, online stalls and cup crashes
+are not declared resolved. Download the APK, notices and checksums; the source
+archive is available for rebuilding and modification.
 
 ## Download and first launch
 
-1. Open the [first Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.10-android.1).
-   Download `KartPad-v0.4.10-android.1-arm64.apk`, `SHA256SUMS`, and the companion
+1. Open the [current Android release](https://github.com/chrissotraidis/kartpad/releases/tag/v0.4.16-android.2).
+   Download `KartPad-v0.4.16-android.2-arm64.apk`, `SHA256SUMS`, and the companion
    notices ZIP. APK is Android's installable format; IPA is Apple-only. The AAB
    is a developer bundle and is not needed for installation (it is not published).
 2. Use an ARM64 phone/tablet with Vulkan and Android 9/API 28 or newer. The
@@ -31,7 +32,7 @@ fix for graphics corruption, slowdown, online stalls or cup crashes.
    not sufficient: the exact profile's identity checks must pass. Keep the
    original image backed up; neither the APK nor this repository supplies it.
 5. Choose Retro Rewind to download, verify and install the separately hosted
-   official **6.12.7** pack. Use matching current content; if KartPad reports a
+   official **6.12.8** pack. Use matching current content; if KartPad reports a
    newer incompatible profile, wait for a matching KartPad update. Never bypass
    the checks or replace executable files manually.
 
@@ -52,7 +53,8 @@ Never uninstall or clear storage as an update step.
 debug certificate. Android will reject the public release as an in-place update
 over those previews. Do not uninstall to force it through: preserve the working
 preview and its app data, and plan a deliberate backed-up migration separately.
-The first public package is code 21; the testing preview is code 28.
+The first public package was code 21; the testing preview was code 28. The
+current public package is code 65.
 Changing a package signature is not a save migration.
 Self-built APKs similarly cannot update public builds unless the signer matches.
 
@@ -69,6 +71,17 @@ and local reporting tools. Touch controls are movable, resizable and hideable;
 the floating movement stick follows your initial thumb position within its
 pickup area. Existing custom layouts are preserved.
 
+The next 0.4.17 update adds **Display → FPS Counter Size… → Small / Medium /
+Large**. This changes the counter text only; the separate **Show FPS Counter**
+toggle controls visibility. It also keeps the touch editor's **Back** and
+**Show/Hide** actions on screen in narrow landscape layouts. These additions
+are in the current device candidate and are not in public code 65.
+
+The same candidate adds **R** and **D-pad Up** under Controller Button Mapping.
+Assigning Right Shoulder to D-pad Up swaps its former R assignment to avoid
+triggering both actions. Existing valid custom mappings are retained; the
+affected Thor/Odin controller still needs its own trial.
+
 The maintainer accepted Original Grand Prix gameplay using Razer Kishi, with
 touch controls hiding automatically when connected. The default mapping is
 A/B/X/Y directly, left stick to steer, Start to pause, left shoulder to Z,
@@ -81,8 +94,9 @@ performance permits. Original 4:3 is the conservative aspect setting; widescreen
 and Fill Screen remain experimental. Pixel play at 3x was accepted, but the
 initial pipeline-compilation queue can cause pronounced hitches, and warm or
 track-dependent slowdown remains. This release does not promise sustained 60 FPS.
-Retro WFC login, worldwide matchmaking and live race play were owner-reported;
-complete results, reconnect and network-transition coverage remain open.
+Retro WFC login and worldwide lobby entry were accepted on the exact tested
+device. Complete results, reconnect and network-transition coverage remain open;
+frame drops and stutter remain known performance issues.
 
 ## Save location and PC transfer
 
@@ -105,6 +119,12 @@ Runtime, renderer-phase and bounded battery/thermal diagnostics are retained
 locally; the app does not upload those reports automatically. Shell profiling
 is enabled in the first release; the later testing builds disable shell profiling.
 Public game packages are non-debuggable.
+
+In **0.4.14**, Report a Problem asks you to select a readable text
+log and confirm that you reviewed it, or explain why logs cannot be included.
+Exporting diagnostics does not select or approve an attachment. If you open
+GitHub, attach the reviewed file manually to the issue draft. Opening a share
+sheet does not send anything until you choose a destination and complete it.
 
 Review diagnostics before sharing; do not attach raw private archives, game
 images, extracted assets, saves, account/device identifiers or signing keys to
