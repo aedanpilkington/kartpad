@@ -54,5 +54,11 @@ build preparation correction leaves production rendering code unchanged.
 Public Android remains 0.4.16 Android 2/code 65 until an accepted,
 community-signed successor is published. The owner's test APK uses the same
 debug signer as their installed app to preserve its data; it is separate from
-the community-signed public update. Physical candidate results will be recorded
-after installation and owner testing.
+the community-signed public update. Code 78 was installed in place on the Pixel 9 Pro XL, retaining package UID
+and first-install time. The before/after inventory has the same 6,593 paths;
+a shell-quoting error means these are path listings, not verified byte hashes.
+Both games visibly show Ready to Play after launch, with no observed launch
+crash. Gameplay, save contents and controller behavior await the owner trial.
+Fresh preparation from merged PR #240 differs from the compiled candidate only
+in test stubs and patch backup files, not production-runtime files. The embedded
+source-dirty flag remains disclosed; this candidate is not a public release.
