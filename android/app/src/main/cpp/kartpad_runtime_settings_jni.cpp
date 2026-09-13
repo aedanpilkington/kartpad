@@ -12,10 +12,11 @@ Java_dev_kartpad_android_KartPadActivity_nativeEnableActivityRecreation(
 
 extern "C" JNIEXPORT void JNICALL
 Java_dev_kartpad_android_KartPadActivity_nativeApplyDisplaySettings(
-    JNIEnv*, jobject, jboolean show_fps, jint aspect_mode,
+    JNIEnv*, jobject, jboolean show_fps, jint fps_size, jint aspect_mode,
     jfloat resolution_scale) {
   kartpad::android::PublishDisplaySettings({
       .show_fps = show_fps == JNI_TRUE,
+      .fps_size = static_cast<int>(fps_size),
       .aspect_mode = static_cast<int>(aspect_mode),
       .resolution_scale = static_cast<float>(resolution_scale),
   });

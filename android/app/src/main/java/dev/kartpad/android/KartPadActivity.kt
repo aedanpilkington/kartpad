@@ -574,6 +574,9 @@ class KartPadActivity : SDLActivity() {
     private fun showDisplayMenu() = showKartPadMenuPage(
         "Display",
         listOf(
+            MenuRow("FPS Counter Size…", R.drawable.ic_kartpad_speedometer) {
+                closeKartPadMenu(::showFpsSizeSettings)
+            },
             MenuRow("Aspect Ratio…", R.drawable.ic_kartpad_display) {
                 closeKartPadMenu(::showAspectRatioSettings)
             },
@@ -746,6 +749,19 @@ class KartPadActivity : SDLActivity() {
         applyDisplaySettings()
     }
 
+    private fun showFpsSizeSettings() {
+        val labels = arrayOf("Small", "Medium", "Large")
+        AlertDialog.Builder(this)
+            .setTitle("FPS Counter Size")
+            .setSingleChoiceItems(labels, KartPadTouchSettings.fpsSize(this)) { dialog, which ->
+                KartPadTouchSettings.setFpsSize(this, which)
+                applyDisplaySettings()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Back") { _, _ -> showDisplayMenu() }
+            .show()
+    }
+
     private fun confirmSwitchGameVersion() {
         AlertDialog.Builder(this)
             .setTitle("Switch Game Version")
@@ -777,6 +793,7 @@ class KartPadActivity : SDLActivity() {
     private fun applyDisplaySettings() {
         nativeApplyDisplaySettings(
             KartPadTouchSettings.showFps(this),
+            KartPadTouchSettings.fpsSize(this),
             KartPadTouchSettings.aspectMode(this),
             KartPadTouchSettings.resolutionScale(this),
         )
@@ -1757,7 +1774,7 @@ class KartPadActivity : SDLActivity() {
                                     "size=$savedSize hide=$savedHide modern=$savedModern"
                             }
                             check(nativeDebugDisplaySettings() ==
-                                "fps=true aspect=0 scale=1.0"
+                                "fps=true size=0 aspect=0 scale=1.0"
                             ) { "touch settings changed the display resolution" }
                             Log.i(
                                 TAG,
@@ -1793,6 +1810,9 @@ class KartPadActivity : SDLActivity() {
                     check(editorLabel.text == "A size" && editorSize.isEnabled &&
                         editorVisibility.isEnabled && editorVisibility.text == "Hide"
                     ) { "editor did not expose selected A controls" }
+                    check(editorBack.isShown && editorVisibility.isShown &&
+                        editorBack.left >= 0 && editorVisibility.right <= editorBar.width
+                    ) { "editor actions were clipped outside ${editorBar.width}px" }
                     check(editorVisibility.performClick()) { "Hide did not accept click" }
                     check(KartPadTouchSettings.isHidden(this, "A") &&
                         editorVisibility.text == "Show"
@@ -1875,13 +1895,13 @@ class KartPadActivity : SDLActivity() {
                 setStroke(dp(2), Color.rgb(255, 199, 51))
             }
             visibility = View.GONE
-            addView(editorBack, LinearLayout.LayoutParams(dp(100), dp(52)))
-            addView(editorLabel, LinearLayout.LayoutParams(dp(250), dp(52)))
-            addView(editorSize, LinearLayout.LayoutParams(dp(340), dp(52)))
-            addView(editorVisibility, LinearLayout.LayoutParams(dp(110), dp(52)))
+            addView(editorBack, LinearLayout.LayoutParams(dp(88), dp(52)))
+            addView(editorLabel, LinearLayout.LayoutParams(0, dp(52), 0.8f))
+            addView(editorSize, LinearLayout.LayoutParams(0, dp(52), 1.2f))
+            addView(editorVisibility, LinearLayout.LayoutParams(dp(88), dp(52)))
         }
         val params = RelativeLayout.LayoutParams(
-            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.MATCH_PARENT,
             RelativeLayout.LayoutParams.WRAP_CONTENT,
         ).apply {
             addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
@@ -2138,7 +2158,7 @@ class KartPadActivity : SDLActivity() {
     }
 
     private external fun nativeApplyDisplaySettings(
-        showFps: Boolean, aspectMode: Int, resolutionScale: Float,
+        showFps: Boolean, fpsSize: Int, aspectMode: Int, resolutionScale: Float,
     )
 
     private external fun nativeEnableActivityRecreation()
