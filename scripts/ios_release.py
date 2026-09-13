@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -16,10 +17,17 @@ TRANSLATION_SHA256 = "f5b67171325d4b98ccee74752268d689952d054f78f001b9083e42507d
 # Compare production inputs, excluding release notes and packaging-only changes.
 PRODUCTION_PATHS = (
     "apple/ios", "apple/mobile", "apple/shared", "apple/third_party",
-    "runtime", "patches", "builder", "CMakeLists.txt",
+    "runtime", "builder", "CMakeLists.txt",
     "scripts/prepare-ios-game-runtime.sh", "scripts/build-ios-device-game-app.sh",
     "scripts/inject-retro-rel-report-guard.py", "scripts/write-build-provenance.py",
     "scripts/generate-ios-icon-assets.sh", "scripts/verify-sunpad-overlay-snapshot.sh",
+)
+# The preparation script is itself compared, so its patch list must also match.
+PRODUCTION_PATHS += tuple(
+    "patches/" + name for name in sorted(set(re.findall(
+        r"[A-Za-z0-9_-]+\.patch",
+        (Path(__file__).parent / "prepare-ios-game-runtime.sh").read_text(),
+    )))
 )
 
 
